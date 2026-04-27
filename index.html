@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portofolio Pribadi</title>
+    <title>Cyber Security Enthusiast | Penetration Tester & Security Researcher</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -12,13 +12,14 @@
     <header>
         <div class="container">
             <nav class="navbar">
-                <a href="#" class="logo">Porto<span>folio</span></a>
+                <a href="#" class="logo"><i class="fas fa-shield-alt"></i> Cyber<span>Security</span></a>
                 <ul class="nav-links">
-                    <li><a href="#home">Beranda</a></li>
-                    <li><a href="#about">Tentang</a></li>
-                    <li><a href="#skills">Keahlian</a></li>
-                    <li><a href="#portfolio">Portofolio</a></li>
-                    <li><a href="#contact">Kontak</a></li>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#skills">Skills</a></li>
+                    <li><a href="#portfolio">Write-ups & Projects</a></li>
+                    <li><a href="#certifications">Certifications</a></li>
+                    <li><a href="#contact">Contact</a></li>
                 </ul>
                 <div class="menu-toggle">
                     <i class="fas fa-bars"></i>
@@ -30,13 +31,26 @@
     <!-- Hero Section -->
     <section id="home" class="hero">
         <div class="container">
-            <img src="profile.jpg" alt="Foto Profil" class="profile-img">
+            <div class="hero-terminal">
+                <div class="terminal-header">
+                    <span class="terminal-dot"></span>
+                    <span class="terminal-dot"></span>
+                    <span class="terminal-dot"></span>
+                </div>
+                <div class="terminal-content">
+                    <p><span class="terminal-prompt">$</span> whoami</p>
+                    <p class="terminal-output">Tsaqif Fawwaz - Ethical Hacker & Security Researcher</p>
+                    <p><span class="terminal-prompt">$</span> echo $passion</p>
+                    <p class="terminal-output">Cybersecurity | Penetration Testing | Vulnerability Research</p>
+                </div>
+            </div>
             <div class="hero-content">
-                <h1>Halo, Saya <span style="color: var(--accent-color);">Tsaqif</span></h1>
-                <p>Seorang mahasiswa Sarjana Terapan Teknik Informatika di Politeknik Elektronika Negeri Surabaya</p>
+                <h1>Hello, I'm <span style="color: var(--accent-color);">Tsaqif</span></h1>
+                <p class="subtitle">Cybersecurity Enthusiast | Ethical Hacker | CTF Player</p>
+                <p>Passionate about uncovering vulnerabilities, securing systems, and sharing knowledge through write-ups and research.</p>
                 <div class="hero-btns">
-                    <a href="#portfolio" class="btn">Lihat Portofolio</a>
-                    <a href="#contact" class="btn btn-accent">Hubungi Saya</a>
+                    <a href="#portfolio" class="btn">View Write-ups</a>
+                    <a href="#contact" class="btn btn-accent">Get In Touch</a>
                 </div>
             </div>
         </div>
@@ -45,16 +59,17 @@
     <!-- About Section -->
     <section id="about" class="about">
         <div class="container">
-            <h2>Tentang Saya</h2>
+            <h2>About Me</h2>
             <div class="about-content">
                 <div class="about-text">
-                    <p>Nama lengkap saya adalah Muhammad Tsaqif Fawwaz Nasywan. Seorang mahasiswa Sarjana Terapan Teknik Informatika di Politeknik Elektronika Negeri Surabaya yang saat ini masih menempuh di semester 2.</p>
-                    <p>Saya masih memiliki sedikit pengalaman untuk bekerja sebagai tim dalam <i>project</i>. Namun, saya akan terus belajar dan mengembangkan keahlian saya sebagai individu yang tertarik pada bidang <i>Cyber Security</i>.</p>
-                    <p>Di waktu luang, saya senang untuk mempelajari dan latihan untuk mengembangkan kemampuan saya dalam bidang <i>Cyber Security</i>. Selain itu, saya juga mendokumentasikan hasil latihan saya dalam bentuk WU/<i>Write Up</i> pada blog saya.</p>
-                    <a href="CV.pdf" download class="btn" style="margin-top: 20px;">Download CV</a>
+                    <p>I'm Muhammad Tsaqif Fawwaz Nasywan, a passionate cybersecurity enthusiast and ethical hacker pursuing a degree in Applied Informatics at Politeknik Elektronika Negeri Surabaya.</p>
+                    <p>My journey in cybersecurity is driven by an insatiable curiosity about system vulnerabilities and security mechanisms. I dedicate my time to studying penetration testing techniques, reverse engineering, network security, and cryptography to build a strong foundation in offensive and defensive security.</p>
+                    <p>I actively participate in Capture The Flag (CTF) competitions and security challenges, continuously expanding my skill set. I document my learning journey through detailed write-ups and technical blogs, sharing insights and methodologies with the cybersecurity community.</p>
+                    <p>My goal is to become a proficient security professional capable of identifying and mitigating sophisticated threats while contributing to a safer digital ecosystem.</p>
+                    <a href="CV.pdf" download class="btn" style="margin-top: 20px;"><i class="fas fa-download"></i> Download CV</a>
                 </div>
                 <div class="about-img">
-                    <img src="https://images.unsplash.com/photo-1555099962-4199c345e5dd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80" alt="Tentang Saya">
+                    <img src="https://images.unsplash.com/photo-1526374965328-7f5ae4e8b12b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80" alt="Cybersecurity">
                 </div>
             </div>
         </div>
@@ -63,42 +78,49 @@
     <!-- Skills Section -->
     <section id="skills" class="skills">
         <div class="container">
-            <h2>Keahlian</h2>
+            <h2>Core Skills</h2>
             <div class="skills-container">
                 <div class="skill-item">
                     <div class="skill-icon">
-                        <i class="fas fa-code"></i>
+                        <i class="fas fa-lock-open"></i>
                     </div>
-                    <h3>Frontend Development</h3>
-                    <p>HTML5, JavaScript, Bootstrap, Tailwind CSS</p>
+                    <h3>Penetration Testing</h3>
+                    <p>Web App Testing, Network Pentesting, Vulnerability Assessment, Burp Suite, Metasploit</p>
                 </div>
                 <div class="skill-item">
                     <div class="skill-icon">
-                        <i class="fas fa-server"></i>
+                        <i class="fas fa-network-wired"></i>
                     </div>
-                    <h3>Backend Development</h3>
-                    <p>Python, PHP</p>
+                    <h3>Network Security</h3>
+                    <p>TCP/IP, Packet Analysis, Wireshark, Sniffing, Man-in-the-Middle Attacks</p>
                 </div>
                 <div class="skill-item">
                     <div class="skill-icon">
-                        <i class="fas fa-database"></i>
+                        <i class="fas fa-key"></i>
                     </div>
-                    <h3>Database</h3>
-                    <p>MySQL, PostgreSQL</p>
+                    <h3>Cryptography</h3>
+                    <p>Encryption, Hashing, Digital Signatures, Steganography, Cipher Analysis</p>
                 </div>
                 <div class="skill-item">
                     <div class="skill-icon">
-                        <i class="fas fa-mobile-alt"></i>
+                        <i class="fas fa-microscope"></i>
                     </div>
-                    <h3>Cyber Security</h3>
-                    <p>Jailbreaking, Network Security, Cryptography, Ethical Hacking</p>
+                    <h3>Malware Analysis</h3>
+                    <p>Reverse Engineering, Binary Analysis, Dynamic/Static Analysis, IDA Pro</p>
                 </div>
                 <div class="skill-item">
                     <div class="skill-icon">
-                        <i class="fas fa-palette"></i>
+                        <i class="fas fa-terminal"></i>
                     </div>
-                    <h3>UI/UX Design</h3>
-                    <p>Figma</p>
+                    <h3>Programming</h3>
+                    <p>Python, Bash, JavaScript, PHP, C - Exploit Development & Scripting</p>
+                </div>
+                <div class="skill-item">
+                    <div class="skill-icon">
+                        <i class="fas fa-flag"></i>
+                    </div>
+                    <h3>CTF & Hacking</h3>
+                    <p>Capture The Flag, Web Exploitation, Reverse Engineering, Steganography, Forensics</p>
                 </div>
             </div>
         </div>
@@ -107,31 +129,120 @@
     <!-- Portfolio Section -->
     <section id="portfolio" class="portfolio">
         <div class="container">
-            <h2>Portofolio</h2>
+            <h2>Write-ups & Projects</h2>
             <div class="portfolio-grid">
                 <div class="portfolio-item">
-                    <img src="https://images.unsplash.com/photo-1551650975-87deedd944c3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1174&q=80" alt="E-commerce Website" class="portfolio-img">
+                    <img src="https://images.unsplash.com/photo-1557821552-17105176677c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80" alt="SQL Injection" class="portfolio-img">
                     <div class="portfolio-content">
-                        <h3>E-commerce Platform</h3>
-                        <p>Platform e-commerce lengkap dengan sistem pembayaran, keranjang belanja, dan dashboard admin. Dibangun dengan React dan Node.js.</p>
-                        <a href="#" class="btn" style="margin-top: 10px; padding: 8px 20px;">Lihat Detail</a>
+                        <h3>SQL Injection Exploitation</h3>
+                        <p>Complete write-up on identifying and exploiting SQL injection vulnerabilities in web applications. Includes bypass techniques, authentication evasion, and data exfiltration methods.</p>
+                        <div class="portfolio-tags">
+                            <span class="tag">Web Security</span>
+                            <span class="tag">SQL Injection</span>
+                        </div>
+                        <a href="#" class="btn" style="margin-top: 10px; padding: 8px 20px;">Read Write-up</a>
                     </div>
                 </div>
                 <div class="portfolio-item">
-                    <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80" alt="Analytics Dashboard" class="portfolio-img">
+                    <img src="https://images.unsplash.com/photo-1526374965328-7f5ae4e8b12b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80" alt="Network Security" class="portfolio-img">
                     <div class="portfolio-content">
-                        <h3>Analytics Dashboard</h3>
-                        <p>Dashboard analitik real-time dengan visualisasi data interaktif menggunakan Chart.js dan D3.js. Terintegrasi dengan berbagai sumber data.</p>
-                        <a href="#" class="btn" style="margin-top: 10px; padding: 8px 20px;">Lihat Detail</a>
+                        <h3>Man-in-the-Middle Attack Lab</h3>
+                        <p>Comprehensive guide to MITM attacks using ARP spoofing. Covers network sniffing, session hijacking, and credential harvesting in a controlled environment.</p>
+                        <div class="portfolio-tags">
+                            <span class="tag">Network Security</span>
+                            <span class="tag">MITM</span>
+                        </div>
+                        <a href="#" class="btn" style="margin-top: 10px; padding: 8px 20px;">Read Write-up</a>
                     </div>
                 </div>
                 <div class="portfolio-item">
-                    <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1074&q=80" alt="Mobile App" class="portfolio-img">
+                    <img src="https://images.unsplash.com/photo-1563986768609-322da13575f3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1074&q=80" alt="CTF Challenge" class="portfolio-img">
                     <div class="portfolio-content">
-                        <h3>Fitness Mobile App</h3>
-                        <p>Aplikasi mobile untuk pelacakan kebugaran dengan fitur workout plans, progress tracking, dan integrasi dengan wearable devices.</p>
-                        <a href="#" class="btn" style="margin-top: 10px; padding: 8px 20px;">Lihat Detail</a>
+                        <h3>TryHackMe CTF Solutions</h3>
+                        <p>Detailed walkthrough of challenging CTF scenarios including privilege escalation, hash cracking, and forensic analysis. Tools: Hashcat, John, Ghidra, Volatility.</p>
+                        <div class="portfolio-tags">
+                            <span class="tag">CTF</span>
+                            <span class="tag">Forensics</span>
+                        </div>
+                        <a href="#" class="btn" style="margin-top: 10px; padding: 8px 20px;">Read Write-up</a>
                     </div>
+                </div>
+                <div class="portfolio-item">
+                    <img src="https://images.unsplash.com/photo-1516321318423-f06f70e504de?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80" alt="Reverse Engineering" class="portfolio-img">
+                    <div class="portfolio-content">
+                        <h3>Malware Reverse Engineering</h3>
+                        <p>Analysis of a trojan sample using IDA Pro and dynamic debugging. Covers unpacking, function identification, API hooking, and behavioral analysis.</p>
+                        <div class="portfolio-tags">
+                            <span class="tag">Malware Analysis</span>
+                            <span class="tag">Reverse Eng.</span>
+                        </div>
+                        <a href="#" class="btn" style="margin-top: 10px; padding: 8px 20px;">Read Write-up</a>
+                    </div>
+                </div>
+                <div class="portfolio-item">
+                    <img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80" alt="Web App Security" class="portfolio-img">
+                    <div class="portfolio-content">
+                        <h3>XSS Vulnerability Assessment</h3>
+                        <p>Finding and exploiting Cross-Site Scripting vulnerabilities. Covers reflected XSS, stored XSS, DOM-based XSS, and WAF bypasses using Burp Suite.</p>
+                        <div class="portfolio-tags">
+                            <span class="tag">Web Security</span>
+                            <span class="tag">XSS</span>
+                        </div>
+                        <a href="#" class="btn" style="margin-top: 10px; padding: 8px 20px;">Read Write-up</a>
+                    </div>
+                </div>
+                <div class="portfolio-item">
+                    <img src="https://images.unsplash.com/photo-1531746790731-6c087fecd65b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1074&q=80" alt="Cryptography" class="portfolio-img">
+                    <div class="portfolio-content">
+                        <h3>Cryptography Challenge Solutions</h3>
+                        <p>Solutions to cryptographic puzzles including RSA attacks, weak cipher analysis, and side-channel attacks. Python scripts included.</p>
+                        <div class="portfolio-tags">
+                            <span class="tag">Cryptography</span>
+                            <span class="tag">Python</span>
+                        </div>
+                        <a href="#" class="btn" style="margin-top: 10px; padding: 8px 20px;">Read Write-up</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Certifications Section -->
+    <section id="certifications" class="certifications">
+        <div class="container">
+            <h2>Certifications & Achievements</h2>
+            <div class="certifications-grid">
+                <div class="cert-item">
+                    <div class="cert-icon">
+                        <i class="fas fa-certificate"></i>
+                    </div>
+                    <h3>CompTIA Security+</h3>
+                    <p>In Progress</p>
+                    <p class="cert-desc">Comprehensive security fundamentals and best practices</p>
+                </div>
+                <div class="cert-item">
+                    <div class="cert-icon">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <h3>HackTheBox Pro</h3>
+                    <p>Active Member</p>
+                    <p class="cert-desc">50+ Machines Rooted | Ranked Top 5%</p>
+                </div>
+                <div class="cert-item">
+                    <div class="cert-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <h3>TryHackMe Master</h3>
+                    <p>2500+ Points</p>
+                    <p class="cert-desc">Completed 100+ Security Training Rooms</p>
+                </div>
+                <div class="cert-item">
+                    <div class="cert-icon">
+                        <i class="fas fa-flag-checkered"></i>
+                    </div>
+                    <h3>CTF Competitions</h3>
+                    <p>Active Participant</p>
+                    <p class="cert-desc">Multiple competition victories</p>
                 </div>
             </div>
         </div>
@@ -140,7 +251,7 @@
     <!-- Contact Section -->
     <section id="contact" class="contact">
         <div class="container">
-            <h2>Hubungi Saya</h2>
+            <h2>Let's Connect</h2>
             <div class="contact-container">
                 <div class="contact-info">
                     <div class="contact-item">
@@ -148,8 +259,8 @@
                             <i class="fas fa-map-marker-alt"></i>
                         </div>
                         <div>
-                            <h3>Lokasi</h3>
-                            <p>Jakarta, Indonesia</p>
+                            <h3>Location</h3>
+                            <p>Surabaya, Indonesia</p>
                         </div>
                     </div>
                     <div class="contact-item">
@@ -158,7 +269,7 @@
                         </div>
                         <div>
                             <h3>Email</h3>
-                            <p>alex.chandra@example.com</p>
+                            <p>tsaqif.fawwaz@example.com</p>
                         </div>
                     </div>
                     <div class="contact-item">
@@ -166,7 +277,7 @@
                             <i class="fas fa-phone"></i>
                         </div>
                         <div>
-                            <h3>Telepon</h3>
+                            <h3>Phone</h3>
                             <p>+62 812 3456 7890</p>
                         </div>
                     </div>
@@ -175,30 +286,30 @@
                             <i class="fas fa-clock"></i>
                         </div>
                         <div>
-                            <h3>Jam Kerja</h3>
-                            <p>Senin - Jumat: 9:00 - 17:00</p>
+                            <h3>Availability</h3>
+                            <p>Always Available for Security Discussions</p>
                         </div>
                     </div>
                 </div>
                 <div class="contact-form">
                     <form id="contactForm">
                         <div class="form-group">
-                            <label for="name">Nama Lengkap</label>
-                            <input type="text" id="name" class="form-control" placeholder="Masukkan nama Anda" required>
+                            <label for="name">Full Name</label>
+                            <input type="text" id="name" class="form-control" placeholder="Enter your name" required>
                         </div>
                         <div class="form-group">
-                            <label for="email">Email</label>
-                            <input type="email" id="email" class="form-control" placeholder="Masukkan email Anda" required>
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" class="form-control" placeholder="Enter your email" required>
                         </div>
                         <div class="form-group">
-                            <label for="subject">Subjek</label>
-                            <input type="text" id="subject" class="form-control" placeholder="Subjek pesan" required>
+                            <label for="subject">Subject</label>
+                            <input type="text" id="subject" class="form-control" placeholder="Message subject" required>
                         </div>
                         <div class="form-group">
-                            <label for="message">Pesan</label>
-                            <textarea id="message" class="form-control" placeholder="Tulis pesan Anda di sini" required></textarea>
+                            <label for="message">Message</label>
+                            <textarea id="message" class="form-control" placeholder="Write your message here..." required></textarea>
                         </div>
-                        <button type="submit" class="btn btn-accent">Kirim Pesan</button>
+                        <button type="submit" class="btn btn-accent">Send Message</button>
                     </form>
                 </div>
             </div>
@@ -210,32 +321,32 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-about">
-                    <h3>Alex Chandra</h3>
-                    <p>Seorang Full Stack Developer yang bersemangat menciptakan solusi digital inovatif. Terbuka untuk kolaborasi dan proyek menarik.</p>
-                    <p style="margin-top: 15px;">&copy; 2023 Portofolio Pribadi. Semua hak dilindungi.</p>
+                    <h3><i class="fas fa-shield-alt"></i> Tsaqif Fawwaz</h3>
+                    <p>Cybersecurity Enthusiast | Ethical Hacker | Security Researcher. Committed to building secure systems and educating others about cybersecurity threats and defenses.</p>
+                    <p style="margin-top: 15px;">&copy; 2024 Cybersecurity Portfolio. All rights reserved.</p>
                 </div>
                 <div class="footer-links">
-                    <h3>Tautan Cepat</h3>
+                    <h3>Quick Links</h3>
                     <ul>
-                        <li><a href="#home">Beranda</a></li>
-                        <li><a href="#about">Tentang</a></li>
-                        <li><a href="#skills">Keahlian</a></li>
-                        <li><a href="#portfolio">Portofolio</a></li>
-                        <li><a href="#contact">Kontak</a></li>
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#about">About</a></li>
+                        <li><a href="#skills">Skills</a></li>
+                        <li><a href="#portfolio">Write-ups</a></li>
+                        <li><a href="#contact">Contact</a></li>
                     </ul>
                 </div>
                 <div class="footer-social">
-                    <h3>Ikuti Saya</h3>
+                    <h3>Follow Me</h3>
                     <div class="social-icons">
-                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                        <a href="#"><i class="fab fa-github"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" title="GitHub"><i class="fab fa-github"></i></a>
+                        <a href="#" title="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" title="Medium"><i class="fab fa-medium"></i></a>
                     </div>
                 </div>
             </div>
             <div class="copyright">
-                <p>Dibuat dengan <i class="fas fa-heart" style="color: #ff7e5f;"></i> untuk portofolio pribadi</p>
+                <p>Built with <i class="fas fa-heart" style="color: #ff7e5f;"></i> for cybersecurity</p>
             </div>
         </div>
     </footer>

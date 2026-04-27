@@ -25,19 +25,19 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
     const message = document.getElementById('message').value;
     
     if (!name || !email || !subject || !message) {
-        alert('Harap lengkapi semua field!');
+        alert('[!] Error: Please fill in all fields!');
         return;
     }
     
     // Validasi email sederhana
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailPattern.test(email)) {
-        alert('Harap masukkan alamat email yang valid!');
+        alert('[!] Error: Invalid email address!');
         return;
     }
     
     // Simulasi pengiriman form
-    alert('Terima kasih! Pesan Anda telah berhasil dikirim. Saya akan menghubungi Anda segera.');
+    alert('[+] Success! Your message has been sent. I will get back to you soon.');
     
     // Reset form
     this.reset();
