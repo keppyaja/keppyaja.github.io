@@ -4,7 +4,7 @@ const commands = [
     { text: "kali@tsaqif:~$ whoami", isCommand: true },
     { text: "Tsaqif Fawwaz - Cyber Security & CP Enthusiast", isCommand: false },
     { text: "kali@tsaqif:~$ ./show_focus.sh", isCommand: true },
-    { text: "[+] Cryptography [+] Reverse Engineering [+] Linux", isCommand: false }
+    { text: "[+] Cryptography [+] Binary Exploitation [+] Linux", isCommand: false }
 ];
 
 let lineIndex = 0;
