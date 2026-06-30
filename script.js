@@ -110,9 +110,46 @@
         window.addEventListener('scroll', handleScrollEffects);
         handleScrollEffects(); // Trigger once on load
 
-        // --- Form submission alert hacker-style ---
+        // --- AJAX Form Submission via FormSubmit ---
         document.getElementById('contactForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            alert('[+] Payload Delivered. Connection established successfully.');
-            this.reset();
+            e.preventDefault(); // Mencegah reload halaman
+
+            // Ambil elemen tombol dan nilai input
+            const btn = this.querySelector('button');
+            const originalText = btn.innerHTML;
+            
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const message = document.getElementById('message').value;
+
+            // Ubah tombol menjadi status loading
+            btn.innerHTML = 'Executing Payload... <i class="fas fa-spinner fa-spin"></i>';
+            btn.disabled = true;
+
+            // Kirim request ke FormSubmit API
+            fetch("https://formsubmit.co/ajax/sukepaja18@gmail.com", {
+                method: "POST",
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    _subject: "[Skippedx0r] New Target Payload Received!",
+                    Name: name,
+                    Email: email,
+                    Message: message
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('[+] Payload Delivered. Connection established successfully.');
+                this.reset(); // Kosongkan form
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            })
+            .catch(error => {
+                alert('[-] Connection Failed. Target unreachable.');
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            });
         });
