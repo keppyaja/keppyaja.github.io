@@ -3,22 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cyber Security Enthusiast | Penetration Tester & Security Researcher</title>
+    <title>Tsaqif Fawwaz | Cyber Security Enthusiast & Reverse Engineer</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Header & Navigation -->
+    <div class="scanlines"></div>
+
     <header>
         <div class="container">
             <nav class="navbar">
-                <a href="#" class="logo"><i class="fas fa-shield-alt"></i> Cyber<span>Security</span></a>
+                <a href="#" class="logo"><i class="fas fa-terminal"></i> 0x<span>Tsaqif</span></a>
                 <ul class="nav-links">
                     <li><a href="#home">Home</a></li>
                     <li><a href="#about">About</a></li>
                     <li><a href="#skills">Skills</a></li>
-                    <li><a href="#portfolio">Write-ups & Projects</a></li>
-                    <li><a href="#certifications">Certifications</a></li>
+                    <li><a href="#portfolio">Projects & CTF</a></li>
                     <li><a href="#contact">Contact</a></li>
                 </ul>
                 <div class="menu-toggle">
@@ -28,7 +28,6 @@
         </div>
     </header>
 
-    <!-- Hero Section -->
     <section id="home" class="hero">
         <div class="container">
             <div class="hero-terminal">
@@ -37,36 +36,30 @@
                     <span class="terminal-dot"></span>
                     <span class="terminal-dot"></span>
                 </div>
-                <div class="terminal-content">
-                    <p><span class="terminal-prompt">$</span> whoami</p>
-                    <p class="terminal-output">Tsaqif Fawwaz - Ethical Hacker & Security Researcher</p>
-                    <p><span class="terminal-prompt">$</span> echo $passion</p>
-                    <p class="terminal-output">Cybersecurity | Penetration Testing | Vulnerability Research</p>
-                </div>
+                <div class="terminal-content" id="terminal-content">
+                    </div>
             </div>
             <div class="hero-content">
-                <h1>Hello, I'm <span style="color: var(--accent-color);">Tsaqif</span></h1>
-                <p class="subtitle">Cybersecurity Enthusiast | Ethical Hacker | CTF Player</p>
-                <p>Passionate about uncovering vulnerabilities, securing systems, and sharing knowledge through write-ups and research.</p>
+                <h1>Hello, I'm <span style="color: var(--accent-color);">Tsaqif Fawwaz</span></h1>
+                <p class="subtitle">Cybersecurity Enthusiast | CTF Player | Programmer</p>
+                <p>Mendedikasikan diri pada analisis kerentanan, kriptografi, dan pemecahan algoritma kompleks melalui Competitive Programming.</p>
                 <div class="hero-btns">
-                    <a href="#portfolio" class="btn">View Write-ups</a>
-                    <a href="#contact" class="btn btn-accent">Get In Touch</a>
+                    <a href="#portfolio" class="btn">Lihat Write-ups</a>
+                    <a href="#contact" class="btn btn-accent">Initiate Handshake</a>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- About Section -->
     <section id="about" class="about">
         <div class="container">
-            <h2>About Me</h2>
+            <h2>Whoami</h2>
             <div class="about-content">
                 <div class="about-text">
-                    <p>I'm Muhammad Tsaqif Fawwaz Nasywan, a passionate cybersecurity enthusiast and ethical hacker pursuing a degree in Applied Informatics at Politeknik Elektronika Negeri Surabaya.</p>
-                    <p>My journey in cybersecurity is driven by an insatiable curiosity about system vulnerabilities and security mechanisms. I dedicate my time to studying penetration testing techniques, reverse engineering, network security, and cryptography to build a strong foundation in offensive and defensive security.</p>
-                    <p>I actively participate in Capture The Flag (CTF) competitions and security challenges, continuously expanding my skill set. I document my learning journey through detailed write-ups and technical blogs, sharing insights and methodologies with the cybersecurity community.</p>
-                    <p>My goal is to become a proficient security professional capable of identifying and mitigating sophisticated threats while contributing to a safer digital ecosystem.</p>
-                    <a href="CV.pdf" download class="btn" style="margin-top: 20px;"><i class="fas fa-download"></i> Download CV</a>
+                    <p>Saya adalah mahasiswa Informatika Terapan di Politeknik Elektronika Negeri Surabaya dengan ketertarikan mendalam pada keamanan siber, khususnya pada ranah Kriptografi, <i>Reverse Engineering</i>, dan <i>Digital Forensics</i>.</p>
+                    <p>Sebagai pemain <i>Capture The Flag</i> (CTF) yang aktif di platform seperti CryptoHack, picoCTF, dan ARACTF, saya sering memecahkan tantangan keamanan mulai dari eksploitasi AES/RSA hingga dekompilasi menggunakan Ghidra di lingkungan Kali Linux & WSL.</p>
+                    <p>Selain keamanan siber, saya juga aktif dalam <i>Competitive Programming</i> (menggunakan C++ dan Python) serta memiliki pengalaman dalam merancang arsitektur basis data relasional (PostgreSQL, SQL, MS Access).</p>
+                    <a href="CV.pdf" download class="btn" style="margin-top: 20px;"><i class="fas fa-download"></i> Dump CV</a>
                 </div>
                 <div class="about-img">
                     <img src="https://images.unsplash.com/photo-1526374965328-7f5ae4e8b12b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80" alt="Cybersecurity">
@@ -75,278 +68,162 @@
         </div>
     </section>
 
-    <!-- Skills Section -->
     <section id="skills" class="skills">
         <div class="container">
-            <h2>Core Skills</h2>
+            <h2>Tech Stack & Arsenal</h2>
             <div class="skills-container">
                 <div class="skill-item">
-                    <div class="skill-icon">
-                        <i class="fas fa-lock-open"></i>
-                    </div>
-                    <h3>Penetration Testing</h3>
-                    <p>Web App Testing, Network Pentesting, Vulnerability Assessment, Burp Suite, Metasploit</p>
+                    <div class="skill-icon"><i class="fas fa-key"></i></div>
+                    <h3>Kriptografi & Analisis</h3>
+                    <p>RSA, AES, Lattice Reduction, Hidden Number Problem (HNP)</p>
                 </div>
                 <div class="skill-item">
-                    <div class="skill-icon">
-                        <i class="fas fa-network-wired"></i>
-                    </div>
-                    <h3>Network Security</h3>
-                    <p>TCP/IP, Packet Analysis, Wireshark, Sniffing, Man-in-the-Middle Attacks</p>
+                    <div class="skill-icon"><i class="fas fa-microscope"></i></div>
+                    <h3>Reverse Engineering</h3>
+                    <p>Ghidra, Analisis Binary, Dekompilasi</p>
                 </div>
                 <div class="skill-item">
-                    <div class="skill-icon">
-                        <i class="fas fa-key"></i>
-                    </div>
-                    <h3>Cryptography</h3>
-                    <p>Encryption, Hashing, Digital Signatures, Steganography, Cipher Analysis</p>
-                </div>
-                <div class="skill-item">
-                    <div class="skill-icon">
-                        <i class="fas fa-microscope"></i>
-                    </div>
-                    <h3>Malware Analysis</h3>
-                    <p>Reverse Engineering, Binary Analysis, Dynamic/Static Analysis, IDA Pro</p>
-                </div>
-                <div class="skill-item">
-                    <div class="skill-icon">
-                        <i class="fas fa-terminal"></i>
-                    </div>
+                    <div class="skill-icon"><i class="fas fa-code"></i></div>
                     <h3>Programming</h3>
-                    <p>Python, Bash, JavaScript, PHP, C - Exploit Development & Scripting</p>
+                    <p>Python (pwntools), C++ (Algoritma/CP), PHP</p>
                 </div>
                 <div class="skill-item">
-                    <div class="skill-icon">
-                        <i class="fas fa-flag"></i>
-                    </div>
-                    <h3>CTF & Hacking</h3>
-                    <p>Capture The Flag, Web Exploitation, Reverse Engineering, Steganography, Forensics</p>
+                    <div class="skill-icon"><i class="fas fa-linux"></i></div>
+                    <h3>Sistem & Lingkungan</h3>
+                    <p>Kali Linux, Ubuntu WSL, Bash Scripting</p>
+                </div>
+                <div class="skill-item">
+                    <div class="skill-icon"><i class="fas fa-database"></i></div>
+                    <h3>Database Design</h3>
+                    <p>PostgreSQL, Oracle, SQL CRUD, MS Access Schema</p>
+                </div>
+                <div class="skill-item">
+                    <div class="skill-icon"><i class="fas fa-flag"></i></div>
+                    <h3>CTF & Keamanan</h3>
+                    <p>CryptoHack, picoCTF, Web Exploitation, Digital Forensics</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Portfolio Section -->
     <section id="portfolio" class="portfolio">
         <div class="container">
-            <h2>Write-ups & Projects</h2>
+            <h2>Projects & Write-ups</h2>
             <div class="portfolio-grid">
                 <div class="portfolio-item">
-                    <img src="https://images.unsplash.com/photo-1557821552-17105176677c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80" alt="SQL Injection" class="portfolio-img">
                     <div class="portfolio-content">
-                        <h3>SQL Injection Exploitation</h3>
-                        <p>Complete write-up on identifying and exploiting SQL injection vulnerabilities in web applications. Includes bypass techniques, authentication evasion, and data exfiltration methods.</p>
+                        <h3>Truncated LCG Solver (Lattice Reduction)</h3>
+                        <p>Mengimplementasikan skrip Python menggunakan <i>pwntools</i> dan teknik Lattice Reduction untuk memulihkan nilai 256-bit tersembunyi. Eksploitasi kerentanan pada Linear Congruential Generator.</p>
                         <div class="portfolio-tags">
-                            <span class="tag">Web Security</span>
-                            <span class="tag">SQL Injection</span>
+                            <span class="tag">Kriptografi</span>
+                            <span class="tag">Python</span>
+                            <span class="tag">Pwntools</span>
                         </div>
-                        <a href="https://medium.com/@sukepaja18" class="btn" style="margin-top: 10px; padding: 8px 20px;">Read Write-up</a>
                     </div>
                 </div>
                 <div class="portfolio-item">
-                    <img src="https://images.unsplash.com/photo-1526374965328-7f5ae4e8b12b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80" alt="Network Security" class="portfolio-img">
                     <div class="portfolio-content">
-                        <h3>Man-in-the-Middle Attack Lab</h3>
-                        <p>Comprehensive guide to MITM attacks using ARP spoofing. Covers network sniffing, session hijacking, and credential harvesting in a controlled environment.</p>
+                        <h3>CTF Write-ups: Crypto & RevEng</h3>
+                        <p>Dokumentasi rinci dan analisis dari berbagai kompetisi seperti ARACTF dan picoCTF. Fokus utama pada bypass keamanan kriptografi dan analisis memori menggunakan alat forensik.</p>
                         <div class="portfolio-tags">
-                            <span class="tag">Network Security</span>
-                            <span class="tag">MITM</span>
-                        </div>
-                        <a href="https://medium.com/@sukepaja18" class="btn" style="margin-top: 10px; padding: 8px 20px;">Read Write-up</a>
-                    </div>
-                </div>
-                <div class="portfolio-item">
-                    <img src="https://images.unsplash.com/photo-1563986768609-322da13575f3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1074&q=80" alt="CTF Challenge" class="portfolio-img">
-                    <div class="portfolio-content">
-                        <h3>TryHackMe CTF Solutions</h3>
-                        <p>Detailed walkthrough of challenging CTF scenarios including privilege escalation, hash cracking, and forensic analysis. Tools: Hashcat, John, Ghidra, Volatility.</p>
-                        <div class="portfolio-tags">
+                            <span class="tag">Ghidra</span>
                             <span class="tag">CTF</span>
                             <span class="tag">Forensics</span>
                         </div>
-                        <a href="https://medium.com/@sukepaja18" class="btn" style="margin-top: 10px; padding: 8px 20px;">Read Write-up</a>
                     </div>
                 </div>
                 <div class="portfolio-item">
-                    <img src="https://images.unsplash.com/photo-1516321318423-f06f70e504de?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80" alt="Reverse Engineering" class="portfolio-img">
                     <div class="portfolio-content">
-                        <h3>Malware Reverse Engineering</h3>
-                        <p>Analysis of a trojan sample using IDA Pro and dynamic debugging. Covers unpacking, function identification, API hooking, and behavioral analysis.</p>
+                        <h3>Algorithmic Problem Solving (CP)</h3>
+                        <p>Menyelesaikan masalah algoritma kompleks dari Codeforces, termasuk implementasi struktur data graf lanjutan dan optimasi <i>linear recurrence</i> menggunakan C++.</p>
                         <div class="portfolio-tags">
-                            <span class="tag">Malware Analysis</span>
-                            <span class="tag">Reverse Eng.</span>
+                            <span class="tag">C++</span>
+                            <span class="tag">Codeforces</span>
+                            <span class="tag">Algorithms</span>
                         </div>
-                        <a href="https://medium.com/@sukepaja18" class="btn" style="margin-top: 10px; padding: 8px 20px;">Read Write-up</a>
                     </div>
                 </div>
                 <div class="portfolio-item">
-                    <img src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80" alt="Web App Security" class="portfolio-img">
                     <div class="portfolio-content">
-                        <h3>XSS Vulnerability Assessment</h3>
-                        <p>Finding and exploiting Cross-Site Scripting vulnerabilities. Covers reflected XSS, stored XSS, DOM-based XSS, and WAF bypasses using Burp Suite.</p>
+                        <h3>Library & Retail Database Systems</h3>
+                        <p>Pengembangan sistem manajemen basis data untuk perpustakaan (berbasis web dengan PHP/SQL) serta perancangan <i>schema</i> database berlapis untuk Toko Kue menggunakan MS Access & PostgreSQL.</p>
                         <div class="portfolio-tags">
-                            <span class="tag">Web Security</span>
-                            <span class="tag">XSS</span>
+                            <span class="tag">PHP</span>
+                            <span class="tag">PostgreSQL</span>
+                            <span class="tag">ER-Diagram</span>
                         </div>
-                        <a href="https://medium.com/@sukepaja18" class="btn" style="margin-top: 10px; padding: 8px 20px;">Read Write-up</a>
-                    </div>
-                </div>
-                <div class="portfolio-item">
-                    <img src="https://images.unsplash.com/photo-1531746790731-6c087fecd65b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1074&q=80" alt="Cryptography" class="portfolio-img">
-                    <div class="portfolio-content">
-                        <h3>Cryptography Challenge Solutions</h3>
-                        <p>Solutions to cryptographic puzzles including RSA attacks, weak cipher analysis, and side-channel attacks. Python scripts included.</p>
-                        <div class="portfolio-tags">
-                            <span class="tag">Cryptography</span>
-                            <span class="tag">Python</span>
-                        </div>
-                        <a href="https://medium.com/@sukepaja18" class="btn" style="margin-top: 10px; padding: 8px 20px;">Read Write-up</a>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Certifications Section -->
-    <section id="certifications" class="certifications">
-        <div class="container">
-            <h2>Certifications & Achievements</h2>
-            <div class="certifications-grid">
-                <div class="cert-item">
-                    <div class="cert-icon">
-                        <i class="fas fa-certificate"></i>
-                    </div>
-                    <h3>CompTIA Security+</h3>
-                    <p>In Progress</p>
-                    <p class="cert-desc">Comprehensive security fundamentals and best practices</p>
-                </div>
-                <div class="cert-item">
-                    <div class="cert-icon">
-                        <i class="fas fa-trophy"></i>
-                    </div>
-                    <h3>HackTheBox Pro</h3>
-                    <p>Active Member</p>
-                    <p class="cert-desc">50+ Machines Rooted | Ranked Top 5%</p>
-                </div>
-                <div class="cert-item">
-                    <div class="cert-icon">
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <h3>TryHackMe Master</h3>
-                    <p>2500+ Points</p>
-                    <p class="cert-desc">Completed 100+ Security Training Rooms</p>
-                </div>
-                <div class="cert-item">
-                    <div class="cert-icon">
-                        <i class="fas fa-flag-checkered"></i>
-                    </div>
-                    <h3>CTF Competitions</h3>
-                    <p>Active Participant</p>
-                    <p class="cert-desc">Multiple competition victories</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Contact Section -->
     <section id="contact" class="contact">
         <div class="container">
-            <h2>Let's Connect</h2>
+            <h2>Establish Connection</h2>
             <div class="contact-container">
                 <div class="contact-info">
                     <div class="contact-item">
-                        <div class="contact-icon">
-                            <i class="fas fa-map-marker-alt"></i>
-                        </div>
+                        <div class="contact-icon"><i class="fas fa-map-marker-alt"></i></div>
                         <div>
                             <h3>Location</h3>
-                            <p>Surabaya, Indonesia</p>
+                            <p>Sidoarjo / Surabaya, Indonesia</p>
                         </div>
                     </div>
                     <div class="contact-item">
-                        <div class="contact-icon">
-                            <i class="fas fa-envelope"></i>
+                        <div class="contact-icon"><i class="fas fa-users"></i></div>
+                        <div>
+                            <h3>Team Affiliation</h3>
+                            <p>Hexa-Unity</p>
                         </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon"><i class="fas fa-envelope"></i></div>
                         <div>
                             <h3>Email</h3>
-                            <p>tsaqif.fawwaz@example.com</p>
-                        </div>
-                    </div>
-                    <div class="contact-item">
-                        <div class="contact-icon">
-                            <i class="fas fa-phone"></i>
-                        </div>
-                        <div>
-                            <h3>Phone</h3>
-                            <p>+62 812 3456 7890</p>
-                        </div>
-                    </div>
-                    <div class="contact-item">
-                        <div class="contact-icon">
-                            <i class="fas fa-clock"></i>
-                        </div>
-                        <div>
-                            <h3>Availability</h3>
-                            <p>Always Available for Security Discussions</p>
+                            <p>Tersedia via Request</p>
                         </div>
                     </div>
                 </div>
                 <div class="contact-form">
                     <form id="contactForm">
                         <div class="form-group">
-                            <label for="name">Full Name</label>
-                            <input type="text" id="name" class="form-control" placeholder="Enter your name" required>
+                            <label for="name">Target Alias (Name)</label>
+                            <input type="text" id="name" class="form-control" required>
                         </div>
                         <div class="form-group">
-                            <label for="email">Email Address</label>
-                            <input type="email" id="email" class="form-control" placeholder="Enter your email" required>
+                            <label for="email">Return Address (Email)</label>
+                            <input type="email" id="email" class="form-control" required>
                         </div>
                         <div class="form-group">
-                            <label for="subject">Subject</label>
-                            <input type="text" id="subject" class="form-control" placeholder="Message subject" required>
+                            <label for="message">Payload (Message)</label>
+                            <textarea id="message" class="form-control" required></textarea>
                         </div>
-                        <div class="form-group">
-                            <label for="message">Message</label>
-                            <textarea id="message" class="form-control" placeholder="Write your message here..." required></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-accent">Send Message</button>
+                        <button type="submit" class="btn btn-accent">Execute <i class="fas fa-paper-plane"></i></button>
                     </form>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Footer -->
     <footer>
         <div class="container">
             <div class="footer-content">
                 <div class="footer-about">
                     <h3><i class="fas fa-shield-alt"></i> Tsaqif Fawwaz</h3>
-                    <p>Cybersecurity Enthusiast | Ethical Hacker | Security Researcher. Committed to building secure systems and educating others about cybersecurity threats and defenses.</p>
-                    <p style="margin-top: 15px;">&copy; 2024 Cybersecurity Portfolio. All rights reserved.</p>
-                </div>
-                <div class="footer-links">
-                    <h3>Quick Links</h3>
-                    <ul>
-                        <li><a href="#home">Home</a></li>
-                        <li><a href="#about">About</a></li>
-                        <li><a href="#skills">Skills</a></li>
-                        <li><a href="#portfolio">Write-ups</a></li>
-                        <li><a href="#contact">Contact</a></li>
-                    </ul>
+                    <p>Cybersecurity Enthusiast | CTF Player. Always learning, always exploring.</p>
                 </div>
                 <div class="footer-social">
-                    <h3>Follow Me</h3>
+                    <h3>Network</h3>
                     <div class="social-icons">
-                        <a href="#" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
                         <a href="#" title="GitHub"><i class="fab fa-github"></i></a>
-                        <a href="#" title="Twitter"><i class="fab fa-twitter"></i></a>
-                        <a href="#" title="Medium"><i class="fab fa-medium"></i></a>
+                        <a href="#" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" title="Codeforces"><i class="fas fa-code"></i></a>
                     </div>
                 </div>
             </div>
             <div class="copyright">
-                <p>Built with <i class="fas fa-heart" style="color: #ff7e5f;"></i> for cybersecurity</p>
+                <p>&copy; 2026 Tsaqif Fawwaz. Compiled successfully.</p>
             </div>
         </div>
     </footer>
