@@ -155,6 +155,12 @@ header {
     top: 0;
     z-index: 1000;
     border-bottom: 1px solid var(--secondary-color);
+    transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+header.scrolled {
+    box-shadow: 0 0 25px rgba(0, 255, 65, 0.25);
+    border-bottom-color: var(--accent-color);
 }
 
 .navbar {
@@ -180,6 +186,7 @@ header {
 
 .nav-links li {
     margin-left: 30px;
+    position: relative; /* Penting untuk penempatan underline */
 }
 
 .nav-links a {
@@ -193,12 +200,33 @@ header {
     text-shadow: 0 0 10px var(--accent-color);
 }
 
+/* Garis bawah & Efek Neon saat menu sedang aktif di-scroll */
+.nav-links a.active {
+    color: var(--accent-color);
+    text-shadow: 0 0 10px var(--accent-color);
+}
+
+.nav-links a.active::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -8px;
+    height: 2px;
+    background-color: var(--accent-color);
+    box-shadow: 0 0 8px var(--accent-color);
+}
+
+/* Perbaikan reset pada tombol mobile menu */
 .menu-toggle {
     display: none;
     font-size: 1.5rem;
     cursor: pointer;
+    background: none;
+    border: none;
+    color: var(--light-color);
+    padding: 0;
 }
-
 /* =========================================
    Hero Section & Terminal
    ========================================= */
