@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>timestamp | Write-up | Skipped</title>
+    <meta name="description" content="Write-up timestamp (Cryptography) dari CyLab (picoCTF) oleh Skipped.">
+    <meta name="theme-color" content="#0d1117">
+    <link rel="icon" type="image/svg+xml" href="../assets/images/favicon.svg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/style.css?v=10">
+</head>
+<body class="writeup-page-body">
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="../index.html" class="logo"><i class="fas fa-terminal"></i> Skipped<span>x0r</span></a>
+                <ul class="nav-links">
+                    <li><a href="../index.html#portfolio">Projects & CTF</a></li>
+                    <li><a href="index.html">Write-ups</a></li>
+                    <li><a href="../index.html#contact">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="writeup-page">
+        <div class="container">
+            <nav class="writeup-breadcrumb" aria-label="Breadcrumb">
+                <a href="../index.html">Home</a>
+                <span>/</span>
+                <a href="index.html">Write-ups</a>
+                <span>/</span>
+                <a href="index.html#cylab-picoctf">CyLab (picoCTF)</a>
+                <span>/</span>
+                <span class="current">timestamp</span>
+            </nav>
+
+            <div class="writeup-page-header">
+                <span class="tag writeup-cat-tag"><i class="fas fa-key"></i> Cryptography</span>
+                <h1>timestamp</h1>
+                <p class="writeup-page-sub">CyLab (picoCTF)</p>
+            </div>
+
+            <article id="markdown-content" class="writeup-page-body-content">
+<h1>picoCTF — timestamp Write-Up</h1>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Challenge Name</strong></td>
+<td>timestamp</td>
+</tr>
+<tr>
+<td><strong>Category</strong></td>
+<td>Cryptography</td>
+</tr>
+<tr>
+<td><strong>Difficulty</strong></td>
+<td>Medium</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Deskripsi</h2>
+<blockquote>
+<p><em>"Someone encrypted a message using AES in ECB mode but they weren't very careful with their key. Turns out it's derived from something as simple as the current time! Can you uncover the key and decrypt the flag?"</em></p>
+</blockquote>
+<hr />
+<h2>File yang Diberikan</h2>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Isi</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>message.txt</code></td>
+<td>Ciphertext dalam format hex beserta hint waktu enkripsi</td>
+</tr>
+<tr>
+<td><code>encryption.py</code></td>
+<td>Source code (sebagian disembunyikan) yang menunjukkan cara enkripsi dilakukan</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Analisis</h2>
+<h3>Kerentanan: Prediktabilitas Kunci (Key Generation)</h3>
+<p>Melihat <code>encryption.py</code>, kunci AES di-generate langsung dari waktu sistem saat itu:</p>
+<pre><code class="language-python">timestamp = int(time.time())
+key = sha256(str(timestamp).encode()).digest()[:16]
+cipher = AES.new(key, AES.MODE_ECB)
+</code></pre>
+<p>Alih-alih menggunakan CSPRNG (seperti <code>os.urandom</code>), skrip ini menggunakan <code>time.time()</code> — yang <strong>sangat mudah diprediksi</strong>.</p>
+<h3>Hint dari <code>message.txt</code></h3>
+<pre><code>Hint: The encryption was done around 1770242615 UTC
+Ciphertext (hex): 24823b2b2d104b36ad2078cafc8d98f22488e78df83b29f507d9b910ad51a464
+</code></pre>
+<p>Kata <strong>"around"</strong> menandakan bahwa waktu eksekusi yang sesungguhnya mungkin beberapa detik sebelum atau sesudah <code>1770242615</code>.</p>
+<hr />
+<h2>Solusi</h2>
+<h3>Metode: Brute-Force Timestamp</h3>
+<p>Karena jendela waktu sangat kecil, kita cukup mengiterasi timestamp di sekitar nilai hint (±100 detik), me-generate kunci untuk setiap detik, lalu mencoba mendekripsi ciphertext.</p>
+<pre><code class="language-python">from hashlib import sha256
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import unpad
+
+def solve_timestamp():
+    &quot;&quot;&quot;Brute-force the timestamp challenge&quot;&quot;&quot;
+
+    # Data from message.txt
+    hint_timestamp = 1770242615
+    ciphertext_hex = &quot;24823b2b2d104b36ad2078cafc8d98f22488e78df83b29f507d9b910ad51a464&quot;
+    ciphertext = bytes.fromhex(ciphertext_hex)
+
+    print(&quot;[*] Starting timestamp brute-force...&quot;)
+
+    # Search a window of +/- 100 seconds around the hint
+    for offset in range(-100, 100):
+        timestamp = hint_timestamp + offset
+
+        # 1. Recreate the key using the exact logic from encryption.py
+        key = sha256(str(timestamp).encode()).digest()[:16]
+
+        # 2. Setup the AES cipher in ECB mode
+        cipher = AES.new(key, AES.MODE_ECB)
+
+        try:
+            # 3. Decrypt and remove the padding
+            decrypted = cipher.decrypt(ciphertext)
+            plaintext = unpad(decrypted, AES.block_size)
+
+            # 4. Check if the decrypted text looks like our flag
+            if b&quot;picoCTF{&quot; in plaintext:
+                print(f&quot;\n✓ Found correct timestamp: {timestamp}&quot;)
+                return plaintext.decode('utf-8')
+
+        except ValueError:
+            # If the key is wrong, unpad() raises a ValueError (invalid padding)
+            continue
+
+    return &quot;Flag not found in the given window.&quot;
+
+# Usage
+flag = solve_timestamp()
+print(f&quot;Final Flag: {flag}&quot;)
+</code></pre>
+<h3>Alur Dekripsi</h3>
+<pre><code>Hint Timestamp : 1770242615
+        ↓
+Test offset -100 → ValueError (padding tidak valid)
+Test offset  -99 → ValueError (padding tidak valid)
+        ...
+        ↓
+Test offset +3 (Timestamp: 1770242618) → BERHASIL ✓
+        ↓
+Derived Key: sha256(&quot;1770242618&quot;).digest()[:16]
+        ↓
+AES-ECB Decrypt + Unpad → picoCTF{...}
+</code></pre>
+<hr />
+<h2>Flag</h2>
+<pre><code>picoCTF{sa3S_sEc9t_fbbd0fb7}
+</code></pre>
+<hr />
+<h2>Key Takeaways</h2>
+<ol>
+<li>
+<p><strong>Insecure Randomness</strong> — Menggunakan <code>time.time()</code> atau seed yang dapat diprediksi untuk key generation merusak seluruh sistem enkripsi, meskipun algoritmanya sendiri (AES) secara komputasional aman.</p>
+</li>
+<li>
+<p><strong>Small Keyspace</strong> — Karena "kunci" direduksi menjadi beberapa ratus kemungkinan detik, brute-force menjadi sangat mudah.</p>
+</li>
+<li>
+<p><strong>Padding sebagai Oracle</strong> — Dalam scripting, <code>unpad()</code> bertindak sebagai filter yang sangat efisien. Kunci yang salah menghasilkan byte acak, menyebabkan validasi padding gagal, sehingga kita bisa dengan efisien melewati tebakan yang salah menggunakan blok <code>try-except</code>.</p>
+</li>
+<li>
+<p><strong>Standar Kriptografi</strong> — Selalu gunakan <strong>CSPRNG</strong> (<em>Cryptographically Secure Pseudo-Random Number Generator</em>) seperti <code>os.urandom</code> atau modul <code>secrets</code> untuk generate kunci kriptografis.</p>
+</li>
+</ol>
+<hr />
+<h2>Tools yang Digunakan</h2>
+<ul>
+<li><strong>Python</strong> — <code>hashlib</code>, <code>pycryptodome</code> (untuk dekripsi AES dan padding)</li>
+</ul>
+            </article>
+
+            <div class="writeup-page-footer">
+                <a href="index.html" class="btn"><i class="fas fa-arrow-left"></i> Kembali ke Archive</a>
+                <a href="source/CyLab(picoCTF)/Cryptography/Timestamped Secret/writeup.md" class="btn" target="_blank" rel="noopener noreferrer"><i class="fas fa-file-lines"></i> Markdown Asli</a>
+                <a href="https://github.com/keppyaja/Write-Ups/blob/main/CyLab(picoCTF)/Cryptography/Timestamped%20Secret/writeup.md" class="btn btn-accent" target="_blank" rel="noopener noreferrer"><i class="fab fa-github"></i> Lihat di GitHub</a>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="copyright">
+                <p>&copy; 2026 Skipped. Compiled successfully.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

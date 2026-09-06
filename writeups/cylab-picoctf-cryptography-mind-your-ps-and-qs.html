@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mind your Ps and Qs | Write-up | Skipped</title>
+    <meta name="description" content="Write-up Mind your Ps and Qs (Cryptography) dari CyLab (picoCTF) oleh Skipped.">
+    <meta name="theme-color" content="#0d1117">
+    <link rel="icon" type="image/svg+xml" href="../assets/images/favicon.svg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/style.css?v=10">
+</head>
+<body class="writeup-page-body">
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="../index.html" class="logo"><i class="fas fa-terminal"></i> Skipped<span>x0r</span></a>
+                <ul class="nav-links">
+                    <li><a href="../index.html#portfolio">Projects & CTF</a></li>
+                    <li><a href="index.html">Write-ups</a></li>
+                    <li><a href="../index.html#contact">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="writeup-page">
+        <div class="container">
+            <nav class="writeup-breadcrumb" aria-label="Breadcrumb">
+                <a href="../index.html">Home</a>
+                <span>/</span>
+                <a href="index.html">Write-ups</a>
+                <span>/</span>
+                <a href="index.html#cylab-picoctf">CyLab (picoCTF)</a>
+                <span>/</span>
+                <span class="current">Mind your Ps and Qs</span>
+            </nav>
+
+            <div class="writeup-page-header">
+                <span class="tag writeup-cat-tag"><i class="fas fa-key"></i> Cryptography</span>
+                <h1>Mind your Ps and Qs</h1>
+                <p class="writeup-page-sub">CyLab (picoCTF)</p>
+            </div>
+
+            <article id="markdown-content" class="writeup-page-body-content">
+<h1>picoCTF — Mind your Ps and Qs Write-Up</h1>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Challenge Name</strong></td>
+<td>Mind your Ps and Qs</td>
+</tr>
+<tr>
+<td><strong>Category</strong></td>
+<td>Cryptography</td>
+</tr>
+<tr>
+<td><strong>Difficulty</strong></td>
+<td>Easy</td>
+</tr>
+<tr>
+<td><strong>Source File</strong></td>
+<td><code>values.txt</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Deskripsi</h2>
+<blockquote>
+<p><em>"Bits are expensive, I used only a little bit over 100 to save money."</em></p>
+</blockquote>
+<p>Challenge ini memberikan parameter RSA berupa ciphertext <code>c</code>, modulus <code>n</code>, dan public exponent <code>e</code>. Petunjuk yang diberikan mengarah pada ukuran modulus yang sangat kecil sehingga dapat difaktorkan secara langsung.</p>
+<hr />
+<h2>Parameter yang Diberikan</h2>
+<pre><code class="language-text">c = 15341890103764929939105506004034128738090325640037083301857608662849501626260517
+
+n = 948406957756830799684818171639547165784816468744946013083947881743680617123566349
+
+e = 65537
+</code></pre>
+<hr />
+<h2>Analisis</h2>
+<h3>Kerentanan: Modulus RSA Terlalu Kecil</h3>
+<p>Keamanan RSA bergantung pada sulitnya memfaktorkan modulus:</p>
+<pre><code class="language-text">n = p × q
+</code></pre>
+<p>Pada implementasi RSA modern, ukuran modulus umumnya minimal 2048-bit sehingga faktorisasi menjadi tidak praktis.</p>
+<p>Namun pada challenge ini, nilai <code>n</code> hanya sekitar 256-bit. Dengan ukuran sekecil ini, faktor prima penyusunnya dapat ditemukan dengan mudah menggunakan tool seperti:</p>
+<ul>
+<li>FactorDB</li>
+<li>YAFU</li>
+<li>msieve</li>
+</ul>
+<p>Begitu nilai <code>p</code> dan <code>q</code> diketahui, seluruh kunci privat dapat direkonstruksi.</p>
+<h3>Mengapa Ini Berbahaya?</h3>
+<table>
+<thead>
+<tr>
+<th>Ukuran Modulus</th>
+<th>Tingkat Keamanan</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>256-bit</td>
+<td>❌ Mudah difaktorkan</td>
+</tr>
+<tr>
+<td>1024-bit</td>
+<td>⚠️ Tidak lagi direkomendasikan</td>
+</tr>
+<tr>
+<td>2048-bit</td>
+<td>✅ Standar modern</td>
+</tr>
+<tr>
+<td>4096-bit</td>
+<td>✅ Sangat kuat</td>
+</tr>
+</tbody>
+</table>
+<p>Karena <code>n</code> sangat kecil, serangan tidak memerlukan teknik RSA lanjutan. Faktorisasi langsung sudah cukup untuk memperoleh plaintext.</p>
+<hr />
+<h2>Solusi</h2>
+<h3>Langkah-Langkah</h3>
+<pre><code class="language-text">1. Faktorkan n menjadi p dan q
+2. Hitung φ(n) = (p−1)(q−1)
+3. Cari private exponent:
+      d = e⁻¹ mod φ(n)
+4. Dekripsi ciphertext:
+      m = c^d mod n
+5. Konversi hasil ke bytes
+6. Balik urutan string karena output tersimpan terbalik
+</code></pre>
+<h3>Hasil Faktorisasi</h3>
+<pre><code class="language-text">p = 1891771437429478964908181306574287207137
+q = 501332739776173570344039681219489434626477
+</code></pre>
+<h3>Exploit Script</h3>
+<pre><code class="language-python">from Crypto.Util.number import inverse, long_to_bytes
+
+c = 15341890103764929939105506004034128738090325640037083301857608662849501626260517
+n = 948406957756830799684818171639547165784816468744946013083947881743680617123566349
+e = 65537
+
+p = 1891771437429478964908181306574287207137
+q = 501332739776173570344039681219489434626477
+
+phi = (p - 1) * (q - 1)
+d = inverse(e, phi)
+
+m = pow(c, d, n)
+
+decrypted = long_to_bytes(m)
+print(&quot;Decoded bytes:&quot;, decrypted)
+</code></pre>
+<h3>Output</h3>
+<pre><code class="language-text">b'}19ea7cd1_do0g_0n_N_11ams{FTCocip'
+</code></pre>
+<p>Output terlihat terbalik. Membalik string menghasilkan:</p>
+<pre><code class="language-python">flag = b&quot;}19ea7cd1_do0g_0n_N_11ams{FTCocip&quot;[::-1]
+print(flag.decode())
+</code></pre>
+<h3>Output Akhir</h3>
+<pre><code class="language-text">picoCTF{sma11_N_n0_g0od_1dc7ae91}
+</code></pre>
+<hr />
+<h2>Flag</h2>
+<pre><code class="language-text">picoCTF{sma11_N_n0_g0od_1dc7ae91}
+</code></pre>
+<blockquote>
+<p>Nama flag secara langsung menggambarkan kelemahan challenge ini: modulus <code>N</code> yang terlalu kecil sehingga tidak aman.</p>
+</blockquote>
+<hr />
+<h2>Diagram Serangan</h2>
+<pre><code class="language-text">Public Key:
+    (n, e)
+
+          |
+          v
+
+   Faktorkan n
+      n = p × q
+
+          |
+          v
+
+ Hitung φ(n)
+
+          |
+          v
+
+ Cari d = e⁻¹ mod φ(n)
+
+          |
+          v
+
+ Dekripsi:
+   m = c^d mod n
+
+          |
+          v
+
+   Konversi ke bytes
+   &amp; balik string
+
+          |
+          v
+
+         FLAG
+</code></pre>
+<hr />
+<h2>Key Takeaways</h2>
+<ol>
+<li>
+<p><strong>Ukuran modulus RSA sangat penting</strong> — Jika <code>n</code> terlalu kecil, faktorisasi menjadi mudah dilakukan.</p>
+</li>
+<li>
+<p><strong>Keamanan RSA bergantung pada kesulitan faktorisasi</strong> — Mengetahui <code>p</code> dan <code>q</code> berarti mengetahui seluruh kunci privat.</p>
+</li>
+<li>
+<p><strong>Public exponent yang aman tidak cukup</strong> — Walaupun <code>e = 65537</code> merupakan nilai standar, RSA tetap runtuh jika <code>n</code> terlalu kecil.</p>
+</li>
+<li>
+<p><strong>Gunakan ukuran kunci modern</strong> — Minimal 2048-bit untuk penggunaan praktis saat ini.</p>
+</li>
+</ol>
+<hr />
+<h2>Tools yang Digunakan</h2>
+<ul>
+<li><strong>FactorDB</strong> — Untuk menemukan faktor prima modulus.</li>
+<li><strong>Python</strong> — Untuk menghitung private key dan melakukan dekripsi RSA.</li>
+<li><strong>PyCryptodome</strong> — <code>inverse()</code> dan <code>long_to_bytes()</code>.</li>
+</ul>
+            </article>
+
+            <div class="writeup-page-footer">
+                <a href="index.html" class="btn"><i class="fas fa-arrow-left"></i> Kembali ke Archive</a>
+                <a href="source/CyLab(picoCTF)/Cryptography/Mind Your Ps and Qs/write-up.md" class="btn" target="_blank" rel="noopener noreferrer"><i class="fas fa-file-lines"></i> Markdown Asli</a>
+                <a href="https://github.com/keppyaja/Write-Ups/blob/main/CyLab(picoCTF)/Cryptography/Mind%20Your%20Ps%20and%20Qs/write-up.md" class="btn btn-accent" target="_blank" rel="noopener noreferrer"><i class="fab fa-github"></i> Lihat di GitHub</a>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="copyright">
+                <p>&copy; 2026 Skipped. Compiled successfully.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

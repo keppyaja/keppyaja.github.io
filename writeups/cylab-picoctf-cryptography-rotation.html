@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rotation | Write-up | Skipped</title>
+    <meta name="description" content="Write-up Rotation (Cryptography) dari CyLab (picoCTF) oleh Skipped.">
+    <meta name="theme-color" content="#0d1117">
+    <link rel="icon" type="image/svg+xml" href="../assets/images/favicon.svg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/style.css?v=10">
+</head>
+<body class="writeup-page-body">
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="../index.html" class="logo"><i class="fas fa-terminal"></i> Skipped<span>x0r</span></a>
+                <ul class="nav-links">
+                    <li><a href="../index.html#portfolio">Projects & CTF</a></li>
+                    <li><a href="index.html">Write-ups</a></li>
+                    <li><a href="../index.html#contact">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="writeup-page">
+        <div class="container">
+            <nav class="writeup-breadcrumb" aria-label="Breadcrumb">
+                <a href="../index.html">Home</a>
+                <span>/</span>
+                <a href="index.html">Write-ups</a>
+                <span>/</span>
+                <a href="index.html#cylab-picoctf">CyLab (picoCTF)</a>
+                <span>/</span>
+                <span class="current">Rotation</span>
+            </nav>
+
+            <div class="writeup-page-header">
+                <span class="tag writeup-cat-tag"><i class="fas fa-key"></i> Cryptography</span>
+                <h1>Rotation</h1>
+                <p class="writeup-page-sub">CyLab (picoCTF)</p>
+            </div>
+
+            <article id="markdown-content" class="writeup-page-body-content">
+<h1>picoCTF - Rotation Write-Up</h1>
+<h2>Challenge Overview</h2>
+<ul>
+<li><strong>Challenge Name</strong>: rotation</li>
+<li><strong>Category</strong>: Cryptography</li>
+<li><strong>Difficulty</strong>: Medium</li>
+<li><strong>Description</strong>: Decrypt an encrypted file to find the flag</li>
+<li><strong>Hint</strong>: "Sometimes rotation is right"</li>
+</ul>
+<h2>Challenge Details</h2>
+<p>We are given an encrypted text file (<code>encrypted.txt</code>) containing the encrypted flag. Based on the challenge title and hint, we need to identify and decrypt the encryption method.</p>
+<h2>Analysis</h2>
+<p>The hint "Sometimes rotation is right" and the challenge name "rotation" indicate that this is a <strong>Caesar Cipher</strong> encryption. The Caesar Cipher is one of the simplest and most well-known encryption techniques, where each letter in the plaintext is shifted a certain number of places down or up the alphabet.</p>
+<h3>Caesar Cipher Overview</h3>
+<ul>
+<li><strong>Encryption</strong>: Each character is shifted by a fixed number of positions (the key)</li>
+<li><strong>Decryption</strong>: Shift back by the same number of positions</li>
+<li><strong>Example</strong>: With shift of 3: A→D, B→E, C→F, etc.</li>
+</ul>
+<h2>Solution Approaches</h2>
+<h3>Method 1: Online Tool (Easiest)</h3>
+<p>Use an online Caesar Cipher decoder like <a href="https://www.dcode.fr/caesar-cipher">dcode.fr/caesar-cipher</a>:</p>
+<ol>
+<li>Copy the encrypted text from <code>encrypted.txt</code></li>
+<li>Visit dcode.fr/caesar-cipher</li>
+<li>Paste the encrypted text</li>
+<li>The tool will automatically try all 26 possible rotations</li>
+<li>Look for readable output - one rotation should reveal the flag</li>
+</ol>
+<h3>Method 2: Brute-Force Python Script</h3>
+<p>If you prefer to write your own solution:</p>
+<pre><code class="language-python">def caesar_decrypt_bruteforce(encrypted_text):
+    &quot;&quot;&quot;Try all 26 possible Caesar Cipher rotations&quot;&quot;&quot;
+    results = []
+
+    for shift in range(26):
+        decrypted = &quot;&quot;
+        for char in encrypted_text:
+            if char.isalpha():
+                # Shift character
+                if char.isupper():
+                    decrypted += chr((ord(char) - ord('A') - shift) % 26 + ord('A'))
+                else:
+                    decrypted += chr((ord(char) - ord('a') - shift) % 26 + ord('a'))
+            else:
+                # Keep non-alphabetic characters as-is
+                decrypted += char
+
+        results.append((shift, decrypted))
+
+    return results
+
+# Read encrypted file
+with open('encrypted.txt', 'r') as f:
+    encrypted_text = f.read().strip()
+
+# Brute-force all rotations
+results = caesar_decrypt_bruteforce(encrypted_text)
+
+# Display all results
+for shift, decrypted_text in results:
+    print(f&quot;Shift {shift}: {decrypted_text}&quot;)
+</code></pre>
+<h3>Method 3: C++ Implementation</h3>
+<p>As mentioned in the original writeup, a C++ solution is also possible:</p>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;fstream&gt;
+#include &lt;string&gt;
+#include &lt;cctype&gt;
+
+using namespace std;
+
+string caesarDecrypt(string text, int shift) {
+    string result = &quot;&quot;;
+    for (char c : text) {
+        if (isalpha(c)) {
+            char base = isupper(c) ? 'A' : 'a';
+            result += (char)((c - base - shift + 26) % 26 + base);
+        } else {
+            result += c;
+        }
+    }
+    return result;
+}
+
+int main() {
+    ifstream file(&quot;encrypted.txt&quot;);
+    string encrypted;
+    getline(file, encrypted);
+
+    for (int shift = 0; shift &lt; 26; shift++) {
+        cout &lt;&lt; &quot;Shift &quot; &lt;&lt; shift &lt;&lt; &quot;: &quot; &lt;&lt; caesarDecrypt(encrypted, shift) &lt;&lt; endl;
+    }
+
+    return 0;
+}
+</code></pre>
+<h2>Flag</h2>
+<pre><code>picoCTF{r0tat1on_d3crypt3d_a4b7d759}
+</code></pre>
+<h2>Key Takeaways</h2>
+<ol>
+<li><strong>Caesar Cipher is weak</strong>: With only 26 possible keys, brute-force is trivial</li>
+<li><strong>Hints matter</strong>: The hint "Sometimes rotation is right" directly points to the Caesar Cipher technique</li>
+<li><strong>Multiple solution methods</strong>: Online tools, Python, C++, or any language can solve this</li>
+<li><strong>Automation over manual testing</strong>: Brute-forcing all possibilities is faster than manual trial</li>
+<li><strong>CTF context clues</strong>: Challenge titles and hints often reveal the encryption technique</li>
+</ol>
+<h2>References</h2>
+<ul>
+<li>Caesar Cipher: https://en.wikipedia.org/wiki/Caesar_cipher</li>
+<li>dcode.fr/caesar-cipher: https://www.dcode.fr/caesar-cipher</li>
+<li>picoCTF Challenge: https://artifacts.picoctf.net/c/389/encrypted.txt</li>
+</ul>
+<hr />
+<p><em>Write-up based on: https://sukepaja18.medium.com/picoctf-rotation-28228eaea94a</em></p>
+            </article>
+
+            <div class="writeup-page-footer">
+                <a href="index.html" class="btn"><i class="fas fa-arrow-left"></i> Kembali ke Archive</a>
+                <a href="source/CyLab(picoCTF)/Cryptography/rotation/write-up.md" class="btn" target="_blank" rel="noopener noreferrer"><i class="fas fa-file-lines"></i> Markdown Asli</a>
+                <a href="https://github.com/keppyaja/Write-Ups/blob/main/CyLab(picoCTF)/Cryptography/rotation/write-up.md" class="btn btn-accent" target="_blank" rel="noopener noreferrer"><i class="fab fa-github"></i> Lihat di GitHub</a>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="copyright">
+                <p>&copy; 2026 Skipped. Compiled successfully.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

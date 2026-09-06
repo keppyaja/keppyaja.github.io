@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vigenere | Write-up | Skipped</title>
+    <meta name="description" content="Write-up Vigenere (Cryptography) dari CyLab (picoCTF) oleh Skipped.">
+    <meta name="theme-color" content="#0d1117">
+    <link rel="icon" type="image/svg+xml" href="../assets/images/favicon.svg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/style.css?v=10">
+</head>
+<body class="writeup-page-body">
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="../index.html" class="logo"><i class="fas fa-terminal"></i> Skipped<span>x0r</span></a>
+                <ul class="nav-links">
+                    <li><a href="../index.html#portfolio">Projects & CTF</a></li>
+                    <li><a href="index.html">Write-ups</a></li>
+                    <li><a href="../index.html#contact">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="writeup-page">
+        <div class="container">
+            <nav class="writeup-breadcrumb" aria-label="Breadcrumb">
+                <a href="../index.html">Home</a>
+                <span>/</span>
+                <a href="index.html">Write-ups</a>
+                <span>/</span>
+                <a href="index.html#cylab-picoctf">CyLab (picoCTF)</a>
+                <span>/</span>
+                <span class="current">Vigenere</span>
+            </nav>
+
+            <div class="writeup-page-header">
+                <span class="tag writeup-cat-tag"><i class="fas fa-key"></i> Cryptography</span>
+                <h1>Vigenere</h1>
+                <p class="writeup-page-sub">CyLab (picoCTF)</p>
+            </div>
+
+            <article id="markdown-content" class="writeup-page-body-content">
+<h1>picoCTF - Vigenere Write-Up</h1>
+<h2>Challenge Overview</h2>
+<ul>
+<li><strong>Challenge Name</strong>: Vigenere</li>
+<li><strong>Category</strong>: Cryptography</li>
+<li><strong>Difficulty</strong>: Medium</li>
+<li><strong>Description</strong>: Decrypt an encrypted message using the Vigenere cipher with a provided key</li>
+<li><strong>Key</strong>: "CYLAB"</li>
+</ul>
+<h2>Challenge Details</h2>
+<p>We are given:
+1. An encrypted message: <code>rgnoDVD{O0NU_WQ3_G1G3O3T3_A1AH3S_f85729e7}</code>
+2. A decryption key: <code>CYLAB</code></p>
+<h2>Vigenere Cipher Overview</h2>
+<p>The <strong>Vigenere Cipher</strong> is a polyalphabetic substitution cipher that extends the Caesar Cipher by using a variable shift instead of a fixed one.</p>
+<h3>Key Differences from Caesar Cipher</h3>
+<ul>
+<li><strong>Caesar Cipher</strong>: Fixed shift value (e.g., always shift by 3)</li>
+<li><strong>Vigenere Cipher</strong>: Shift value changes based on each character of the key, repeated cyclically</li>
+</ul>
+<h3>How Vigenere Cipher Works</h3>
+<p><strong>Encryption:</strong></p>
+<pre><code>Plaintext:  HELLO
+Key:        CYLAB (repeated: CYLAB)
+Ciphertext: HSJGP
+
+Process:
+H + C(shift 2) = J
+E + Y(shift 24) = C
+L + L(shift 11) = W
+L + A(shift 0) = L
+O + B(shift 1) = P
+</code></pre>
+<p><strong>Decryption:</strong></p>
+<pre><code>Ciphertext: HSJGP
+Key:        CYLAB
+Plaintext:  HELLO
+
+Process:
+H - C(shift 2) = F
+S - Y(shift 24) = A
+J - L(shift 11) = Y
+G - A(shift 0) = G
+P - B(shift 1) = O
+</code></pre>
+<h2>Solution</h2>
+<h3>C++ Implementation</h3>
+<pre><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;cctype&gt;
+
+using namespace std;
+
+int charToInt(char c) {
+    return toupper(c) - 'A';
+}
+
+char intToChar(int n, bool isUpper) {
+    return (isUpper ? 'A' : 'a') + n;
+}
+
+string vigenereDecode(string ciphertext, string key) {
+    string plaintext = &quot;&quot;;
+    int keyLen = key.size();
+    int keyIndex = 0;
+
+    for (char c : ciphertext) {
+        if (isalpha(c)) {
+            // Get integer values
+            int cVal = charToInt(c);
+            int kVal = charToInt(key[keyIndex % keyLen]);
+
+            // Decrypt: subtract key value, mod 26 to stay in range
+            int pVal = (cVal - kVal + 26) % 26;
+
+            // Convert back to character, preserving case
+            plaintext += intToChar(pVal, isupper(c));
+
+            // Move to next key character (only for letters)
+            keyIndex++;
+        } else {
+            // Keep non-alphabetic characters as-is
+            plaintext += c;
+        }
+    }
+
+    return plaintext;
+}
+
+int main() {
+    string ciphertext = &quot;rgnoDVD{O0NU_WQ3_G1G3O3T3_A1AH3S_f85729e7}&quot;;
+    string key = &quot;CYLAB&quot;;
+
+    string plaintext = vigenereDecode(ciphertext, key);
+    cout &lt;&lt; &quot;Decrypted: &quot; &lt;&lt; plaintext &lt;&lt; endl;
+
+    return 0;
+}
+</code></pre>
+<h3>Python Implementation</h3>
+<pre><code class="language-python">def vigenere_decode(ciphertext, key):
+    &quot;&quot;&quot;Decrypt a Vigenere cipher&quot;&quot;&quot;
+    plaintext = &quot;&quot;
+    key_len = len(key)
+    key_index = 0
+
+    for char in ciphertext:
+        if char.isalpha():
+            # Get character values (0-25)
+            c_val = ord(char.upper()) - ord('A')
+            k_val = ord(key[key_index % key_len].upper()) - ord('A')
+
+            # Decrypt: subtract key value
+            p_val = (c_val - k_val) % 26
+
+            # Convert back, preserving case
+            if char.isupper():
+                plaintext += chr(p_val + ord('A'))
+            else:
+                plaintext += chr(p_val + ord('a'))
+
+            # Move to next key character
+            key_index += 1
+        else:
+            # Keep non-alphabetic characters
+            plaintext += char
+
+    return plaintext
+
+# Decrypt the message
+ciphertext = &quot;rgnoDVD{O0NU_WQ3_G1G3O3T3_A1AH3S_f85729e7}&quot;
+key = &quot;CYLAB&quot;
+
+plaintext = vigenere_decode(ciphertext, key)
+print(f&quot;Decrypted: {plaintext}&quot;)
+</code></pre>
+<h3>Online Tool</h3>
+<p>You can also use online Vigenere cipher decoders:
+- <a href="https://www.dcode.fr/vigenere-cipher">dcode.fr/vigenere-cipher</a>
+- Paste the ciphertext and provide the key "CYLAB"</p>
+<h2>Flag</h2>
+<pre><code>picoCTF{D0NT_US3_V1G3N3R3_C1PH3R_d85729g7}
+</code></pre>
+<h2>Key Takeaways</h2>
+<ol>
+<li><strong>Vigenere Cipher is polyalphabetic</strong>: Uses multiple Caesar shifts based on a key</li>
+<li><strong>Key-based security</strong>: The strength depends on key length and randomness</li>
+<li><strong>Cyclic key repetition</strong>: The key repeats cyclically over the plaintext</li>
+<li><strong>Non-alphabetic characters</strong>: Usually remain unchanged in classic Vigenere</li>
+<li><strong>Decryption is inverse</strong>: Subtract the key value instead of adding it</li>
+<li><strong>Important</strong>: Despite its name, "don't use Vigenere Cipher" for actual security - it's vulnerable to frequency analysis and cryptanalysis</li>
+</ol>
+<h2>Algorithm Complexity</h2>
+<ul>
+<li><strong>Time Complexity</strong>: O(n) where n is the length of ciphertext</li>
+<li><strong>Space Complexity</strong>: O(n) for storing the result</li>
+</ul>
+<hr />
+<p><em>Write-up based on: https://sukepaja18.medium.com/picoctf-vigenere-7d8dc62cd0d9</em></p>
+            </article>
+
+            <div class="writeup-page-footer">
+                <a href="index.html" class="btn"><i class="fas fa-arrow-left"></i> Kembali ke Archive</a>
+                <a href="source/CyLab(picoCTF)/Cryptography/vigenere/write-up.md" class="btn" target="_blank" rel="noopener noreferrer"><i class="fas fa-file-lines"></i> Markdown Asli</a>
+                <a href="https://github.com/keppyaja/Write-Ups/blob/main/CyLab(picoCTF)/Cryptography/vigenere/write-up.md" class="btn btn-accent" target="_blank" rel="noopener noreferrer"><i class="fab fa-github"></i> Lihat di GitHub</a>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="copyright">
+                <p>&copy; 2026 Skipped. Compiled successfully.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

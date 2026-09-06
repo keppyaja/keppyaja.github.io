@@ -3,16 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tsaqif Fawwaz | Cyber Security Enthusiast</title>
-    <!-- Pastikan FontAwesome dimuat -->
+    <title>Skipped | Cyber Security Enthusiast</title>
+    <meta name="description" content="Skipped — Cybersecurity enthusiast & CTF player, fokus di Kriptografi, Binary Exploitation, dan Web Exploitation. Aktif di CryptoHack, CyLab Academy, dan Codeforces.">
+    <meta name="theme-color" content="#0d1117">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="skipped | Cyber Security Enthusiast">
+    <meta property="og:description" content="Cybersecurity enthusiast & CTF player, fokus di Kriptografi, Binary Exploitation, dan Web Exploitation.">
+    <meta property="og:image" content="assets/images/profile.webp">
+    <meta name="twitter:card" content="summary">
+    <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Menggunakan cache buster (?v=3) -->
-    <link rel="stylesheet" href="style.css?v=3">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js" defer></script>
+
+    <link rel="stylesheet" href="assets/css/style.css?v=10">
 </head>
 <body>
+    <canvas id="binary-canvas"></canvas>
     <div class="scanlines"></div>
 
-    <!-- Header Baru dengan Struktur & Tag Button Mobile -->
     <header>
         <div class="container">
             <nav class="navbar">
@@ -22,6 +36,7 @@
                     <li><a href="#about">About</a></li>
                     <li><a href="#skills">Skills</a></li>
                     <li><a href="#portfolio">Projects & CTF</a></li>
+                    <li><a href="writeups/index.html">Write-ups</a></li>
                     <li><a href="#contact">Contact</a></li>
                 </ul>
                 <button type="button" class="menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="navLinks">
@@ -40,11 +55,10 @@
                     <span class="terminal-dot"></span>
                 </div>
                 <div class="terminal-content" id="terminal-content">
-                    <!-- Teks akan diisi oleh JavaScript -->
-                </div>
+                    </div>
             </div>
             <div class="hero-content">
-                <h1>Hello, I'm <span style="color: var(--accent-color);">Tsaqif Fawwaz</span></h1>
+                <h1>Hello, I'm <span style="color: var(--accent-color);">Tsaqif</span> A.K.A <span style="color: var(--accent-color);">Skipped</span></h1>
                 <p class="subtitle">Cybersecurity Enthusiast | CTF Player | Programmer</p>
                 <p>Mendedikasikan diri pada analisis kerentanan, kriptografi, dan pemecahan algoritma kompleks melalui Competitive Programming.</p>
                 <div class="hero-btns">
@@ -60,13 +74,62 @@
             <h2>Whoami</h2>
             <div class="about-content">
                 <div class="about-text">
-                    <p>Saya adalah mahasiswa Informatika Terapan di Politeknik Elektronika Negeri Surabaya dengan ketertarikan mendalam pada keamanan siber, khususnya pada ranah Kriptografi, <i>Binary Exploitation</i>, dan <i>Web Exploitation</i>.</p>
-                    <p>Sebagai pemain <i>Capture The Flag</i> (CTF) yang aktif di platform seperti CryptoHack, picoCTF, dan overthewire, saya sering memecahkan tantangan keamanan mulai dari eksploitasi AES/RSA hingga dekompilasi menggunakan Ghidra di lingkungan Kali Linux & WSL.</p>
-                    <p>Selain keamanan siber, saya juga aktif dalam <i>Competitive Programming</i> (menggunakan C++) serta memiliki pengalaman dalam merancang arsitektur basis data relasional (PostgreSQL).</p>
-                    <a href="CV.pdf" download class="btn" style="margin-top: 20px;"><i class="fas fa-download"></i> Dump CV</a>
+                    <p>Saya adalah mahasiswa Sarjana Terapan Teknik Informatika di Politeknik Elektronika Negeri Surabaya dengan ketertarikan mendalam pada keamanan siber, khususnya pada ranah Kriptografi, <i>Binary Exploitation</i>, dan <i>Web Exploitation</i>.</p>
+                    <p>Sebagai pemain <i>Capture The Flag</i> (CTF) yang aktif di platform seperti CryptoHack, picoCTF (sekarang CyLab), dan OverTheWire, saya sering memecahkan tantangan keamanan mulai dari eksploitasi AES/RSA hingga dekompilasi menggunakan Ghidra di lingkungan Kali Linux & WSL.</p>
+                    <p>Selain keamanan siber, saya juga cukup aktif dalam <i>Competitive Programming</i> (menggunakan C++) serta memiliki pengalaman dalam merancang arsitektur basis data relasional (PostgreSQL).</p>
                 </div>
                 <div class="about-img">
-                    <img src="assets/profile.jpg" alt="Cybersecurity">
+                    <img src="assets/images/profile.webp" alt="Tsaqif Fawwaz" loading="lazy">
+                    
+                    <div id="cf-stats" class="cf-card" aria-live="polite">
+                        <h4><i class="fas fa-satellite-dish"></i> Intercepting Codeforces Data...</h4>
+                    </div>
+
+                    <div id="cylab-stats" class="cf-card" aria-live="polite">
+
+    <h4>
+        <i class="fas fa-shield-halved"></i>
+        CyLab Live
+    </h4>
+
+    <div class="cf-grid">
+
+        <div class="cf-item">
+            <span>Progress</span>
+            <strong id="cy-progress">...</strong>
+        </div>
+
+        <div class="cf-item">
+            <span>Solved</span>
+            <strong id="cy-solved">...</strong>
+        </div>
+
+        <div class="cf-item">
+            <span>Easy</span>
+            <strong id="cy-easy">...</strong>
+        </div>
+
+        <div class="cf-item">
+            <span>Medium</span>
+            <strong id="cy-medium">...</strong>
+        </div>
+
+        <div class="cf-item">
+            <span>Hard</span>
+            <strong id="cy-hard">...</strong>
+        </div>
+
+    </div>
+
+    <div class="progress-bar">
+
+        <div id="cy-bar"></div>
+
+    </div>
+
+    <div id="cy-updated"></div>
+
+</div>
                 </div>
             </div>
         </div>
@@ -92,7 +155,7 @@
                     <p>Python (pwntools), C++ (Algoritma/CP), PHP</p>
                 </div>
                 <div class="skill-item">
-                    <div class="skill-icon"><i class="fas fa-linux"></i></div>
+                    <div class="skill-icon"><i class="fab fa-linux"></i></div>
                     <h3>Sistem & Lingkungan</h3>
                     <p>Kali Linux, Ubuntu WSL, Bash Scripting</p>
                 </div>
@@ -104,7 +167,7 @@
                 <div class="skill-item">
                     <div class="skill-icon"><i class="fas fa-flag"></i></div>
                     <h3>CTF & Keamanan</h3>
-                    <p>CryptoHack, picoCTF, Web Exploitation, Digital Forensics</p>
+                    <p>CryptoHack, picoCTF, Web Exploitation, Cryptography, Binary Exploitation</p>
                 </div>
             </div>
         </div>
@@ -114,6 +177,55 @@
         <div class="container">
             <h2>Projects & Write-ups</h2>
             <div class="portfolio-grid">
+                <div class="portfolio-item">
+                    <div class="portfolio-content">
+                        <h3>WebMusyKom: Sistem E-Voting Musyawarah Komisariat</h3>
+                        <p class="portfolio-role"><i class="fas fa-user-gear"></i> Full-Stack Developer</p>
+                        <p>Backend REST API untuk e-voting musyawarah komisariat yang berfokus pada keamanan, anonimitas, dan integritas pemilihan. Dibangun dengan Node.js, Express.js, dan MySQL; menggunakan JWT & Bcrypt, validasi payload, rate limiting, account lockout, Helmet, CSP, CORS, serta audit log. Setiap pemilih hanya dapat memilih sekali dengan transaksi dan row-level locking (<code>SELECT ... FOR UPDATE</code>), sementara data suara dipisahkan dari identitas pemilih agar pilihan tetap anonim.</p>
+                        <div class="portfolio-tags">
+                            <span class="tag">Node.js</span>
+                            <span class="tag">Express.js</span>
+                            <span class="tag">MySQL</span>
+                            <span class="tag">JWT & Bcrypt</span>
+                            <span class="tag">Helmet & CORS</span>
+                            <span class="tag">Docker</span>
+                        </div>
+                        <button class="btn btn-accent" style="margin-top: 15px; padding: 8px 15px; font-size: 1rem;" onclick="openProjectDetail('webmusykom')">
+                            <i class="fas fa-file-lines"></i> Baca Studi Kasus
+                        </button>
+                    </div>
+                </div>
+                <div class="portfolio-item">
+                    <div class="portfolio-content">
+                        <h3>Multi-Platform Local AI Chatbot (Discord & WhatsApp)</h3>
+                        <p class="portfolio-role"><i class="fas fa-user-gear"></i> Backend Developer</p>
+                        <p>Membangun ekosistem chatbot modular yang mengintegrasikan model AI lokal ke Discord dan WhatsApp. Sistem ini memisahkan logika pemrosesan AI (<i>Orchestrator</i>) dengan utilitas bot standar (<i>Gateway</i>). Fitur utamanya mencakup pembuatan stiker WhatsApp otomatis berbasis media, penyiaran (<i>broadcast</i>) dengan rate-limiting anti-banned, eksekusi slash commands Discord, dan auto-chunking algoritma untuk mengatasi batasan karakter pesan. Dioptimalkan untuk berjalan stabil di lingkungan Linux (WSL) tanpa kebocoran memori.</p>
+                        <div class="portfolio-tags">
+                            <span class="tag">Node.js</span>
+                            <span class="tag">Ollama</span>
+                            <span class="tag">Discord.js v14</span>
+                            <span class="tag">whatsapp-web.js</span>
+                            <span class="tag">Puppeteer</span>
+                            <span class="tag">FFmpeg</span>
+                        </div>
+                        <button class="btn btn-accent" style="margin-top: 15px; padding: 8px 15px; font-size: 1rem;" onclick="openProjectDetail('ai-bot')">
+                            <i class="fas fa-file-lines"></i> Baca Studi Kasus
+                        </button>
+                    </div>
+                </div>
+                <div class="portfolio-item">
+                    <div class="portfolio-content">
+                        <h3>Perpusri: Digital Library System</h3>
+                        <p>Platform repositori riset online untuk mahasiswa, peneliti, dan pengguna umum dalam mencari serta mengelola buku, jurnal, artikel, skripsi, tesis, dan disertasi. Fitur utamanya mencakup autentikasi dengan pemisahan hak akses pengguna/admin, pencarian berdasarkan judul, email penulis, kategori, dan tahun, unggah dokumen, profil publikasi, serta forum dengan topik, komentar, dan voting. Dashboard admin digunakan untuk mengelola koleksi, akun, statistik, dan peringatan. Dibangun dengan HTML, CSS, dan JavaScript responsif, menerapkan validasi, sanitasi input, pembatasan ukuran file, serta <i>localStorage</i> sebagai penyimpanan sisi klien untuk kebutuhan demo.</p>
+                        <div class="portfolio-tags">
+                            <span class="tag">HTML5 & CSS3</span>
+                            <span class="tag">Vanilla JavaScript</span>
+                            <span class="tag">Font Awesome</span>
+                            <span class="tag">LocalStorage</span>
+                            <span class="tag">Responsive Design</span>
+                        </div>
+                    </div>
+                </div>
                 <div class="portfolio-item">
                     <div class="portfolio-content">
                         <h3>Truncated LCG Solver (Lattice Reduction)</h3>
@@ -127,12 +239,20 @@
                 </div>
                 <div class="portfolio-item">
                     <div class="portfolio-content">
-                        <h3>CTF Write-ups: Crypto & RevEng</h3>
-                        <p>Dokumentasi rinci dan analisis dari berbagai kompetisi seperti ARACTF dan picoCTF. Fokus utama pada bypass keamanan kriptografi dan analisis memori menggunakan alat forensik.</p>
+                        <h3>CTF Write-ups: Crypto & BinEx</h3>
+                        <p>Dokumentasi rinci dan analisis dari kompetisi dan latihan seperti ARACTF dan picoCTF. Fokus utama pada bypass keamanan kriptografi dan binary exploitation.</p>
                         <div class="portfolio-tags">
                             <span class="tag">Ghidra</span>
                             <span class="tag">CTF</span>
-                            <span class="tag">Forensics</span>
+                            <span class="tag">Rev</span>
+                        </div>
+                        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top: 15px;">
+                            <a href="writeups/index.html" class="btn btn-accent" style="padding: 8px 15px; font-size: 1rem;">
+                                <i class="fas fa-terminal"></i> Browse All Write-ups
+                            </a>
+                            <a href="https://github.com/keppyaja/Write-Ups" target="_blank" rel="noopener noreferrer" class="btn" style="padding: 8px 15px; font-size: 1rem;">
+                                <i class="fab fa-github"></i> View Repo
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -144,17 +264,6 @@
                             <span class="tag">C++</span>
                             <span class="tag">Codeforces</span>
                             <span class="tag">Algorithms</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="portfolio-item">
-                    <div class="portfolio-content">
-                        <h3>Library & Retail Database Systems</h3>
-                        <p>Pengembangan sistem manajemen basis data untuk perpustakaan (berbasis web dengan PHP/SQL) serta perancangan <i>schema</i> database berlapis untuk Toko Kue menggunakan MS Access & PostgreSQL.</p>
-                        <div class="portfolio-tags">
-                            <span class="tag">PHP</span>
-                            <span class="tag">PostgreSQL</span>
-                            <span class="tag">ER-Diagram</span>
                         </div>
                     </div>
                 </div>
@@ -178,14 +287,14 @@
                         <div class="contact-icon"><i class="fas fa-users"></i></div>
                         <div>
                             <h3>Team Affiliation</h3>
-                            <p>KTCG Community</p>
+                            <p><a href="https://www.ktcg.my.id/roster" target="_blank" rel="noopener noreferrer">KTCG Community</a></p>
                         </div>
                     </div>
                     <div class="contact-item">
                         <div class="contact-icon"><i class="fas fa-envelope"></i></div>
                         <div>
                             <h3>Email</h3>
-                            <p>Tersedia via Request</p>
+                            <p>sukepaja18@gmail.com</p>
                         </div>
                     </div>
                 </div>
@@ -203,6 +312,7 @@
                             <label for="message">Payload (Message)</label>
                             <textarea id="message" class="form-control" required></textarea>
                         </div>
+                        <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
                         <button type="submit" class="btn btn-accent">Execute <i class="fas fa-paper-plane"></i></button>
                     </form>
                 </div>
@@ -215,26 +325,610 @@
             <div class="footer-content">
                 <div class="footer-about">
                     <h3><i class="fas fa-shield-alt"></i> Tsaqif Fawwaz</h3>
-                    <p>Cybersecurity Enthusiast | CTF Player. Always learning, always exploring.</p>
+                    <p>Cybersecurity Enthusiast | CTF Player. Can be diligent and lazy at the same time.</p>
                 </div>
                 <div class="footer-social">
                     <h3>Network</h3>
                     <div class="social-icons">
-                        <a href="https://github.com/keppyaja" title="GitHub"><i class="fab fa-github"></i></a>
-                        <a href="https://www.linkedin.com/in/muhammad-tsaqif-fawwaz-nasywan-b179bb320/" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-                        <a href="https://codeforces.com/profile/TsaaQiif" title="Codeforces"><i class="fas fa-code"></i></a>
-                        <a href="https://ctftime.org/user/201802" title="CTFTIME"><i class="fas fa-flag"></i></a>
+                        <a href="https://github.com/keppyaja" title="GitHub" target="_blank" rel="noopener noreferrer"><i class="fab fa-github"></i></a>
+                        <a href="https://www.linkedin.com/in/muhammad-tsaqif-fawwaz-nasywan-b179bb320/" title="LinkedIn" target="_blank" rel="noopener noreferrer"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="https://codeforces.com/profile/TsaaQiif" title="Codeforces" target="_blank" rel="noopener noreferrer"><i class="fas fa-code"></i></a>
+                        <a href="https://ctftime.org/user/201802" title="CTFTIME" target="_blank" rel="noopener noreferrer"><i class="fas fa-flag"></i></a>
+                        <a href="https://learn.cylabacademy.org/users/itsskipped" title="CyLab Academy" target="_blank" rel="noopener noreferrer"><i class="fas fa-satellite-dish"></i></a>
                     </div>
                 </div>
             </div>
             <div class="copyright">
-                <p>&copy; 2026 Tsaqif Fawwaz. Compiled successfully.</p>
+                <p>&copy; 2026 Skipped. Compiled successfully.</p>
             </div>
         </div>
     </footer>
+    <div id="writeupModal" class="modal" role="dialog" aria-modal="true" aria-label="Write-up viewer">
+        <div class="modal-content">
+            <span class="close-btn" tabindex="0" role="button" aria-label="Close write-up viewer">&times;</span>
+            <div id="markdown-content">
+                <p><i class="fas fa-spinner fa-spin"></i> Mendekripsi payload dari GitHub...</p>
+            </div>
+        </div>
+    </div>
+    <script>
+        // --- Toast notification (replaces alert()) ---
+        function showToast(message, isError = false) {
+            const existing = document.querySelector('.toast');
+            if (existing) existing.remove();
 
-    <!-- INLINE JAVASCRIPT -->
-    <script src="script.js">
+            const toast = document.createElement('div');
+            toast.className = 'toast' + (isError ? ' toast-error' : '');
+            toast.setAttribute('role', 'status');
+            toast.setAttribute('aria-live', 'polite');
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            requestAnimationFrame(() => toast.classList.add('show'));
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+        // ==========================================
+        // FITUR: ANIMASI BACKGROUND BINARY RAIN GLOBAL
+        // ==========================================
+        const canvas = document.getElementById('binary-canvas');
+        const ctx = canvas.getContext('2d');
+
+        const chars = '01'; 
+        const fontSize = 16;
+        let columns;
+        let drops = [];
+
+        // Menyesuaikan ukuran kanvas secara global ke seluruh layar viewport pengguna
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            
+            // Menghitung ulang jumlah kolom saat layar di-resize
+            columns = Math.floor(canvas.width / fontSize);
+            drops = [];
+            for (let x = 0; x < columns; x++) {
+                // Memberikan nilai acak agar hujan turun tidak bersamaan di awal
+                drops[x] = Math.random() * -100; 
+            }
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        function drawBinaryRain() {
+            // Memberikan efek jejak (fade) warna background terminal
+            ctx.fillStyle = 'rgba(13, 17, 23, 0.1)'; 
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Warna hijau neon biner
+            ctx.fillStyle = '#00ff41'; 
+            ctx.font = fontSize + 'px "VT323", monospace'; 
+
+            for (let i = 0; i < drops.length; i++) {
+                const text = chars.charAt(Math.floor(Math.random() * chars.length));
+                
+                // Mencegah tulisan muncul sebelum waktunya (jika nilai Y minus)
+                if (drops[i] * fontSize > 0) {
+                    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                }
+
+                // Reset tetesan ke atas secara acak jika melewati layar bawah
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+
+        setInterval(drawBinaryRain, 50);
+        // --- Terminal Typewriter Effect ---
+        const terminalContent = document.getElementById('terminal-content');
+        const commands = [
+            { type: 'input', prompt: 'kali@skipped:~$', text: 'whoami' },
+            { type: 'output', text: 'Skipped - Cyber Security & CP Enthusiast' },
+            { type: 'input', prompt: 'kali@skipped:~$', text: './show_focus.sh' },
+            { type: 'output', text: '[+] Cryptography [+] Binary Exploitation [+] Linux' }
+        ];
+        const altOutput = '[+] Web Exploitation'; // Teks pengganti baris terakhir
+
+        let stepIndex = 0;
+        let charIndex = 0;
+        let phase = 0; // 0: Ketik Awal, 1: Hapus Baris Terakhir, 2: Ketik Alternatif, 3: Hapus Semua
+
+        function typeTerminal() {
+            // ==========================================
+            // FASE 0: Mengetik semua baris perintah awal
+            // ==========================================
+            if (phase === 0) {
+                if (stepIndex < commands.length) {
+                    const currentData = commands[stepIndex];
+
+                    if (charIndex === 0) {
+                        const p = document.createElement('p');
+                        if (currentData.type === 'input') {
+                            p.innerHTML = `<span class="terminal-prompt">${currentData.prompt}</span> <span class="typing-text" style="color: var(--light-color);"></span><span class="cursor-solid"></span>`;
+                        } else {
+                            p.className = "terminal-output";
+                            p.innerHTML = `<span class="typing-text"></span><span class="cursor-solid"></span>`;
+                        }
+                        terminalContent.appendChild(p);
+                    }
+
+                    const currentP = terminalContent.lastElementChild;
+                    const textSpan = currentP.querySelector('.typing-text');
+                    const cursorSpan = currentP.querySelector('.cursor-solid');
+                    
+                    if (charIndex < currentData.text.length) {
+                        textSpan.textContent += currentData.text.charAt(charIndex);
+                        charIndex++;
+                        setTimeout(typeTerminal, 40); 
+                    } else {
+                        if (cursorSpan) cursorSpan.remove();
+                        stepIndex++;
+                        charIndex = 0;
+                        setTimeout(typeTerminal, 400); 
+                    }
+                } else {
+                    // Selesai Fase 0: Tampilkan prompt kedip, tunggu 3 detik
+                    const finalP = document.createElement('p');
+                    finalP.innerHTML = `<span class="terminal-prompt">kali@skipped:~$</span> <span class="cursor-blink"></span>`;
+                    terminalContent.appendChild(finalP);
+
+                    setTimeout(() => {
+                        terminalContent.removeChild(terminalContent.lastElementChild);
+                        phase = 1;
+                        stepIndex = commands.length - 1; // Target ke baris terakhir
+                        charIndex = commands[stepIndex].text.length;
+                        typeTerminal();
+                    }, 3000);
+                }
+            }
+            // ==========================================
+            // FASE 1: Menghapus baris terakhir saja
+            // ==========================================
+            else if (phase === 1) {
+                const currentP = terminalContent.lastElementChild;
+                const textSpan = currentP.querySelector('.typing-text');
+                let cursorSpan = currentP.querySelector('.cursor-solid');
+
+                if (!cursorSpan) {
+                    cursorSpan = document.createElement('span');
+                    cursorSpan.className = 'cursor-solid';
+                    currentP.appendChild(cursorSpan);
+                }
+
+                if (charIndex > 0) {
+                    textSpan.textContent = textSpan.textContent.slice(0, -1);
+                    charIndex--;
+                    setTimeout(typeTerminal, 30);
+                } else {
+                    terminalContent.removeChild(currentP); // Buang baris yang sudah kosong
+                    phase = 2; // Pindah ke Fase 2
+                    charIndex = 0;
+                    setTimeout(typeTerminal, 500);
+                }
+            }
+            // ==========================================
+            // FASE 2: Mengetik baris alternatif
+            // ==========================================
+            else if (phase === 2) {
+                if (charIndex === 0) {
+                    const p = document.createElement('p');
+                    p.className = "terminal-output";
+                    p.innerHTML = `<span class="typing-text"></span><span class="cursor-solid"></span>`;
+                    terminalContent.appendChild(p);
+                }
+
+                const currentP = terminalContent.lastElementChild;
+                const textSpan = currentP.querySelector('.typing-text');
+                const cursorSpan = currentP.querySelector('.cursor-solid');
+
+                if (charIndex < altOutput.length) {
+                    textSpan.textContent += altOutput.charAt(charIndex);
+                    charIndex++;
+                    setTimeout(typeTerminal, 40);
+                } else {
+                    if (cursorSpan) cursorSpan.remove();
+                    
+                    // Selesai Fase 2: Tampilkan prompt kedip, tunggu 3 detik
+                    const finalP = document.createElement('p');
+                    finalP.innerHTML = `<span class="terminal-prompt">kali@skipped:~$</span> <span class="cursor-blink"></span>`;
+                    terminalContent.appendChild(finalP);
+
+                    setTimeout(() => {
+                        terminalContent.removeChild(terminalContent.lastElementChild);
+                        phase = 3;
+                        charIndex = altOutput.length; // Set indeks dari panjang teks alternatif
+                        typeTerminal();
+                    }, 3000);
+                }
+            }
+            // ==========================================
+            // FASE 3: Menghapus semuanya secara penuh
+            // ==========================================
+            else if (phase === 3) {
+                const currentP = terminalContent.lastElementChild;
+                if (!currentP) { 
+                    // Terminal kosong, Reset ke awal
+                    phase = 0;
+                    stepIndex = 0;
+                    charIndex = 0;
+                    setTimeout(typeTerminal, 1000);
+                    return;
+                }
+
+                const textSpan = currentP.querySelector('.typing-text');
+                let cursorSpan = currentP.querySelector('.cursor-solid');
+
+                if (!cursorSpan) {
+                    cursorSpan = document.createElement('span');
+                    cursorSpan.className = 'cursor-solid';
+                    currentP.appendChild(cursorSpan);
+                }
+
+                if (charIndex > 0) {
+                    textSpan.textContent = textSpan.textContent.slice(0, -1);
+                    charIndex--;
+                    setTimeout(typeTerminal, 30); // Menghapus sangat cepat
+                } else {
+                    terminalContent.removeChild(currentP);
+                    stepIndex--; // Mundur ke baris atasnya
+                    
+                    if (stepIndex >= 0) {
+                        charIndex = commands[stepIndex].text.length;
+                        setTimeout(typeTerminal, 80);
+                    } else {
+                        // Jika sudah tak bersisa, Reset ke awal
+                        phase = 0;
+                        stepIndex = 0;
+                        charIndex = 0;
+                        setTimeout(typeTerminal, 1000); // Jeda sebelum mengetik "whoami" lagi
+                    }
+                }
+            }
+        }
+
+        terminalContent.innerHTML = '';
+        window.addEventListener('load', typeTerminal);
+
+        // --- Mobile menu toggle ---
+        const menuToggle = document.querySelector('.menu-toggle');
+        const navLinks = document.querySelector('.nav-links');
+
+        menuToggle.addEventListener('click', function () {
+            const isOpen = navLinks.classList.toggle('active');
+            this.setAttribute('aria-expanded', isOpen);
+            this.querySelector('i').classList.toggle('fa-bars');
+            this.querySelector('i').classList.toggle('fa-times');
+        });
+
+        // Close mobile menu when a nav link is clicked
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+                menuToggle.setAttribute('aria-expanded', 'false');
+                menuToggle.querySelector('i').classList.remove('fa-times');
+                menuToggle.querySelector('i').classList.add('fa-bars');
+            });
+        });
+
+        // --- Smooth scroll ---
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                if (this.getAttribute('href') === '#') return;
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // --- Header glow + active-section nav highlighting ---
+        const header = document.querySelector('header');
+        const sections = document.querySelectorAll('section[id]');
+        const navAnchors = document.querySelectorAll('.nav-links a[href^="#"]');
+
+        function handleScrollEffects() {
+            header.classList.toggle('scrolled', window.scrollY > 100);
+
+            let currentSection = '';
+            sections.forEach(section => {
+                if (window.scrollY >= section.offsetTop - 120) {
+                    currentSection = section.id;
+                }
+            });
+
+            navAnchors.forEach(link => {
+                link.classList.toggle('active', link.getAttribute('href') === `#${currentSection}`);
+            });
+        }
+
+        window.addEventListener('scroll', handleScrollEffects);
+        handleScrollEffects(); 
+
+        // --- AJAX Form Submission via FormSubmit ---
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault(); // Mencegah reload halaman
+
+            // Ambil elemen tombol dan nilai input
+            const btn = this.querySelector('button');
+            const originalText = btn.innerHTML;
+            
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const message = document.getElementById('message').value;
+
+            // Ubah tombol menjadi status loading
+            btn.innerHTML = 'Executing Payload... <i class="fas fa-spinner fa-spin"></i>';
+            btn.disabled = true;
+
+            // Kirim request ke FormSubmit API
+            fetch("https://formsubmit.co/ajax/sukepaja18@gmail.com", {
+                method: "POST",
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    _subject: "[Skippedx0r] New Target Payload Received!",
+                    Name: name,
+                    Email: email,
+                    Message: message
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                showToast('[+] Payload Delivered. Connection established successfully.');
+                this.reset(); // Kosongkan form
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            })
+            .catch(error => {
+                showToast('[-] Connection Failed. Target unreachable.', true);
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            });
+        });
+        // ==========================================
+        // FITUR 3: LIVE CODEFORCES API INTEGRATION
+        // ==========================================
+        async function fetchCodeforces() {
+            const cfContainer = document.getElementById('cf-stats');
+            try {
+                const res = await fetch('https://codeforces.com/api/user.info?handles=TsaaQiif');
+                const data = await res.json();
+                
+                if (data.status === 'OK') {
+                    const user = data.result[0];
+                    cfContainer.innerHTML = `
+                        <h4><i class="fas fa-code"></i> Codeforces Live Status</h4>
+                        <div class="cf-grid">
+                            <div class="cf-item"><span>Handle:</span> <a href="https://codeforces.com/profile/TsaaQiif" target="_blank" rel="noopener noreferrer">${user.handle}</a></div>
+                            <div class="cf-item"><span>Rank:</span> ${user.rank || 'Unrated'}</div>
+                            <div class="cf-item"><span>Rating:</span> ${user.rating || 'N/A'} <span style="color:var(--gray-color);">(Max: ${user.maxRating || 'N/A'})</span></div>
+                        </div>
+                    `;
+                }
+            } catch (e) {
+                cfContainer.innerHTML = `<p style="color: red;">[-] Gagal menyambung ke server Codeforces.</p>`;
+            }
+        }
+        fetchCodeforces();
+
+        // ==========================================
+        // FITUR 5: GITHUB MARKDOWN WRITE-UP VIEWER
+        // ==========================================
+        const modal = document.getElementById("writeupModal");
+        const span = document.getElementsByClassName("close-btn")[0];
+        const mdContent = document.getElementById("markdown-content");
+        let lastFocusedElement = null;
+
+        function openModal(triggerEl) {
+            lastFocusedElement = triggerEl || document.activeElement;
+            modal.style.display = "block";
+            span.focus();
+        }
+
+        function closeModal() {
+            modal.style.display = "none";
+            if (lastFocusedElement) lastFocusedElement.focus();
+        }
+
+        function renderMarkdownSafely(markdownText) {
+            const rawHtml = marked.parse(markdownText);
+            mdContent.innerHTML = window.DOMPurify ? DOMPurify.sanitize(rawHtml) : rawHtml;
+        }
+
+        // --- Studi kasus lokal (tidak perlu fetch ke repo eksternal) ---
+        const PROJECT_DETAILS = {
+            'webmusykom': `## Deskripsi Proyek
+
+WebMusyKom adalah platform pemilihan suara elektronik (*e-voting*) berstandar tinggi yang dirancang khusus untuk mengelola proses pemilihan kepemimpinan dalam musyawarah komisariat secara transparan, aman, dan efisien. Sistem ini memisahkan arsitektur front-end yang responsif dengan back-end RESTful API yang andal, serta menerapkan prinsip kerahasiaan suara (*anonymous voting*) untuk menjaga integritas pemilihan.
+
+## Arsitektur & Tech Stack
+
+**Back-End**
+- Node.js dengan kerangka kerja Express.js yang menerapkan arsitektur modular routing (pemisahan logika rute untuk \`auth\`, \`komisariat\`, \`candidates\`, \`vote\`, dan \`results\`).
+
+**Database & Manajemen Data**
+- PostgreSQL yang diintegrasikan menggunakan connection pooling (\`pg\`) untuk performa kueri yang optimal dan aman.
+
+**Keamanan (Security)**
+- Enkripsi kata sandi menggunakan Bcrypt.
+- Manajemen sesi berbasis JSON Web Token (JWT).
+- Proteksi header HTTP menggunakan Helmet dan pembatasan frekuensi permintaan (*rate limiting*) menggunakan \`express-rate-limit\`.
+
+**Front-End & Visualisasi**
+- HTML5 interaktif yang diperindah dengan Tailwind CSS serta grafik statistik perolehan suara real-time menggunakan pustaka Chart.js.
+
+## Fitur Utama Sistem
+
+**Autentikasi Pemilih Berbasis Komisariat**
+
+Validasi pemilih yang terikat secara presisi dengan data asal komisariat dan nomor registrasi (NRP) unik.
+
+**Sistem Pencoblosan Anonim (Anonymous Voting)**
+
+Memisahkan tabel data pemilih dan tabel perolehan suara secara struktural guna memastikan kerahasiaan pilihan suara tetap terjaga mutlak.
+
+**Dashboard & Grafik Hasil Real-Time**
+
+Menyediakan halaman visualisasi data hasil pemilihan dalam bentuk grafik interaktif yang dapat diperbarui secara otomatis.
+
+**Fleksibilitas Deployment**
+
+Mendukung skenario deployment produksi standar berbasis VPS Linux maupun *rapid deployment* lokal menggunakan layanan tunneling (seperti Ngrok/Cloudflare) untuk acara berskala cepat.
+
+## Catatan Portofolio
+
+Proyek ini mencerminkan kemampuan dalam merancang sistem autentikasi yang aman, mengelola relasi basis data relasional kompleks, serta membangun aplikasi full-stack fungsional dari tahap perancangan skema hingga tahap deployment.`,
+
+            'ai-bot': `## Deskripsi Proyek
+
+Mengembangkan arsitektur backend Node.js modular yang menjembatani model *Large Language Model* (LLM) lokal dengan dua platform komunikasi secara bersamaan: **Discord** dan **WhatsApp**. Proyek ini bertujuan untuk menciptakan asisten AI yang cerdas sekaligus menyediakan alat utilitas komunitas yang praktis (seperti pembuat stiker, alat moderasi, dan penyiaran pesan).
+
+## Tanggung Jawab & Implementasi Teknis
+
+**AI Orchestration**
+- Mengintegrasikan LLM lokal menggunakan antarmuka Ollama dengan kapabilitas manajemen context window, pelacakan riwayat obrolan dinamis, dan kalkulasi token presisi.
+
+**Discord Gateway (Discord.js v14)**
+- Membangun sistem Slash Commands dinamis untuk fitur moderasi (\`/kick\`, \`/timeout\`, \`/clear\`) dan reaction-roles.
+- Mengimplementasikan filter mention-trigger agar AI hanya merespons saat di-tag, menjaga ruang obrolan tetap kondusif.
+- Menciptakan fungsi Auto-Chunking cerdas yang memecah respons panjang dari AI untuk melewati batas maksimal 2.000 karakter Discord tanpa merusak struktur kalimat.
+
+**WhatsApp Gateway (whatsapp-web.js)**
+- Membangun Command Interceptor khusus (menggunakan awalan \`!\`) untuk memisahkan obrolan AI dengan perintah utilitas seperti \`!menu\` dan \`!ping\`.
+- Menciptakan fitur pengubah media menjadi stiker (Media-to-Sticker) secara real-time yang ditenagai oleh mesin FFmpeg.
+- Mengembangkan algoritma Broadcasting aman dengan jittered rate-limiting otomatis (jeda 3-6 detik) untuk memitigasi risiko pemblokiran akun oleh sistem anti-spam WhatsApp.
+
+## Penyelesaian Masalah (Tantangan Teknis Utama)
+
+**Mengatasi "Zombie Process" & Memory Leak**
+
+Mengkonfigurasi argumen khusus pada Puppeteer Chromium (\`--disable-dev-shm-usage\`) untuk memastikan stabilitas server di lingkungan WSL/Linux.
+
+**Evolusi Kriptografi WhatsApp**
+
+Menyelesaikan bug dekripsi media (error \`r\` pada unduhan gambar) dengan mem-bypass Chromium bawaan Puppeteer dan memaksa penggunaan Google Chrome Native di Linux untuk dukungan codec dan kriptografi penuh.
+
+**Decoupled Architecture**
+
+Memisahkan secara ketat (isolasi) antara logika pemrosesan AI lokal dengan event listener Discord/WhatsApp, memastikan jika salah satu API mengalami downtime, sistem lainnya tetap berjalan (*fault-tolerant*).`
+        };
+
+        function openProjectDetail(key) {
+            const markdownText = PROJECT_DETAILS[key];
+            if (!markdownText) return;
+            openModal(document.activeElement);
+            renderMarkdownSafely(markdownText);
+        }
+
+        // Catatan: write-up sekarang punya halaman statisnya sendiri-sendiri
+        // di direktori writeups/ (lihat writeups/index.html), jadi tidak lagi
+        // di-fetch ke dalam modal ini. Modal di atas sekarang hanya dipakai
+        // untuk studi kasus proyek (openProjectDetail).
+
+        // Tutup modal jika tombol X diklik
+        span.onclick = closeModal;
+        // Tutup modal jika user mengklik area luar kotak
+        window.onclick = function(event) {
+            if (event.target == modal) closeModal();
+        }
+        // Tutup modal dengan tombol Escape
+        window.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' && modal.style.display === 'block') closeModal();
+        });
+        async function fetchCyLab(){
+
+    try{
+        const res =
+        await fetch("data/stats.json?"+Date.now());
+
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+        const stats =
+        await res.json();
+
+        document.getElementById("cy-progress").textContent =
+        stats.overall.percentage+"%";
+
+        document.getElementById("cy-solved").textContent =
+        `${stats.overall.solved}/${stats.overall.available}`;
+
+        document.getElementById("cy-easy").textContent =
+        `${stats.difficulty.easy.solved}/${stats.difficulty.easy.available}`;
+
+        document.getElementById("cy-medium").textContent =
+        `${stats.difficulty.medium.solved}/${stats.difficulty.medium.available}`;
+
+        document.getElementById("cy-hard").textContent =
+        `${stats.difficulty.hard.solved}/${stats.difficulty.hard.available}`;
+
+        document.getElementById("cy-bar").style.width =
+        stats.overall.percentage+"%";
+
+        const d =
+        new Date(stats.updated);
+
+        document.getElementById("cy-updated").innerHTML =
+        `<i class="fas fa-clock"></i> Updated ${d.toLocaleString()}`;
+
+    }
+
+    catch(err){
+
+        document.getElementById("cylab-stats").innerHTML=`
+            <h4>
+                <i class="fas fa-triangle-exclamation"></i>
+                CyLab Offline
+            </h4>
+
+            <p>
+                Unable to load statistics.
+            </p>
+        `;
+
+    }
+
+}
+
+fetchCyLab();
+
+// --- Scroll reveal: section masuk sekali saja ---
+const sectionTargets = document.querySelectorAll('section');
+sectionTargets.forEach(el => el.classList.add('reveal-section'));
+
+const sectionObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            sectionObserver.unobserve(entry.target);
+        }
+    });
+}, { threshold: 0.05 });
+
+sectionTargets.forEach(el => sectionObserver.observe(el));
+
+// --- Scroll reveal: card masuk & keluar tiap kali di-scroll ---
+const cardTargets = document.querySelectorAll('.portfolio-item, .skill-item, .cf-card');
+cardTargets.forEach(el => el.classList.add('reveal-card'));
+
+const cardObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        entry.target.classList.toggle('is-visible', entry.isIntersecting);
+    });
+}, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+
+cardTargets.forEach(el => cardObserver.observe(el));
     </script>
 </body>
 </html>

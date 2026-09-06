@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Numbers | Write-up | Skipped</title>
+    <meta name="description" content="Write-up The Numbers (Cryptography) dari CyLab (picoCTF) oleh Skipped.">
+    <meta name="theme-color" content="#0d1117">
+    <link rel="icon" type="image/svg+xml" href="../assets/images/favicon.svg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/style.css?v=10">
+</head>
+<body class="writeup-page-body">
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="../index.html" class="logo"><i class="fas fa-terminal"></i> Skipped<span>x0r</span></a>
+                <ul class="nav-links">
+                    <li><a href="../index.html#portfolio">Projects & CTF</a></li>
+                    <li><a href="index.html">Write-ups</a></li>
+                    <li><a href="../index.html#contact">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="writeup-page">
+        <div class="container">
+            <nav class="writeup-breadcrumb" aria-label="Breadcrumb">
+                <a href="../index.html">Home</a>
+                <span>/</span>
+                <a href="index.html">Write-ups</a>
+                <span>/</span>
+                <a href="index.html#cylab-picoctf">CyLab (picoCTF)</a>
+                <span>/</span>
+                <span class="current">The Numbers</span>
+            </nav>
+
+            <div class="writeup-page-header">
+                <span class="tag writeup-cat-tag"><i class="fas fa-key"></i> Cryptography</span>
+                <h1>The Numbers</h1>
+                <p class="writeup-page-sub">CyLab (picoCTF)</p>
+            </div>
+
+            <article id="markdown-content" class="writeup-page-body-content">
+<h1>picoCTF - The Numbers Challenge Write-Up</h1>
+<h2>Challenge Information</h2>
+<p><strong>Challenge Name:</strong> The Numbers<br />
+<strong>Category:</strong> Cryptography<br />
+<strong>Difficulty:</strong> Easy<br />
+<strong>Source:</strong> https://sukepaja18.medium.com/picoctf-the-numbers-b402fbcc43f6</p>
+<h2>Challenge Description</h2>
+<p>The challenge provides a mysterious hint: "The numbers… what do they mean?"</p>
+<p>A PNG file is provided containing a series of numbers that need to be decoded.</p>
+<h2>Understanding Letter Number Code</h2>
+<p>Letter Number Code is a simple substitution cipher where each letter is replaced by its position in the alphabet:</p>
+<ul>
+<li>A = 1</li>
+<li>B = 2</li>
+<li>C = 3</li>
+<li>... and so on</li>
+<li>Z = 26</li>
+</ul>
+<p>This is also known as <strong>A1Z26 encoding</strong> or <strong>Alphanumeric Code</strong>.</p>
+<h3>Key Characteristics:</h3>
+<ul>
+<li>Numbers directly correspond to letter positions (1-26)</li>
+<li>Spaces or separators between numbers indicate letter boundaries</li>
+<li>Case typically doesn't matter (can be uppercase or lowercase)</li>
+<li>Non-alphabetic characters are generally not encoded</li>
+</ul>
+<h2>Solution</h2>
+<p>The cipher text from the image is a sequence of numbers that represent letters in alphabetical order.</p>
+<h3>Method 1: Manual Decryption</h3>
+<p>Decode each number to its corresponding letter:</p>
+<pre><code>20 8 5 = T H E
+14 21 13 2 5 18 19 = N U M B E R S
+13 1 19 15 14 = M A S O N
+</code></pre>
+<h3>Method 2: Python Script</h3>
+<pre><code class="language-python">def decode_letter_number(cipher_text):
+    &quot;&quot;&quot;
+    Decode Letter Number Code (A1Z26)
+    Input: numbers separated by spaces
+    Output: decoded message
+    &quot;&quot;&quot;
+    numbers = cipher_text.split()
+    result = &quot;&quot;
+
+    for num in numbers:
+        num = int(num)
+        if 1 &lt;= num &lt;= 26:
+            result += chr(ord('A') + num - 1)
+
+    return result
+
+# Example
+cipher = &quot;20 8 5 14 21 13 2 5 18 19 13 1 19 15 14&quot;
+plaintext = decode_letter_number(cipher)
+print(plaintext)  # Output: THENUMBERSMASON
+</code></pre>
+<h3>Method 3: Online Tools</h3>
+<p>Use <a href="https://gchq.github.io/CyberChef/">CyberChef</a>:</p>
+<ol>
+<li>Navigate to CyberChef</li>
+<li>Paste the number sequence</li>
+<li>Search for and apply the "From A1Z26" recipe</li>
+<li>The decoded message will appear instantly</li>
+</ol>
+<h2>Decrypted Message</h2>
+<p>After decoding the numbers:</p>
+<pre><code>PICOCTFTHENUMBERSMASON
+</code></pre>
+<p>Breaking it down:
+- PICOCTF (the flag format)
+- THENUMBERSMASON (the decoded message)</p>
+<h2>Flag</h2>
+<pre><code>PICOCTF{THENUMBERSMASON}
+</code></pre>
+<h2>Key Takeaways</h2>
+<ol>
+<li><strong>Simple substitution ciphers</strong> - Letter Number Code is one of the most basic encryption methods</li>
+<li><strong>Recognize patterns</strong> - Numbers in sequences often indicate Letter Number Code</li>
+<li><strong>Alphabet position mapping</strong> - Understanding the A-Z to 1-26 mapping is essential</li>
+<li><strong>Challenge hints</strong> - The title "The Numbers" is a direct hint to what you're dealing with</li>
+<li><strong>Cryptanalysis</strong> - Even without knowing the cipher type beforehand, frequency analysis or trial-and-error with common cipher types can reveal the solution</li>
+</ol>
+<h2>Related Challenges</h2>
+<ul>
+<li>ROT13 ciphers (like MOD 26 and 13)</li>
+<li>Caesar Cipher</li>
+<li>Other simple substitution ciphers</li>
+</ul>
+            </article>
+
+            <div class="writeup-page-footer">
+                <a href="index.html" class="btn"><i class="fas fa-arrow-left"></i> Kembali ke Archive</a>
+                <a href="source/CyLab(picoCTF)/Cryptography/The Numbers/Write-up.md" class="btn" target="_blank" rel="noopener noreferrer"><i class="fas fa-file-lines"></i> Markdown Asli</a>
+                <a href="https://github.com/keppyaja/Write-Ups/blob/main/CyLab(picoCTF)/Cryptography/The%20Numbers/Write-up.md" class="btn btn-accent" target="_blank" rel="noopener noreferrer"><i class="fab fa-github"></i> Lihat di GitHub</a>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="copyright">
+                <p>&copy; 2026 Skipped. Compiled successfully.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mod 26 | Write-up | Skipped</title>
+    <meta name="description" content="Write-up Mod 26 (Cryptography) dari CyLab (picoCTF) oleh Skipped.">
+    <meta name="theme-color" content="#0d1117">
+    <link rel="icon" type="image/svg+xml" href="../assets/images/favicon.svg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/style.css?v=10">
+</head>
+<body class="writeup-page-body">
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="../index.html" class="logo"><i class="fas fa-terminal"></i> Skipped<span>x0r</span></a>
+                <ul class="nav-links">
+                    <li><a href="../index.html#portfolio">Projects & CTF</a></li>
+                    <li><a href="index.html">Write-ups</a></li>
+                    <li><a href="../index.html#contact">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="writeup-page">
+        <div class="container">
+            <nav class="writeup-breadcrumb" aria-label="Breadcrumb">
+                <a href="../index.html">Home</a>
+                <span>/</span>
+                <a href="index.html">Write-ups</a>
+                <span>/</span>
+                <a href="index.html#cylab-picoctf">CyLab (picoCTF)</a>
+                <span>/</span>
+                <span class="current">Mod 26</span>
+            </nav>
+
+            <div class="writeup-page-header">
+                <span class="tag writeup-cat-tag"><i class="fas fa-key"></i> Cryptography</span>
+                <h1>Mod 26</h1>
+                <p class="writeup-page-sub">CyLab (picoCTF)</p>
+            </div>
+
+            <article id="markdown-content" class="writeup-page-body-content">
+<h1>picoCTF - Mod 26 Challenge Write-Up</h1>
+<h2>Challenge Information</h2>
+<p><strong>Challenge Name:</strong> Mod 26<br />
+<strong>Category:</strong> Cryptography<br />
+<strong>Difficulty:</strong> Easy<br />
+<strong>Source:</strong> https://sukepaja18.medium.com/picoctf-mod-26-5a1037512753</p>
+<h2>Challenge Description</h2>
+<p>The challenge provides a cryptic string that appears to be encrypted:</p>
+<pre><code>cvpbPGS{arkg_gvzr_V'yy_gel_2_ebhaqf_bs_ebg13_jdJBFOXJ}
+</code></pre>
+<p>The hint mentions ROT13, which is a classic Caesar Cipher encryption technique.</p>
+<h2>Understanding ROT13</h2>
+<p>ROT13 is a simple substitution cipher that rotates each letter by 13 positions in the alphabet. It's a form of the Caesar Cipher and has the following characteristics:</p>
+<ul>
+<li><strong>Encryption Formula:</strong> <code>(c + 13) % 26</code></li>
+<li><strong>Decryption Formula:</strong> <code>(c - 13) % 26</code></li>
+</ul>
+<p>Where <code>c</code> represents the ASCII/position value of the character to be transformed.</p>
+<p>Key points:
+- It works on letters (both uppercase and lowercase)
+- Numbers and special characters typically remain unchanged
+- Applying ROT13 twice returns the original text (since 13 + 13 = 26)</p>
+<h2>Solution</h2>
+<p>To decrypt the flag, we need to apply the ROT13 decryption to the given ciphertext.</p>
+<h3>Method 1: Online Tools</h3>
+<p>The simplest approach is to use an online tool like <a href="https://gchq.github.io/CyberChef/">CyberChef</a>:</p>
+<ol>
+<li>Navigate to CyberChef</li>
+<li>Paste the encrypted string: <code>cvpbPGS{arkg_gvzr_V'yy_gel_2_ebhaqf_bs_ebg13_jdJBFOXJ}</code></li>
+<li>Search for and select the "ROT13" recipe</li>
+<li>The decrypted output will appear instantly</li>
+</ol>
+<h3>Method 2: Manual Decryption</h3>
+<p>If implementing manually in Python:</p>
+<pre><code class="language-python">import codecs
+
+ciphertext = &quot;cvpbPGS{arkg_gvzr_V'yy_gel_2_ebhaqf_bs_ebg13_jdJBFOXJ}&quot;
+plaintext = codecs.encode(ciphertext, 'rot_13')
+print(plaintext)
+</code></pre>
+<p>Or using a simple loop:</p>
+<pre><code class="language-python">def rot13_decrypt(text):
+    result = &quot;&quot;
+    for char in text:
+        if 'a' &lt;= char &lt;= 'z':
+            result += chr((ord(char) - ord('a') + 13) % 26 + ord('a'))
+        elif 'A' &lt;= char &lt;= 'Z':
+            result += chr((ord(char) - ord('A') + 13) % 26 + ord('A'))
+        else:
+            result += char
+    return result
+
+ciphertext = &quot;cvpbPGS{arkg_gvzr_V'yy_gel_2_ebhaqf_bs_ebg13_jdJBFOXJ}&quot;
+print(rot13_decrypt(ciphertext))
+</code></pre>
+<h2>Flag</h2>
+<p>After applying ROT13 decryption:</p>
+<pre><code>picoCTF{next_time_I'll_try_2_rounds_of_rot13_wqWOSBKW}
+</code></pre>
+<h2>Key Takeaways</h2>
+<ol>
+<li><strong>ROT13 is a symmetric cipher</strong> - applying it twice returns the original text</li>
+<li><strong>Caesar Cipher weakness</strong> - simple substitution ciphers are vulnerable to brute force (only 25 possible shifts)</li>
+<li><strong>The flag itself is humorous</strong> - it suggests the creator considered using ROT13 twice for "security" (which wouldn't help since 2 × 13 = 26)</li>
+<li><strong>Always look for hints</strong> - the challenge description mentions ROT13, which is the key to solving it</li>
+</ol>
+            </article>
+
+            <div class="writeup-page-footer">
+                <a href="index.html" class="btn"><i class="fas fa-arrow-left"></i> Kembali ke Archive</a>
+                <a href="source/CyLab(picoCTF)/Cryptography/MOD26/Write-Up.md" class="btn" target="_blank" rel="noopener noreferrer"><i class="fas fa-file-lines"></i> Markdown Asli</a>
+                <a href="https://github.com/keppyaja/Write-Ups/blob/main/CyLab(picoCTF)/Cryptography/MOD26/Write-Up.md" class="btn btn-accent" target="_blank" rel="noopener noreferrer"><i class="fab fa-github"></i> Lihat di GitHub</a>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="copyright">
+                <p>&copy; 2026 Skipped. Compiled successfully.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Binary Digits | Write-up | Skipped</title>
+    <meta name="description" content="Write-up Binary Digits (Forensics) dari CyLab (picoCTF) oleh Skipped.">
+    <meta name="theme-color" content="#0d1117">
+    <link rel="icon" type="image/svg+xml" href="../assets/images/favicon.svg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/style.css?v=10">
+</head>
+<body class="writeup-page-body">
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="../index.html" class="logo"><i class="fas fa-terminal"></i> Skipped<span>x0r</span></a>
+                <ul class="nav-links">
+                    <li><a href="../index.html#portfolio">Projects & CTF</a></li>
+                    <li><a href="index.html">Write-ups</a></li>
+                    <li><a href="../index.html#contact">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="writeup-page">
+        <div class="container">
+            <nav class="writeup-breadcrumb" aria-label="Breadcrumb">
+                <a href="../index.html">Home</a>
+                <span>/</span>
+                <a href="index.html">Write-ups</a>
+                <span>/</span>
+                <a href="index.html#cylab-picoctf">CyLab (picoCTF)</a>
+                <span>/</span>
+                <span class="current">Binary Digits</span>
+            </nav>
+
+            <div class="writeup-page-header">
+                <span class="tag writeup-cat-tag"><i class="fas fa-magnifying-glass"></i> Forensics</span>
+                <h1>Binary Digits</h1>
+                <p class="writeup-page-sub">CyLab (picoCTF)</p>
+            </div>
+
+            <article id="markdown-content" class="writeup-page-body-content">
+<h1>picoCTF 2026 - Binary Digits Write-Up</h1>
+<h2>Informasi Challenge</h2>
+<table>
+<thead>
+<tr>
+<th>Atribut</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Nama Challenge</td>
+<td>Binary Digits</td>
+</tr>
+<tr>
+<td>Kategori</td>
+<td>Forensics</td>
+</tr>
+<tr>
+<td>Tingkat Kesulitan</td>
+<td>Easy</td>
+</tr>
+<tr>
+<td>Poin</td>
+<td>100</td>
+</tr>
+<tr>
+<td>Files</td>
+<td><code>digits.bin</code></td>
+</tr>
+</tbody>
+</table>
+<h2>Deskripsi Challenge</h2>
+<p>Deskripsi tantangannya:</p>
+<pre><code>This file doesn't look like much… just a bunch of 1s and 0s.
+But maybe it's not just random noise. Can you recover anything
+meaningful from this?
+</code></pre>
+<p>Tidak ada hint yang diberikan pada challenge ini — satu-satunya bahan yang tersedia hanyalah file <code>digits.bin</code>.</p>
+<h2>Memahami Konsepnya</h2>
+<p>Ketika file <code>digits.bin</code> dibuka, isinya hanya berupa satu baris teks yang sangat panjang, terdiri dari karakter <code>0</code> dan <code>1</code> saja. Ini adalah representasi <strong>binary digits</strong> dalam bentuk teks ASCII (bukan byte biner asli), sehingga setiap 8 karakter <code>0</code>/<code>1</code> sebenarnya merepresentasikan <strong>1 byte</strong> data.</p>
+<p>Pola penyelesaian challenge seperti ini cukup umum di kategori forensics:
+1. Cek jenis file terlebih dahulu untuk memastikan bahwa isinya memang teks berisi deretan bit, bukan data biner mentah.
+2. Lihat potongan awal dari deretan bit tersebut, lalu ubah menjadi byte untuk mengecek apakah cocok dengan <strong>magic bytes</strong> (tanda tangan) dari suatu format file yang dikenal.
+3. Jika cocok, konversi seluruh deretan bit menjadi byte sungguhan, lalu simpan sebagai file dengan ekstensi yang sesuai.</p>
+<h2>Analisis</h2>
+<p>Pengecekan jenis file dengan <code>file</code>:</p>
+<pre><code class="language-bash">file digits.bin
+</code></pre>
+<pre><code>digits.bin: ASCII text, with very long lines (65536), with no line terminators
+</code></pre>
+<p>Ini mengonfirmasi bahwa <code>digits.bin</code> adalah teks ASCII biasa, bukan data biner mentah — artinya karakter <code>0</code> dan <code>1</code> di dalamnya perlu dikonversi secara manual menjadi byte.</p>
+<p>Melihat 32 bit pertama dari file:</p>
+<pre><code class="language-bash">head -c 32 digits.bin
+</code></pre>
+<pre><code>11111111 11011000 11111111 11100000
+</code></pre>
+<p>Jika 4 byte pertama ini dikonversi ke heksadesimal:</p>
+<pre><code>11111111 -&gt; FF
+11011000 -&gt; D8
+11111111 -&gt; FF
+11100000 -&gt; E0
+</code></pre>
+<p>Hasilnya adalah <code>FF D8 FF E0</code> — ini merupakan <strong>magic bytes</strong> standar untuk file <strong>JPEG</strong> (<code>FF D8 FF</code> menandakan awal file JPEG, diikuti marker APP0/JFIF <code>E0</code>). Dengan kata lain, seluruh deretan bit pada <code>digits.bin</code> kemungkinan besar adalah representasi teks dari byte-byte sebuah file gambar JPEG.</p>
+<h2>Solusi</h2>
+<h3>Konversi bit menjadi file JPEG dengan Python</h3>
+<pre><code class="language-python">bits = open(&quot;digits.bin&quot;, &quot;r&quot;).read().strip()
+
+data = bytes(
+    int(bits[i:i+8], 2)
+    for i in range(0, len(bits), 8)
+    if len(bits[i:i+8]) == 8
+)
+
+with open(&quot;recovered.jpg&quot;, &quot;wb&quot;) as f:
+    f.write(data)
+
+print(&quot;wrote&quot;, len(data), &quot;bytes&quot;)
+</code></pre>
+<p>Logika script:
+1. Membaca seluruh isi <code>digits.bin</code> sebagai satu string panjang berisi karakter <code>0</code> dan <code>1</code>.
+2. Memotong string tersebut per 8 karakter, lalu mengonversi tiap potongan menjadi satu byte menggunakan <code>int(chunk, 2)</code>.
+3. Menggabungkan seluruh byte hasil konversi dan menuliskannya ke file baru <code>recovered.jpg</code>.</p>
+<p>Alternatif tanpa Python, cukup dengan CyberChef: masukkan isi <code>digits.bin</code> ke recipe <strong>"From Binary"</strong>, lalu gunakan fitur render image untuk langsung melihat hasilnya sebagai gambar.</p>
+<h2>Verifikasi</h2>
+<p>Setelah file <code>recovered.jpg</code> dihasilkan, jenis filenya diverifikasi kembali dengan <code>file</code>:</p>
+<pre><code class="language-bash">file recovered.jpg
+</code></pre>
+<pre><code>recovered.jpg: JPEG image data, JFIF standard 1.01, aspect ratio,
+density 1x1, segment length 16, baseline, precision 8, 800x500, components 3
+</code></pre>
+<p>Output ini mengonfirmasi bahwa file benar-benar berhasil dipulihkan menjadi gambar JPEG yang valid berukuran 800x500 piksel. Saat gambar dibuka, isinya menampilkan teks flag yang tertulis langsung pada gambar tersebut.</p>
+<h2>Flag</h2>
+<pre><code>picoCTF{h1dd3n_1n_th3_b1n4ry_cc2099d3}
+</code></pre>
+<h2>Kesimpulan (Key Takeaways)</h2>
+<ol>
+<li><strong>Deretan angka <code>0</code> dan <code>1</code> dalam bentuk teks bisa merepresentasikan byte data apa pun</strong> — termasuk gambar, dokumen, maupun arsip, selama dikonversi kembali dengan pengelompokan 8-bit per byte yang benar.</li>
+<li><strong>Magic bytes (file signature) adalah alat identifikasi yang sangat cepat dan andal</strong> — cukup dengan melihat beberapa byte pertama suatu file, kita bisa menebak formatnya tanpa harus membuka file secara penuh.</li>
+<li><strong><code>FF D8 FF</code> adalah tanda pengenal universal untuk file JPEG</strong> — mengenali pola ini membuat proses forensik jauh lebih efisien.</li>
+<li><strong>Tools seperti <code>file</code>, Python, dan CyberChef saling melengkapi</strong> — <code>file</code> untuk identifikasi cepat, Python untuk kontrol penuh atas proses konversi, dan CyberChef untuk eksplorasi visual yang cepat tanpa perlu menulis kode.</li>
+<li><strong>Challenge forensics seringkali sesederhana "ubah representasi data, lalu lihat isinya"</strong> — kesulitan utamanya bukan pada teknik yang rumit, melainkan pada kejelian mengenali bahwa data yang tampak acak sebenarnya menyimpan struktur file yang dikenal.</li>
+</ol>
+            </article>
+
+            <div class="writeup-page-footer">
+                <a href="index.html" class="btn"><i class="fas fa-arrow-left"></i> Kembali ke Archive</a>
+                <a href="source/CyLab(picoCTF)/Forensics/Binary-Digits/Write-Up.md" class="btn" target="_blank" rel="noopener noreferrer"><i class="fas fa-file-lines"></i> Markdown Asli</a>
+                <a href="https://github.com/keppyaja/Write-Ups/blob/main/CyLab(picoCTF)/Forensics/Binary-Digits/Write-Up.md" class="btn btn-accent" target="_blank" rel="noopener noreferrer"><i class="fab fa-github"></i> Lihat di GitHub</a>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="copyright">
+                <p>&copy; 2026 Skipped. Compiled successfully.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

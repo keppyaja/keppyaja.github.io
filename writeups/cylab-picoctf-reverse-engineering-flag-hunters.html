@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flag Hunters | Write-up | Skipped</title>
+    <meta name="description" content="Write-up Flag Hunters (Reverse Engineering) dari CyLab (picoCTF) oleh Skipped.">
+    <meta name="theme-color" content="#0d1117">
+    <link rel="icon" type="image/svg+xml" href="../assets/images/favicon.svg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/style.css?v=10">
+</head>
+<body class="writeup-page-body">
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="../index.html" class="logo"><i class="fas fa-terminal"></i> Skipped<span>x0r</span></a>
+                <ul class="nav-links">
+                    <li><a href="../index.html#portfolio">Projects & CTF</a></li>
+                    <li><a href="index.html">Write-ups</a></li>
+                    <li><a href="../index.html#contact">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="writeup-page">
+        <div class="container">
+            <nav class="writeup-breadcrumb" aria-label="Breadcrumb">
+                <a href="../index.html">Home</a>
+                <span>/</span>
+                <a href="index.html">Write-ups</a>
+                <span>/</span>
+                <a href="index.html#cylab-picoctf">CyLab (picoCTF)</a>
+                <span>/</span>
+                <span class="current">Flag Hunters</span>
+            </nav>
+
+            <div class="writeup-page-header">
+                <span class="tag writeup-cat-tag"><i class="fas fa-microscope"></i> Reverse Engineering</span>
+                <h1>Flag Hunters</h1>
+                <p class="writeup-page-sub">CyLab (picoCTF)</p>
+            </div>
+
+            <article id="markdown-content" class="writeup-page-body-content">
+<h1>picoCTF - Flag Hunters Write-Up</h1>
+<h2>Challenge Information</h2>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Challenge Name</td>
+<td>Flag Hunters</td>
+</tr>
+<tr>
+<td>Category</td>
+<td>Reverse Engineering</td>
+</tr>
+<tr>
+<td>Difficulty</td>
+<td>Easy</td>
+</tr>
+<tr>
+<td>Points</td>
+<td>75</td>
+</tr>
+<tr>
+<td>Source</td>
+<td><code>lyric-reader.py</code></td>
+</tr>
+</tbody>
+</table>
+<h2>Challenge Description</h2>
+<p>Lyrics jump from verses to the refrain kind of like a subroutine call. There's a hidden refrain this program doesn't print by default. Can you get it to print it? There might be something in it for you.</p>
+<h2>Understanding the Program</h2>
+<p><code>reader()</code> treats the song as a flat array of lines (<code>song_lines</code>) with an
+instruction pointer <code>lip</code>. Each pass through the main loop takes
+<code>song_lines[lip]</code>, <strong>splits it on <code>;</code></strong>, and processes each resulting token:</p>
+<ul>
+<li><code>REFRAIN</code> → saves a return address into the line at <code>refrain_return</code>
+  (formatted as <code>RETURN &lt;lip+1&gt;</code>), then jumps <code>lip</code> to the <code>[REFRAIN]</code> label.
+  This is a classic call instruction.</li>
+<li><code>RETURN N</code> (matched with <code>re.match(r"RETURN [0-9]+", line)</code>) → sets
+  <code>lip = N</code>. This is an unchecked, attacker-reachable jump.</li>
+<li><code>CROWD...</code> → calls <code>input()</code>, then <strong>overwrites <code>song_lines[lip]</code></strong> with
+  <code>'Crowd: ' + crowd</code>, using no filtering at all.</li>
+<li>Anything else → printed as a lyric, <code>lip</code> advances by one.</li>
+</ul>
+<p>The dangerous combination is:</p>
+<ol>
+<li><code>CROWD</code> writes raw, unsanitized user input directly back into the
+   program's own instruction array.</li>
+<li>The refrain is called <strong>multiple times</strong> over the course of the song
+   (once after every verse), so the line that <code>CROWD</code> overwrote gets
+   <em>re-executed</em> — and re-split on <code>;</code> — the next time the refrain runs.</li>
+<li>Because the split happens on the <em>current</em> content of the line, any <code>;</code>
+   we put in our input turns our answer into new "instructions" that the
+   interpreter will happily execute, including an unchecked <code>RETURN N</code>
+   jump.</li>
+</ol>
+<p>In short: the <code>CROWD</code> prompt is a self-modifying-code injection point. Input
+containing <code>;RETURN 0</code> gets stored, and the next time the refrain plays,
+the interpreter parses it as two instructions — print <code>Crowd:</code>, then jump
+straight to line 0, the very first line of the song (the hidden
+<code>secret_intro</code> containing the flag).</p>
+<h2>Solution</h2>
+<h3>Step 1 — Connect to the challenge</h3>
+<pre><code>nc verbal-sleep.picoctf.net 61812
+</code></pre>
+<h3>Step 2 — Let it play until the first <code>Crowd:</code> prompt</h3>
+<p>The program prints the first verse and the refrain, then pauses waiting for
+crowd participation:</p>
+<pre><code>...
+We're chasing that victory, and we'll never quit.
+Crowd:
+</code></pre>
+<h3>Step 3 — Send the injection payload</h3>
+<p>Instead of singing along, submit:</p>
+<pre><code>;RETURN 0
+</code></pre>
+<p>This does nothing visible immediately (the CROWD instruction just gets
+overwritten to <code>Crowd: ;RETURN 0</code> and execution returns normally to the next
+verse) — this is expected. The payload doesn't fire until the <strong>next</strong> time
+<code>REFRAIN</code> is called.</p>
+<h3>Step 4 — Let the song continue</h3>
+<p>When the second verse finishes and calls <code>REFRAIN;</code> again, the interpreter
+re-plays the refrain and re-reaches the now-modified line. It splits it on
+<code>;</code>, prints the harmless <code>Crowd:</code> token, then hits <code>RETURN 0</code> and jumps the
+instruction pointer to line 0 — the start of the hidden <code>secret_intro</code> —
+printing:</p>
+<pre><code>Pico warriors rising, puzzles laid bare,
+Solving each challenge with precision and flair.
+With unity and skill, flags we deliver,
+The ether's ours to conquer, picoCTF{...}
+</code></pre>
+<p>I verified this control-flow hijack end-to-end against a local copy of the
+script (with a placeholder flag) before running it against the real
+instance, confirming that a single <code>;RETURN 0</code> answer at the first <code>Crowd:</code>
+prompt is sufficient — no second input is ever requested, since the
+overwritten line no longer matches the <code>CROWD</code> pattern on replay.</p>
+<h2>Flag</h2>
+<pre><code>picoCTF{70637h3r_f0r3v3r_a5202532}
+</code></pre>
+<h2>Key Takeaways</h2>
+<ol>
+<li><strong>Never trust unsanitized input, especially when it's written back into
+   code/data that will be re-parsed</strong> — this challenge is a miniature,
+   readable example of the same class of bug as SQL injection or template
+   injection: user data crossing into the "code" channel.</li>
+<li><strong>Self-modifying interpreters are dangerous</strong> — overwriting
+   <code>song_lines[lip]</code> with raw input turned a harmless "singalong" prompt
+   into an arbitrary jump primitive the moment the same line was executed
+   twice.</li>
+<li><strong>Delimiters are attack surface</strong> — the <code>;</code> splitting logic meant to
+   separate lyric commands became the injection vector once user input
+   could introduce its own <code>;</code> characters.</li>
+<li><strong>Read the whole program, not just the entry point</strong> — the flag lived in
+   <code>secret_intro</code>, before the declared <code>startLabel</code>. Static analysis of the
+   full script (not just the printed output) revealed data the "front door"
+   execution path never exposes.</li>
+<li><strong>Undefined states are your friend during exploitation</strong> — as Hint 1
+   suggests, getting the interpreter into a state its author didn't design
+   for (Ctrl-C, malformed input, re-executed lines) is often exactly how you
+   find the bug.</li>
+</ol>
+            </article>
+
+            <div class="writeup-page-footer">
+                <a href="index.html" class="btn"><i class="fas fa-arrow-left"></i> Kembali ke Archive</a>
+                <a href="source/CyLab(picoCTF)/Reverse-Engineering/Flag-Hunters/Write-Up.md" class="btn" target="_blank" rel="noopener noreferrer"><i class="fas fa-file-lines"></i> Markdown Asli</a>
+                <a href="https://github.com/keppyaja/Write-Ups/blob/main/CyLab(picoCTF)/Reverse-Engineering/Flag-Hunters/Write-Up.md" class="btn btn-accent" target="_blank" rel="noopener noreferrer"><i class="fab fa-github"></i> Lihat di GitHub</a>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="copyright">
+                <p>&copy; 2026 Skipped. Compiled successfully.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

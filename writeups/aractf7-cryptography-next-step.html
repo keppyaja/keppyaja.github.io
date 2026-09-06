@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>next step | Write-up | Skipped</title>
+    <meta name="description" content="Write-up next step (Cryptography) dari ARACTF7 oleh Skipped.">
+    <meta name="theme-color" content="#0d1117">
+    <link rel="icon" type="image/svg+xml" href="../assets/images/favicon.svg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/style.css?v=10">
+</head>
+<body class="writeup-page-body">
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="../index.html" class="logo"><i class="fas fa-terminal"></i> Skipped<span>x0r</span></a>
+                <ul class="nav-links">
+                    <li><a href="../index.html#portfolio">Projects & CTF</a></li>
+                    <li><a href="index.html">Write-ups</a></li>
+                    <li><a href="../index.html#contact">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="writeup-page">
+        <div class="container">
+            <nav class="writeup-breadcrumb" aria-label="Breadcrumb">
+                <a href="../index.html">Home</a>
+                <span>/</span>
+                <a href="index.html">Write-ups</a>
+                <span>/</span>
+                <a href="index.html#aractf7">ARACTF7</a>
+                <span>/</span>
+                <span class="current">next step</span>
+            </nav>
+
+            <div class="writeup-page-header">
+                <span class="tag writeup-cat-tag"><i class="fas fa-key"></i> Cryptography</span>
+                <h1>next step</h1>
+                <p class="writeup-page-sub">ARACTF7</p>
+            </div>
+
+            <article id="markdown-content" class="writeup-page-body-content">
+<h1>Write-Up: next step</h1>
+<p><strong>Kategori:</strong> Cryptography
+<strong>Poin:</strong> 100
+<strong>Author:</strong> hyall</p>
+<hr />
+<h2>Observasi Awal</h2>
+<p>Tantangan ini mengharuskan kita untuk melakukan koneksi ke <em>server</em> menggunakan perintah <code>nc chall-ctf.ara-its.id 7969</code>. Berdasarkan skrip Python yang diberikan pada lampiran, terdapat dua opsi utama:
+* Jika memilih Opsi 2, <em>server</em> akan memberikan nilai IV (<em>Initialization Vector</em>) dan CT (<em>Ciphertext</em>). CT tersebut merupakan hasil operasi XOR dan pemanggilan fungsi <code>stream_encrypt</code>.
+* Jika memilih Opsi 1, kita diizinkan untuk melakukan tes atau mencoba enkripsi dengan memberikan masukan IV dan <em>message</em> secara manual.</p>
+<h2>Solusi dan Analisis</h2>
+<p>Karena enkripsi ini memanfaatkan operasi XOR, kita dapat memanfaatkan input berupa 16 <em>bytes</em> bernilai 0 (<code>00000000000000000000000000000000</code>) untuk secara langsung mendapatkan nilai <code>AES(Key, IV)</code> (atau <em>Keystream</em>).</p>
+<p>Berikut adalah langkah-langkah eksploitasinya:
+1.  <strong>Ambil Data Flag:</strong> Pilih Opsi 2 untuk mendapatkan <code>initial_IV</code> dan <code>full_ciphertext</code>.
+2.  <strong>Identifikasi Blok IV:</strong> * IV untuk blok pertama dari <em>flag</em> adalah <code>initial_IV</code>.
+    * IV untuk blok kedua dari <em>flag</em> adalah hasil <em>ciphertext</em> dari blok pertama (CT_1).
+    * IV untuk blok ketiga adalah CT_2, dan begitu seterusnya.
+3.  <strong>Minta Keystream ke Server:</strong> * Pergi ke Opsi 1, lalu masukkan IV blok pertama dan pesan berisi angka nol (<code>00...00</code>). Simpan hasilnya sebagai <code>Keystream_1</code>.
+    * Ulangi langkah ini dengan memasukkan <code>CT_1</code> sebagai IV untuk mendapatkan <code>Keystream_2</code>, dan seterusnya.
+4.  <strong>Dekripsi Manual:</strong> * Lakukan operasi XOR antara <code>CT_1</code> dengan <code>Keystream_1</code> untuk mendapatkan teks asli blok pertama.
+    * Lakukan XOR antara <code>CT_2</code> dengan <code>Keystream_2</code> untuk mendapatkan teks asli blok kedua.
+5.  <strong>Gabungkan:</strong> Satukan seluruh potongan teks hasil dekripsi tersebut untuk menyusun <em>flag</em> secara utuh.</p>
+<h2>Solver Script</h2>
+<pre><code class="language-python">from pwn import *
+
+#Helper to XOR two byte strings
+def xor(a, b):
+    return bytes (x^y for x, y in zip(a, b))
+
+def solve():
+    r = remote('chall-ctf.ara-its.id', 7969)
+    r.sendlineafter (b&quot;&gt;&gt; &quot;, b&quot;2&quot;)
+    r.recvuntil(b&quot;IV: &quot;)
+    initial_iv = bytes.fromhex(r.recvline().strip().decode())
+    r.recvuntil(b&quot;CT: &quot;)
+    full_ct = bytes.fromhex(r.recvline().strip().decode())
+
+    ct_blocks = [full_ct[i:i+16] for i in range(0, len (full_ct), 16)]
+    flag_blocks = []
+    current_iv = initial_iv
+
+    for ct_block in ct_blocks:
+        r.sendlineafter(b&quot;&gt;&gt; &quot;, b&quot;1&quot;)
+        r.sendlineafter (b&quot;IV (hex): &quot;, current_iv.hex().encode())
+        r.sendlineafter (b&quot;Msg (hex): &quot;, (&quot;00&quot; * 16).encode())
+        r.recvuntil(b&quot;CT: &quot;)
+        keystream = bytes.fromhex(r.recvline().strip().decode())
+
+        pt_block = xor(ct_block, keystream)
+        flag_blocks.append(pt_block)
+        current_iv = ct_block
+
+    full_flag = b&quot;&quot;.join(flag_blocks)
+    print (f&quot;Decrypted Flag: {full_flag.decode(errors='ignore')}&quot;)
+    r.close()
+
+if __name__ == '__main__':
+    solve()
+</code></pre>
+<h2>Flag</h2>
+<p><code>ARA7{a9055fb26edf78ccd6368858b118ff29de264480b211d2812ff111c49d7080aa}</code></p>
+            </article>
+
+            <div class="writeup-page-footer">
+                <a href="index.html" class="btn"><i class="fas fa-arrow-left"></i> Kembali ke Archive</a>
+                <a href="source/ARACTF7/Quals/Crypto/nextStep.md" class="btn" target="_blank" rel="noopener noreferrer"><i class="fas fa-file-lines"></i> Markdown Asli</a>
+                <a href="https://github.com/keppyaja/Write-Ups/blob/main/ARACTF7/Quals/Crypto/nextStep.md" class="btn btn-accent" target="_blank" rel="noopener noreferrer"><i class="fab fa-github"></i> Lihat di GitHub</a>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="copyright">
+                <p>&copy; 2026 Skipped. Compiled successfully.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crack The Power | Write-up | Skipped</title>
+    <meta name="description" content="Write-up Crack The Power (Cryptography) dari CyLab (picoCTF) oleh Skipped.">
+    <meta name="theme-color" content="#0d1117">
+    <link rel="icon" type="image/svg+xml" href="../assets/images/favicon.svg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/style.css?v=10">
+</head>
+<body class="writeup-page-body">
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="../index.html" class="logo"><i class="fas fa-terminal"></i> Skipped<span>x0r</span></a>
+                <ul class="nav-links">
+                    <li><a href="../index.html#portfolio">Projects & CTF</a></li>
+                    <li><a href="index.html">Write-ups</a></li>
+                    <li><a href="../index.html#contact">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="writeup-page">
+        <div class="container">
+            <nav class="writeup-breadcrumb" aria-label="Breadcrumb">
+                <a href="../index.html">Home</a>
+                <span>/</span>
+                <a href="index.html">Write-ups</a>
+                <span>/</span>
+                <a href="index.html#cylab-picoctf">CyLab (picoCTF)</a>
+                <span>/</span>
+                <span class="current">Crack The Power</span>
+            </nav>
+
+            <div class="writeup-page-header">
+                <span class="tag writeup-cat-tag"><i class="fas fa-key"></i> Cryptography</span>
+                <h1>Crack The Power</h1>
+                <p class="writeup-page-sub">CyLab (picoCTF)</p>
+            </div>
+
+            <article id="markdown-content" class="writeup-page-body-content">
+<h1>picoCTF — Crack The Power Write-Up</h1>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Challenge Name</strong></td>
+<td>Small e</td>
+</tr>
+<tr>
+<td><strong>Category</strong></td>
+<td>Cryptography</td>
+</tr>
+<tr>
+<td><strong>Difficulty</strong></td>
+<td>Medium</td>
+</tr>
+<tr>
+<td><strong>Source File</strong></td>
+<td><code>message.txt</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Deskripsi</h2>
+<blockquote>
+<p><em>"The modulus is built from primes large enough that factoring them isn't an option, at least not today. See if you can make sense of the numbers and reveal the flag."</em></p>
+</blockquote>
+<p><strong>Hints yang diberikan:</strong>
+1. Ketika nilai tertentu dalam setup enkripsi lebih kecil dari biasanya, ada jalan pintas yang tidak terduga untuk memulihkan plaintext.
+2. Pertimbangkan apakah kamu bisa membalik enkripsi <strong>tanpa memfaktorkan <code>n</code></strong>.
+3. Baca lebih lanjut tentang <a href="https://en.wikipedia.org/wiki/Coppersmith%27s_attack">Coppersmith's Attack</a>.</p>
+<hr />
+<h2>Parameter yang Diberikan</h2>
+<pre><code>n = 340226612280453880490912927616922654745871244089289366256789212515896004497250...
+    (4095-bit modulus — sangat besar, tidak bisa difaktorkan)
+
+e = 20         ← sangat kecil!
+
+c = 640637430810406857500566702096274080396661344326148989819149855637707275983...
+</code></pre>
+<hr />
+<h2>Analisis</h2>
+<h3>Kerentanan: Eksponen Publik <code>e</code> yang Sangat Kecil</h3>
+<p>Dalam RSA standar, enkripsi bekerja seperti ini:</p>
+<pre><code>c = m^e mod n
+</code></pre>
+<p>Agar RSA aman, perlu ada reduksi modular — artinya <code>m^e</code> harus <strong>melampaui n</strong> sehingga operasi mod n benar-benar mengubah nilainya.</p>
+<p>Namun jika <strong><code>e</code> sangat kecil</strong> dan <strong>pesan <code>m</code> juga relatif kecil</strong>, maka:</p>
+<pre><code>m^e &lt; n   →   tidak ada reduksi modular!
+c = m^e mod n = m^e   (murni, tanpa mod)
+</code></pre>
+<p>Dengan kata lain, <code>c</code> hanyalah <code>m</code> dipangkatkan 20, <strong>bukan</strong> operasi RSA yang sesungguhnya. Untuk mendekripsi, kita cukup menghitung <strong>akar ke-20 dari <code>c</code></strong> secara integer.</p>
+<h3>Kenapa <code>e = 20</code> Berbahaya?</h3>
+<table>
+<thead>
+<tr>
+<th>Nilai <code>e</code></th>
+<th>Keamanan</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>e = 65537</code></td>
+<td>✅ Standar &amp; aman</td>
+</tr>
+<tr>
+<td><code>e = 3</code></td>
+<td>⚠️ Rentan jika m kecil</td>
+</tr>
+<tr>
+<td><code>e = 20</code></td>
+<td>❌ Sangat rentan jika m^e &lt; n</td>
+</tr>
+</tbody>
+</table>
+<p>Karena flag picoCTF relatif pendek (&lt; 60 karakter), nilai <code>m</code> jauh lebih kecil dari <code>n</code> (4095-bit), sehingga <code>m^20</code> tidak pernah melewati nilai <code>n</code>.</p>
+<hr />
+<h2>Solusi</h2>
+<h3>Langkah-Langkah</h3>
+<pre><code>1. Amati bahwa e = 20 (sangat kecil)
+2. Coba hitung akar integer ke-20 dari c
+3. Jika hasilnya tepat (exact), berarti m^e tidak pernah ter-reduce oleh mod n
+4. Konversi integer m ke bytes → flag
+</code></pre>
+<h3>Exploit Script</h3>
+<pre><code class="language-python">import sympy
+
+n = 340226612280453880490912927616922654745871244089289366256789212515896004497250888584335811193830299831152937221710730524607657274800439820657259458335845939604931208401645166794422421061753256418606981891166292142312310415412822538932571250257863289381608926058569443787372767929674420189682140643934828208884862456000947387644814288954199430403778409100671478459624487135877196949510819070843489062177812610169137985121981686847113760741151147789395635551162493262500781469414674715294121266223065415289341718811129151397178263070097355368724306157335976262867024266322656022224190318373194930817027553444120202292747938671524024999221893702460945171052909676860508777477633202757108535727508915761012307312590775794562319046042072447802326462685809774970879511380747691257281474551283000843537035593404036052654969917069297984148223213335741086514064256735270274423335098606567685634207561183967667312482624845887343588501669563704153809977521324544338273705452304166553609342275320152815696737710312761215921474738505250301661262646544496431458447294223499494555443767746404864888997183239119346466619148212371671931706071305354788570231263917420073144154793116214641438554148643280191881422603579089810874350592019963992600316667
+e = 20
+c = 640637430810406857500566702096274080396661344326148989819149855637707275983472899892750444419300234079892653333362989506852801685008762251130872832744197646466858521890159108234060530632218545536493488645992429077472502031329127700427356736726536701719062158231800255112161983427364020254609533473401843023952968018844806862896943490893119371703331960982414876010742030933003301879372695333343200500711596801923272711473735596859184517981485041587840922031361580523565471754589502606896163103556972744430028454860323232448424368114835718966903896081921822322495308942627206587827869758822635827159743949522778872267782737023325775825987938515587028997868106842378444561485725423380868087876415156656531868887461098120850401515409014096099316919268977722048391610017964961835883458482549333972161386084047586325153495747282557560791442172961910916373381462229380156133838381633915942059818808997063047255803431866226725960708286498794535426919185922421000300087374455173022674406631175145902138929540939977920690014479484669993159370314372551152369559506116674980314595547354085609712390963374849992524368048463233368412763016667750045491935391770001
+
+# Coba hitung akar integer ke-e dari c
+m, exact = sympy.integer_nthroot(c, e)
+
+if exact:
+    flag = m.to_bytes((m.bit_length() + 7) // 8, byteorder='big').decode()
+    print(f&quot;Exact root found! m^{e} == c (tanpa reduksi modular)&quot;)
+    print(f&quot;Flag: {flag}&quot;)
+else:
+    print(&quot;Tidak exact — perlu metode lain (Coppersmith)&quot;)
+</code></pre>
+<h3>Output</h3>
+<pre><code>Exact root found! m^20 == c (tanpa reduksi modular)
+Flag: picoCTF{t1ny_e_9b88056f}
+</code></pre>
+<hr />
+<h2>Flag</h2>
+<pre><code>picoCTF{t1ny_e_9b88056f}
+</code></pre>
+<blockquote>
+<p><strong>Nama flag sekaligus petunjuknya:</strong> <em>"tiny e"</em> — eksponen publik yang terlalu kecil adalah kelemahan utama di sini.</p>
+</blockquote>
+<hr />
+<h2>Diagram Serangan</h2>
+<pre><code>Enkripsi normal RSA:          Enkripsi yang lemah (e kecil, m kecil):
+  c = m^e mod n                  c = m^e   (tidak ada reduksi!)
+
+Dekripsi normal:              Serangan akar integer:
+  m = c^d mod n                  m = c^(1/e)   ← hitung langsung!
+  (butuh kunci privat d)         (tidak butuh d, tidak butuh faktorisasi n)
+</code></pre>
+<hr />
+<h2>Key Takeaways</h2>
+<ol>
+<li>
+<p><strong><code>e</code> harus cukup besar</strong> — Nilai standar <code>e = 65537</code> dipilih karena efisien namun cukup besar untuk mencegah serangan akar integer.</p>
+</li>
+<li>
+<p><strong>Reduksi modular adalah jantung keamanan RSA</strong> — Jika <code>m^e</code> tidak melewati <code>n</code>, operasi <code>mod n</code> tidak mengubah apapun, dan enkripsi menjadi sekadar perpangkatan biasa.</p>
+</li>
+<li>
+<p><strong>Ukuran <code>n</code> yang besar tidak menjamin keamanan</strong> — <code>n</code> berukuran 4095-bit, tetapi tetap dibobol karena kelemahannya bukan pada <code>n</code>, melainkan pada <code>e</code>.</p>
+</li>
+<li>
+<p><strong>Coppersmith's Attack</strong> — Untuk kasus yang lebih kompleks di mana <code>m^e</code> sedikit melewati <code>n</code> (namun masih bisa dimanipulasi), teknik Coppersmith menggunakan LLL lattice reduction untuk menemukan akar polinomial modular kecil.</p>
+</li>
+</ol>
+<hr />
+<h2>Tools yang Digunakan</h2>
+<ul>
+<li><strong>Python</strong> — <code>sympy.integer_nthroot</code> untuk menghitung akar integer secara tepat</li>
+</ul>
+            </article>
+
+            <div class="writeup-page-footer">
+                <a href="index.html" class="btn"><i class="fas fa-arrow-left"></i> Kembali ke Archive</a>
+                <a href="source/CyLab(picoCTF)/Cryptography/Crack The Power/write-up.md" class="btn" target="_blank" rel="noopener noreferrer"><i class="fas fa-file-lines"></i> Markdown Asli</a>
+                <a href="https://github.com/keppyaja/Write-Ups/blob/main/CyLab(picoCTF)/Cryptography/Crack%20The%20Power/write-up.md" class="btn btn-accent" target="_blank" rel="noopener noreferrer"><i class="fab fa-github"></i> Lihat di GitHub</a>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="copyright">
+                <p>&copy; 2026 Skipped. Compiled successfully.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

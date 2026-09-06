@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Encryption | Write-up | Skipped</title>
+    <meta name="description" content="Write-up Custom Encryption (Cryptography) dari CyLab (picoCTF) oleh Skipped.">
+    <meta name="theme-color" content="#0d1117">
+    <link rel="icon" type="image/svg+xml" href="../assets/images/favicon.svg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/style.css?v=10">
+</head>
+<body class="writeup-page-body">
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="../index.html" class="logo"><i class="fas fa-terminal"></i> Skipped<span>x0r</span></a>
+                <ul class="nav-links">
+                    <li><a href="../index.html#portfolio">Projects & CTF</a></li>
+                    <li><a href="index.html">Write-ups</a></li>
+                    <li><a href="../index.html#contact">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="writeup-page">
+        <div class="container">
+            <nav class="writeup-breadcrumb" aria-label="Breadcrumb">
+                <a href="../index.html">Home</a>
+                <span>/</span>
+                <a href="index.html">Write-ups</a>
+                <span>/</span>
+                <a href="index.html#cylab-picoctf">CyLab (picoCTF)</a>
+                <span>/</span>
+                <span class="current">Custom Encryption</span>
+            </nav>
+
+            <div class="writeup-page-header">
+                <span class="tag writeup-cat-tag"><i class="fas fa-key"></i> Cryptography</span>
+                <h1>Custom Encryption</h1>
+                <p class="writeup-page-sub">CyLab (picoCTF)</p>
+            </div>
+
+            <article id="markdown-content" class="writeup-page-body-content">
+<h1>picoCTF - Custom Encryption Write-Up</h1>
+<h2>Challenge Overview</h2>
+<ul>
+<li><strong>Challenge Name</strong>: Custom Encryption</li>
+<li><strong>Category</strong>: Cryptography</li>
+<li><strong>Difficulty</strong>: Medium</li>
+<li><strong>Description</strong>: Analyze a custom encryption implementation and write a decryption function to decode the encrypted flag.</li>
+</ul>
+<h2>Challenge Details</h2>
+<p>We are given two files:
+1. <code>custom_encryption.py</code> - The source code containing encryption functions
+2. <code>enc_flag</code> - The encrypted flag</p>
+<h2>Analysis of Encryption Functions</h2>
+<h3>1. Generator Function</h3>
+<pre><code class="language-python">def generator(g, x, p):
+    return pow(g, x) % p
+</code></pre>
+<p>Uses modular exponentiation, similar to the Diffie-Hellman key exchange protocol.</p>
+<h3>2. Encrypt Function</h3>
+<pre><code class="language-python">def encrypt(plaintext, key):
+    cipher = []
+    for char in plaintext:
+        cipher.append((ord(char) * key * 311))
+    return cipher
+</code></pre>
+<ul>
+<li>Multiplies each character's ASCII value by the key and 311</li>
+<li>Returns a list of encrypted values</li>
+</ul>
+<h3>3. Is_Prime Function</h3>
+<pre><code class="language-python">def is_prime(p):
+    v = 0
+    for i in range(2, p + 1):
+        if p % i == 0:
+            v = v + 1
+    if v &gt; 1:
+        return False
+    else:
+        return True
+</code></pre>
+<p>Validates whether a number <code>p</code> is prime.</p>
+<h3>4. Dynamic XOR Encrypt</h3>
+<pre><code class="language-python">def dynamic_xor_encrypt(plaintext, text_key):
+    cipher_text = &quot;&quot;
+    key_length = len(text_key)
+    for i, char in enumerate(plaintext[::-1]):
+        key_char = text_key[i % key_length]
+        encrypted_char = chr(ord(char) ^ ord(key_char))
+        cipher_text += encrypted_char
+    return cipher_text
+</code></pre>
+<ul>
+<li>XOR encryption using Vigenere-style key</li>
+<li>Processes the plaintext in reverse order</li>
+<li>Uses modulo wrapping for the key</li>
+</ul>
+<h2>Solution</h2>
+<h3>Decryption Strategy</h3>
+<p>To decrypt, we need to reverse each encryption operation:</p>
+<h3>1. Mathematical Decrypt Function</h3>
+<pre><code class="language-python">def decrypt_mathematical(cipher_value, key):
+    &quot;&quot;&quot;Reverse the operation: cipher = ord(char) * key * 311&quot;&quot;&quot;
+    if cipher_value == 0:
+        return chr(0)  # Null character
+
+    # cipher_value = ord(char) * key * 311
+    # ord(char) = cipher_value / (key * 311)
+    original_ord = cipher_value // (key * 311)
+
+    # Validate exact division
+    if cipher_value % (key * 311) == 0 and 0 &lt;= original_ord &lt;= 127:
+        return chr(original_ord)
+    else:
+        return None
+</code></pre>
+<h3>2. Dynamic XOR Decrypt Function</h3>
+<pre><code class="language-python">def dynamic_xor_decrypt(cipher_text, text_key):
+    &quot;&quot;&quot;Reverse the XOR encryption&quot;&quot;&quot;
+    plaintext = &quot;&quot;
+    key_length = len(text_key)
+
+    for i, char in enumerate(cipher_text):
+        key_char = text_key[i % key_length]
+        decrypted_char = chr(ord(char) ^ ord(key_char))
+        plaintext += decrypted_char
+
+    return plaintext
+</code></pre>
+<h3>Complete Solver Script</h3>
+<pre><code class="language-python">def generator(g, x, p):
+    return pow(g, x) % p
+
+def decrypt_mathematical(cipher_value, key):
+    &quot;&quot;&quot;Reverse the encrypt operation&quot;&quot;&quot;
+    if cipher_value == 0:
+        return chr(0)
+
+    original_ord = cipher_value // (key * 311)
+
+    if cipher_value % (key * 311) == 0 and 0 &lt;= original_ord &lt;= 127:
+        return chr(original_ord)
+    else:
+        return None
+
+def dynamic_xor_decrypt(cipher_text, text_key):
+    &quot;&quot;&quot;Reverse XOR encryption&quot;&quot;&quot;
+    plaintext = &quot;&quot;
+    key_length = len(text_key)
+
+    for i, char in enumerate(cipher_text):
+        key_char = text_key[i % key_length]
+        decrypted_char = chr(ord(char) ^ ord(key_char))
+        plaintext += decrypted_char
+
+    return plaintext
+
+# Load and decrypt the flag
+# ... (load enc_flag and apply decryption functions)
+</code></pre>
+<h2>Flag</h2>
+<pre><code>picoCTF{custom_d2cr0pt6d_8b41f976}
+</code></pre>
+<h2>Key Takeaways</h2>
+<ol>
+<li><strong>Understand the encryption</strong>: Carefully analyze each encryption function to determine how to reverse it</li>
+<li><strong>Mathematical operations are reversible</strong>: Division reverses multiplication</li>
+<li><strong>XOR is symmetric</strong>: XORing with the same key twice returns the original value</li>
+<li><strong>Vigenere-style encryption</strong>: Using a repeating key with modulo arithmetic</li>
+<li><strong>Validation is important</strong>: Check that decrypted values are valid (ASCII ranges, exact division)</li>
+</ol>
+<hr />
+<p><em>Write-up based on: https://sukepaja18.medium.com/picoctf-custom-encryption-8dd7e705bdff</em></p>
+            </article>
+
+            <div class="writeup-page-footer">
+                <a href="index.html" class="btn"><i class="fas fa-arrow-left"></i> Kembali ke Archive</a>
+                <a href="source/CyLab(picoCTF)/Cryptography/Custom Encryption/write-up.md" class="btn" target="_blank" rel="noopener noreferrer"><i class="fas fa-file-lines"></i> Markdown Asli</a>
+                <a href="https://github.com/keppyaja/Write-Ups/blob/main/CyLab(picoCTF)/Cryptography/Custom%20Encryption/write-up.md" class="btn btn-accent" target="_blank" rel="noopener noreferrer"><i class="fab fa-github"></i> Lihat di GitHub</a>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="copyright">
+                <p>&copy; 2026 Skipped. Compiled successfully.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

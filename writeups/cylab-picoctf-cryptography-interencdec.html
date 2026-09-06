@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>interencdec | Write-up | Skipped</title>
+    <meta name="description" content="Write-up interencdec (Cryptography) dari CyLab (picoCTF) oleh Skipped.">
+    <meta name="theme-color" content="#0d1117">
+    <link rel="icon" type="image/svg+xml" href="../assets/images/favicon.svg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/style.css?v=10">
+</head>
+<body class="writeup-page-body">
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="../index.html" class="logo"><i class="fas fa-terminal"></i> Skipped<span>x0r</span></a>
+                <ul class="nav-links">
+                    <li><a href="../index.html#portfolio">Projects & CTF</a></li>
+                    <li><a href="index.html">Write-ups</a></li>
+                    <li><a href="../index.html#contact">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="writeup-page">
+        <div class="container">
+            <nav class="writeup-breadcrumb" aria-label="Breadcrumb">
+                <a href="../index.html">Home</a>
+                <span>/</span>
+                <a href="index.html">Write-ups</a>
+                <span>/</span>
+                <a href="index.html#cylab-picoctf">CyLab (picoCTF)</a>
+                <span>/</span>
+                <span class="current">interencdec</span>
+            </nav>
+
+            <div class="writeup-page-header">
+                <span class="tag writeup-cat-tag"><i class="fas fa-key"></i> Cryptography</span>
+                <h1>interencdec</h1>
+                <p class="writeup-page-sub">CyLab (picoCTF)</p>
+            </div>
+
+            <article id="markdown-content" class="writeup-page-body-content">
+<h1>picoCTF - interencdec Write-Up</h1>
+<h2>Challenge Overview</h2>
+<ul>
+<li><strong>Challenge Name</strong>: interencdec</li>
+<li><strong>Category</strong>: Cryptography</li>
+<li><strong>Difficulty</strong>: Easy</li>
+<li><strong>Description</strong>: Decrypt a file with multiple layers of encryption to find the real meaning/flag</li>
+</ul>
+<h2>Challenge Details</h2>
+<p>We are given an encrypted file (<code>enc_flag</code>) containing a string with multiple layers of encryption that need to be unpeeled one by one.</p>
+<h2>Analysis</h2>
+<p>The encrypted content requires decryption through multiple stages:
+1. <strong>Base64 Decode</strong> (Layer 1)
+2. <strong>Base64 Decode</strong> (Layer 2)
+3. <strong>Caesar Cipher Decryption</strong> (Layer 3)</p>
+<h3>Layer 1: Initial Base64 Encoding</h3>
+<p>The original file contains a Base64-encoded string that decodes to:</p>
+<pre><code>b'd3BqdkpBTXtqaGx6aHlfazNqeTl3YTNrX2kyMDRoa2o2fQ=='
+</code></pre>
+<h3>Layer 2: Nested Base64 Encoding</h3>
+<p>After removing the <code>b'...'</code> wrapper and decoding the second Base64 string, we get:</p>
+<pre><code>wpjvJAM{jhlzhy_k3jy9wa3k_i204hkj6}
+</code></pre>
+<h3>Layer 3: Caesar Cipher</h3>
+<p>The final layer uses Caesar Cipher encryption with a shift of 7.</p>
+<p><strong>How to determine the shift:</strong>
+- Looking at the encrypted text: <code>wpjvJAM{...}</code>
+- The flag format should be: <code>picoCTF{...}</code>
+- Comparing <code>w</code> → <code>p</code> and <code>p</code> → <code>i</code>, we can calculate the shift
+- Distance from <code>w</code> to <code>p</code> (backwards) = 7 shifts</p>
+<h2>Solution Methods</h2>
+<h3>Method 1: CyberChef (Easiest)</h3>
+<p>Use the online tool <a href="https://gchq.github.io/CyberChef/">CyberChef</a>:</p>
+<ol>
+<li>Go to CyberChef</li>
+<li>Paste the encrypted content</li>
+<li>Add "From Base64" operation (repeat twice for both layers)</li>
+<li>Add "Caesar Cipher Brute Force" operation</li>
+<li>Adjust shift value to 7 or let it auto-detect</li>
+<li>Read the decrypted output</li>
+</ol>
+<h3>Method 2: Python Script</h3>
+<pre><code class="language-python">import base64
+
+def decode_interencdec(encrypted_file):
+    &quot;&quot;&quot;Decrypt the interencdec challenge&quot;&quot;&quot;
+
+    # Read the encrypted file
+    with open(encrypted_file, 'r') as f:
+        content = f.read().strip()
+
+    # Layer 1: First Base64 decode
+    try:
+        layer1 = base64.b64decode(content).decode('utf-8')
+        print(f&quot;After Layer 1 (Base64): {layer1}&quot;)
+    except Exception as e:
+        print(f&quot;Error in Layer 1: {e}&quot;)
+        return None
+
+    # Layer 2: Second Base64 decode (remove b'...' wrapper if present)
+    try:
+        # Remove the b'...' wrapper if it exists
+        if layer1.startswith(&quot;b'&quot;) and layer1.endswith(&quot;'&quot;):
+            layer1 = layer1[2:-1]
+
+        layer2 = base64.b64decode(layer1).decode('utf-8')
+        print(f&quot;After Layer 2 (Base64): {layer2}&quot;)
+    except Exception as e:
+        print(f&quot;Error in Layer 2: {e}&quot;)
+        return None
+
+    # Layer 3: Caesar Cipher with shift 19
+    def caesar_decrypt(text, shift):
+        result = &quot;&quot;
+        for char in text:
+            if char.isalpha():
+                if char.isupper():
+                    result += chr((ord(char) - ord('A') - shift) % 26 + ord('A'))
+                else:
+                    result += chr((ord(char) - ord('a') - shift) % 26 + ord('a'))
+            else:
+                result += char
+        return result
+
+    # Try all shifts (brute force)
+    print(&quot;\nTrying all Caesar Cipher shifts:&quot;)
+    for shift in range(26):
+        decrypted = caesar_decrypt(layer2, shift)
+        print(f&quot;Shift {shift}: {decrypted}&quot;)
+        if &quot;picoCTF&quot; in decrypted:
+            print(f&quot;\n✓ Found flag with shift {shift}!&quot;)
+            return decrypted
+
+    return None
+
+# Usage
+flag = decode_interencdec('enc_flag')
+print(f&quot;\nFinal Flag: {flag}&quot;)
+</code></pre>
+<h3>Method 3: Bash/Linux</h3>
+<pre><code class="language-bash"># Layer 1: First Base64 decode
+cat enc_flag | base64 -d &gt; layer1.txt
+
+# Layer 2: Second Base64 decode
+cat layer1.txt | tail -c +3 | head -c -2 | base64 -d &gt; layer2.txt
+
+# Layer 3: Caesar Cipher (shift 19)
+# Using ROT13 variant with custom shift
+cat layer2.txt | tr 'a-z' 'd-za-c' | tr 'A-Z' 'D-ZA-C'
+</code></pre>
+<h3>Method 4: Manual Caesar Brute-Force</h3>
+<p>Use online Caesar cipher tools:
+- <a href="https://www.dcode.fr/caesar-cipher">dcode.fr/caesar-cipher</a>
+- Paste the Base64-decoded text
+- Try all 26 rotations or let it brute-force automatically</p>
+<h2>Decryption Process Example</h2>
+<pre><code>Encrypted (Base64 Layer 1): SGVsbG8gV29ybGQh...
+↓
+After Base64 Decode 1: d3BqdkpBTXtqaGx6aHlfazNqeTl3YTNrX2kyMDRoa2o2fQ==
+↓
+After Base64 Decode 2: wpjvJAM{jhlzhy_k3jy9wa3k_i204hkj6}
+↓
+After Caesar (shift 7): picoCTF{caesar_d3cr9pt3d_b204adc6}
+</code></pre>
+<h2>Flag</h2>
+<pre><code>picoCTF{caesar_d3cr9pt3d_b204adc6}
+</code></pre>
+<h2>Key Takeaways</h2>
+<ol>
+<li><strong>Layered Encryption</strong>: This challenge demonstrates multiple encryption layers working together</li>
+<li><strong>Base64 Encoding</strong>: Not encryption but encoding - often used to wrap data in text format</li>
+<li><strong>Multiple Decryption Methods</strong>: Different tools and languages can solve the same problem</li>
+<li><strong>Brute Force for Simple Ciphers</strong>: Caesar cipher has only 26 possibilities, making brute-force trivial</li>
+<li><strong>Pattern Recognition</strong>: Looking for the flag format (picoCTF{...}) helps identify the correct decryption</li>
+<li><strong>Tool Usage</strong>: CyberChef is excellent for layered encoding/decoding challenges</li>
+</ol>
+<h2>Tools Used</h2>
+<ul>
+<li><strong>CyberChef</strong>: https://gchq.github.io/CyberChef/</li>
+<li><strong>dcode.fr</strong>: https://www.dcode.fr/caesar-cipher</li>
+<li><strong>Python</strong>: base64, string manipulation</li>
+<li><strong>Linux</strong>: base64, tr commands</li>
+</ul>
+<hr />
+<p><em>Write-up based on: https://sukepaja18.medium.com/picoctf-interencdec-4a1a4cb3439e</em></p>
+            </article>
+
+            <div class="writeup-page-footer">
+                <a href="index.html" class="btn"><i class="fas fa-arrow-left"></i> Kembali ke Archive</a>
+                <a href="source/CyLab(picoCTF)/Cryptography/interencdec/write-up.md" class="btn" target="_blank" rel="noopener noreferrer"><i class="fas fa-file-lines"></i> Markdown Asli</a>
+                <a href="https://github.com/keppyaja/Write-Ups/blob/main/CyLab(picoCTF)/Cryptography/interencdec/write-up.md" class="btn btn-accent" target="_blank" rel="noopener noreferrer"><i class="fab fa-github"></i> Lihat di GitHub</a>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="copyright">
+                <p>&copy; 2026 Skipped. Compiled successfully.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
