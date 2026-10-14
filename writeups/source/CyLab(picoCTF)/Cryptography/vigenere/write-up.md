@@ -79,20 +79,15 @@ string vigenereDecode(string ciphertext, string key) {
     
     for (char c : ciphertext) {
         if (isalpha(c)) {
-            // Get integer values
             int cVal = charToInt(c);
             int kVal = charToInt(key[keyIndex % keyLen]);
             
-            // Decrypt: subtract key value, mod 26 to stay in range
             int pVal = (cVal - kVal + 26) % 26;
             
-            // Convert back to character, preserving case
             plaintext += intToChar(pVal, isupper(c));
             
-            // Move to next key character (only for letters)
             keyIndex++;
         } else {
-            // Keep non-alphabetic characters as-is
             plaintext += c;
         }
     }

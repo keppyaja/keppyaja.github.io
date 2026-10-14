@@ -1,6 +1,8 @@
 # Skipped | Cybersecurity Portfolio
 
-Website portofolio pribadi **Tsaqif Fawwaz** (Skipped), seorang cybersecurity enthusiast, CTF player, dan programmer. Website ini menampilkan profil, kompetensi teknis, proyek, aktivitas CTF, serta kumpulan write-up keamanan siber dalam antarmuka bergaya terminal/CRT.
+Website portofolio pribadi **Tsaqif Fawwaz** (Skipped), seorang cybersecurity enthusiast, CTF player, dan programmer. Website ini menampilkan profil, kompetensi teknis, proyek, aktivitas CTF, serta kumpulan write-up keamanan siber dengan tema penggemar **Zenless Zone Zero** dan **Ye Shunguang** (Physical / Honed Edge / Attack, Yunkui Summit) sebagai karakter sorotan: permukaan hitam, kuning khas, strip hazard diagonal, dan panel bersudut potong.
+
+> Situs penggemar tidak resmi. Zenless Zone Zero dan Ye Shunguang adalah milik HoYoverse. Seluruh ilustrasi (lambang tebasan dan lingkaran Ether Veil) dibuat sendiri dengan SVG/CSS; tidak ada artwork resmi yang dipakai.
 
 ![Portfolio Preview](assets/images/profile.webp)
 
@@ -16,15 +18,17 @@ Portofolio ini dibuat sebagai ruang dokumentasi untuk:
 
 ## Fitur
 
-- **Hero terminal** dengan animasi dan nuansa command-line.
-- **About / Whoami** berisi profil dan fokus keahlian.
-- **Tech Stack & Arsenal** untuk merangkum tools dan teknologi yang digunakan.
+- **Hero bertema ZZZ** dengan *agent file* Ye Shunguang dan cuplikan analisis RSA Weak Key yang terhubung ke catatan lengkap.
+- **Tentang** berisi profil, foto, dan fokus keahlian.
+- **Fokus & perangkat** berupa indeks ringkas bidang dan teknologi yang digunakan.
 - **Project showcase** dengan deskripsi dan studi kasus proyek.
-- **Write-ups archive** untuk menjelajahi dokumentasi CTF berdasarkan kategori.
+- **Arsip write-up** dengan pencarian, filter kategori/kompetisi, dan pagination enam catatan per halaman. Tanpa JavaScript, seluruh tautan tetap tersedia.
 - **Live-style statistics** untuk progres CyLab dan Codeforces.
 - **Responsive layout** untuk desktop, tablet, dan perangkat mobile.
 - **Contact section** untuk mengirimkan pesan atau memulai koneksi.
-- Efek visual **CRT scanline**, binary canvas, glow, dan terminal interface.
+- Tipografi **Barlow Condensed** (judul), **IBM Plex Sans / Mono** (isi dan kode), tanpa scanline, glow, binary rain, atau animasi mengetik berulang.
+- Navigasi keyboard, indikator fokus, dan dukungan preferensi reduced motion.
+- Form kontak menggunakan FormSubmit; nama, email, dan pesan diteruskan ke layanan tersebut.
 
 ## Proyek Unggulan
 
@@ -58,15 +62,12 @@ Buka arsip melalui menu **Write-ups** atau [writeups/index.html](writeups/index.
 - HTML5
 - CSS3
 - Vanilla JavaScript
-- Python untuk pembaruan statistik
 - Font Awesome
-- Google Fonts: VT323
+- Google Fonts: Barlow Condensed, IBM Plex Sans, dan IBM Plex Mono
 - Marked.js untuk rendering Markdown
 - DOMPurify untuk sanitasi konten Markdown
 - Chart.js untuk visualisasi pada studi kasus proyek
 - Browser Fetch API
-- JSON sebagai sumber data statistik lokal
-- Playwright untuk mengambil data statistik CyLab
 
 ## Struktur Folder
 
@@ -74,15 +75,10 @@ Buka arsip melalui menu **Write-ups** atau [writeups/index.html](writeups/index.
 .
 ├── index.html                 # Halaman utama portofolio
 ├── assets/
-│   ├── css/style.css          # Gaya utama dan efek visual CRT
+│   ├── css/style.css          # Sistem visual portofolio dan halaman catatan
 │   ├── images/                # Foto profil, favicon, dan aset gambar
 │   └── js/
-│       ├── app.js             # Memuat statistik umum dari JSON
-│       └── cylab.js           # Menampilkan statistik CyLab
-├── data/
-│   └── stats.json             # Data statistik CyLab yang ditampilkan website
-├── scripts/
-│   └── update_stats.py        # Mengambil dan memperbarui statistik CyLab
+│       └── writeups.js        # Pencarian, filter, dan pagination arsip
 └── writeups/
     ├── index.html             # Halaman arsip write-up
     ├── *.html                 # Halaman write-up yang sudah dirender
@@ -107,21 +103,7 @@ Buka [http://localhost:8000](http://localhost:8000) di browser.
 
 Buka folder repository di VS Code, lalu jalankan `index.html` menggunakan ekstensi **Live Server**.
 
-> Server lokal disarankan karena halaman memuat `data/stats.json` menggunakan `fetch`. Membuka `index.html` langsung melalui `file://` dapat dibatasi oleh kebijakan browser.
-
-## Memperbarui Statistik CyLab
-
-Script pembaruan statistik menggunakan Playwright dan browser Brave dengan profil lokal. Konfigurasi executable browser, user data directory, dan profile pada `scripts/update_stats.py` perlu disesuaikan dengan komputer yang digunakan.
-
-Alur umumnya:
-
-```bash
-pip install playwright
-playwright install
-python scripts/update_stats.py
-```
-
-Script mengambil data dari dashboard CyLab, menghitung statistik keseluruhan, tingkat kesulitan, dan kategori, kemudian menyimpannya ke `data/stats.json`.
+> Server lokal disarankan untuk menghindari pembatasan browser saat membuka halaman langsung melalui `file://`.
 
 ## Catatan Dependensi
 
