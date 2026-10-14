@@ -104,6 +104,25 @@
         updateToggle(!audio.paused);
     }
 
+    function syncEntrySession() {
+        const entryScreen = document.getElementById('entry-screen');
+        if (!entryScreen) return;
+
+        let hasVisited = false;
+        try {
+            hasVisited = sessionStorage.getItem('skipped-portfolio-entry-seen') === 'true';
+        } catch (error) {
+            console.warn('Entry session state is unavailable during navigation.', error);
+        }
+
+        if (hasVisited) {
+            document.documentElement.classList.add('entry-session-visited');
+            document.body.classList.remove('entry-locked');
+            entryScreen.hidden = true;
+            entryScreen.setAttribute('aria-hidden', 'true');
+        }
+    }
+
     async function loadPageScripts(nextDocument) {
         const scripts = [
             ...nextDocument.head.querySelectorAll('script'),
@@ -141,6 +160,7 @@
             document.body.append(persistentAudio);
             document.body.className = nextDocument.body.className;
             document.title = nextDocument.title;
+            syncEntrySession();
             if (pushState) window.history.pushState({}, '', url);
             await loadPageScripts(nextDocument);
             ensureAudioToggle();
@@ -181,5 +201,6 @@
     });
 
     ensureAudioToggle();
+    syncEntrySession();
     if (!shouldResumeAudio) startAudio();
 })();
