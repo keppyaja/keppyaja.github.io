@@ -1,125 +1,122 @@
 # Skipped | Cybersecurity Portfolio
 
-Website portofolio pribadi **Tsaqif Fawwaz** (Skipped), seorang cybersecurity enthusiast, CTF player, dan programmer. Website ini menampilkan profil, kompetensi teknis, proyek, aktivitas CTF, serta kumpulan write-up keamanan siber dengan tema penggemar **Zenless Zone Zero** dan **Ye Shunguang** (Physical / Honed Edge / Attack, Yunkui Summit) sebagai karakter sorotan: permukaan hitam, kuning khas, strip hazard diagonal, dan panel bersudut potong.
+Portofolio pribadi **Tsaqif Fawwaz (Skipped)**, seorang cybersecurity enthusiast, CTF player, dan programmer. Situs ini menggabungkan profil, kompetensi teknis, proyek, aktivitas CTF, dan arsip write-up dalam antarmuka bertema cyberpunk yang terinspirasi secara nonresmi oleh **Zenless Zone Zero** dan Ye Shunguang.
 
-> Situs penggemar tidak resmi. Zenless Zone Zero dan Ye Shunguang adalah milik HoYoverse. Seluruh ilustrasi (lambang tebasan dan lingkaran Ether Veil) dibuat sendiri dengan SVG/CSS; tidak ada artwork resmi yang dipakai.
+> Situs ini adalah situs penggemar tidak resmi. Zenless Zone Zero dan Ye Shunguang adalah milik HoYoverse. Situs tidak berafiliasi dengan HoYoverse dan tidak menggunakan artwork resmi.
 
-![Portfolio Preview](assets/images/profile.webp)
+## Isi Situs
 
-## Tentang Website
+- **Hero dan agent file** dengan tema Ye Shunguang, Yunkui Summit, Physical, Honed Edge, dan Attack.
+- **Tentang**: profil, latar belakang, minat keamanan siber, dan competitive programming.
+- **Fokus dan keahlian**: kriptografi, binary exploitation, web exploitation, reverse engineering, Linux, database, dan CTF.
+- **Project showcase**: WebMusyKom, local AI chatbot, Perpusri, dan proyek algoritma.
+- **Statistik Codeforces** yang diambil dari Codeforces API.
+- **Arsip write-up CTF** dari ARACTF7 dan CyLab/picoCTF.
+- **Form kontak** yang mengirimkan pesan melalui FormSubmit.
 
-Portofolio ini dibuat sebagai ruang dokumentasi untuk:
+## Fitur Interaksi
 
-- Memperkenalkan latar belakang dan minat di bidang keamanan siber.
-- Menampilkan kemampuan kriptografi, binary exploitation, web exploitation, reverse engineering, dan competitive programming.
-- Mendokumentasikan solusi tantangan CTF dari CyLab/picoCTF dan ARACTF.
-- Menampilkan proyek pengembangan web, backend, chatbot, dan pemecahan algoritma.
-- Menyajikan statistik progres CyLab dan Codeforces secara informatif.
+- Entry screen dengan animasi pembuka dan status sesi menggunakan `sessionStorage`.
+- Smooth scroll untuk anchor internal tanpa mempertahankan hash pada URL.
+- Navigasi responsive dengan menu mobile.
+- Pencarian, filter kompetisi/kategori, dan pagination pada [writeups/index.html](writeups/index.html).
+- Modal studi kasus proyek dengan rendering Markdown yang disanitasi.
+- Parallax, tilt, scroll reveal, dan dukungan `prefers-reduced-motion`.
+- Audio lokal `assets/audio/theme.mp3` dengan:
+  - loop playback,
+  - tombol mute/unmute di navbar,
+  - pause otomatis saat tab tidak aktif,
+  - resume saat tab kembali aktif,
+  - penyimpanan posisi dan status playback selama sesi.
+- Navigasi internal tanpa reload melalui [assets/js/site-audio.js](assets/js/site-audio.js), sehingga elemen audio tetap dipertahankan saat berpindah halaman internal.
 
-## Fitur
-
-- **Hero bertema ZZZ** dengan *agent file* Ye Shunguang dan cuplikan analisis RSA Weak Key yang terhubung ke catatan lengkap.
-- **Tentang** berisi profil, foto, dan fokus keahlian.
-- **Fokus & perangkat** berupa indeks ringkas bidang dan teknologi yang digunakan.
-- **Project showcase** dengan deskripsi dan studi kasus proyek.
-- **Arsip write-up** dengan pencarian, filter kategori/kompetisi, dan pagination enam catatan per halaman. Tanpa JavaScript, seluruh tautan tetap tersedia.
-- **Live-style statistics** untuk progres CyLab dan Codeforces.
-- **Responsive layout** untuk desktop, tablet, dan perangkat mobile.
-- **Contact section** untuk mengirimkan pesan atau memulai koneksi.
-- Tipografi **Barlow Condensed** (judul), **IBM Plex Sans / Mono** (isi dan kode), tanpa scanline, glow, binary rain, atau animasi mengetik berulang.
-- Navigasi keyboard, indikator fokus, dan dukungan preferensi reduced motion.
-- Form kontak menggunakan FormSubmit; nama, email, dan pesan diteruskan ke layanan tersebut.
-
-## Proyek Unggulan
-
-### WebMusyKom: Sistem E-Voting Musyawarah Komisariat
-
-Backend REST API untuk sistem e-voting yang berfokus pada keamanan, anonimitas, dan integritas proses pemilihan. Proyek ini menggunakan Node.js, Express.js, MySQL, JWT, Bcrypt, Helmet, CORS, rate limiting, dan Docker.
-
-### Multi-Platform Local AI Chatbot
-
-Ekosistem chatbot modular yang menghubungkan model AI lokal dengan Discord dan WhatsApp. Fitur yang ditampilkan meliputi integrasi media, pembuatan stiker, broadcast dengan rate limiting, slash commands, serta pemrosesan pesan berukuran panjang.
-
-### Perpusri: Digital Library System
-
-Platform repositori riset online untuk mengelola buku, jurnal, artikel, skripsi, tesis, dan disertasi. Aplikasi ini menyediakan pencarian multi-kriteria, unggah dokumen, profil publikasi, forum, voting, dashboard admin, validasi input, dan penyimpanan demo berbasis browser `localStorage`.
-
-### CTF Write-ups
-
-Arsip dokumentasi dan analisis tantangan keamanan siber, termasuk:
-
-- Cryptography
-- Binary Exploitation
-- Web Exploitation
-- Reverse Engineering
-- Forensics
-- General Skills
-
-Buka arsip melalui menu **Write-ups** atau [writeups/index.html](writeups/index.html).
+Autoplay audio dapat dibatasi oleh browser. Pada kondisi tersebut, pengguna perlu menekan tombol **Musik** atau melakukan interaksi yang mengizinkan playback.
 
 ## Teknologi
 
 - HTML5
-- CSS3
+- CSS3 dengan custom properties, responsive media queries, dan animasi CSS
 - Vanilla JavaScript
-- Font Awesome
+- Font Awesome 6.4.0
 - Google Fonts: Barlow Condensed, IBM Plex Sans, dan IBM Plex Mono
-- Marked.js untuk rendering Markdown
-- DOMPurify untuk sanitasi konten Markdown
-- Chart.js untuk visualisasi pada studi kasus proyek
+- Marked.js `15.0.12` untuk rendering Markdown
+- DOMPurify `3.2.6` untuk sanitasi HTML hasil Markdown
 - Browser Fetch API
+- Web Audio/HTMLMedia API
+- Page Visibility API
+- History API dan `sessionStorage`
 
 ## Struktur Folder
 
 ```text
 .
-├── index.html                 # Halaman utama portofolio
+├── index.html                  # Halaman utama portofolio
+├── README.md
 ├── assets/
-│   ├── css/style.css          # Sistem visual portofolio dan halaman catatan
-│   ├── images/                # Foto profil, favicon, dan aset gambar
+│   ├── audio/
+│   │   └── theme.mp3           # Musik latar lokal
+│   ├── css/
+│   │   └── style.css           # Sistem visual seluruh halaman
+│   ├── images/
+│   │   ├── favicon.svg
+│   │   ├── profile.webp
+│   │   └── ye-candidate-*.webp
 │   └── js/
-│       └── writeups.js        # Pencarian, filter, dan pagination arsip
+│       ├── site-audio.js       # Audio global dan navigasi internal
+│       └── writeups.js          # Search, filter, dan pagination write-up
 └── writeups/
-    ├── index.html             # Halaman arsip write-up
-    ├── *.html                 # Halaman write-up yang sudah dirender
-    └── source/                # Sumber Markdown dan materi asli
+    ├── index.html               # Arsip write-up
+    ├── *.html                   # Halaman write-up yang dirender
+    └── source/                  # Sumber Markdown dan materi asli
 ```
 
 ## Menjalankan Secara Lokal
 
-Website ini tidak memerlukan proses build atau framework frontend.
+Situs ini merupakan static website dan tidak memerlukan proses build atau framework frontend.
 
-### Opsi 1: Python HTTP server
+### Python HTTP server
 
-Pastikan Python 3 sudah terpasang, kemudian jalankan dari root repository:
+Jalankan dari root repository:
 
 ```bash
 python -m http.server 8000
 ```
 
-Buka [http://localhost:8000](http://localhost:8000) di browser.
+Buka [http://localhost:8000](http://localhost:8000).
 
-### Opsi 2: VS Code Live Server
+### VS Code Live Server
 
-Buka folder repository di VS Code, lalu jalankan `index.html` menggunakan ekstensi **Live Server**.
+Buka folder repository di VS Code, kemudian jalankan `index.html` menggunakan ekstensi **Live Server**.
 
-> Server lokal disarankan untuk menghindari pembatasan browser saat membuka halaman langsung melalui `file://`.
+Server HTTP lokal disarankan daripada membuka file secara langsung melalui `file://`, terutama untuk audio lokal, Fetch API, navigasi internal, dan resource antar-folder.
 
-## Catatan Dependensi
+## Keamanan dan Privasi
 
-Beberapa aset frontend dimuat melalui CDN:
+- `marked` dan DOMPurify menggunakan versi exact dengan Subresource Integrity (SRI).
+- Markdown dibersihkan dengan DOMPurify sebelum dimasukkan ke DOM.
+- Tautan eksternal yang dibuka pada tab baru menggunakan `rel="noopener noreferrer"`.
+- Audio di-host secara lokal dan tidak menggunakan embed pihak ketiga.
+- Statistik Codeforces diambil dari endpoint publik yang sudah ditentukan.
+- Form kontak meneruskan nama, email, dan pesan ke FormSubmit melalui HTTPS.
 
-- Font Awesome 6.4.0
-- Google Fonts
-- Marked.js
-- DOMPurify
+Header keamanan seperti Content Security Policy (CSP), HSTS, dan `frame-ancestors` perlu dikonfigurasi pada hosting atau CDN karena tidak dapat ditetapkan sepenuhnya dari file HTML statis.
 
-Karena itu, koneksi internet diperlukan saat pertama kali memuat resource tersebut. Konten write-up lokal tetap tersedia di dalam repository.
+## Catatan Konten
+
+Arsip saat ini berisi write-up dari kategori:
+
+- Cryptography
+- Binary Exploitation
+- Reverse Engineering
+- Forensics
+- Miscellaneous
+
+Sumber Markdown berada di [writeups/source](writeups/source). Halaman yang sudah dirender dapat dibuka melalui [writeups/index.html](writeups/index.html).
 
 ## Status Proyek
 
-Website ini merupakan static portfolio yang aktif dikembangkan. Data statistik dan isi proyek dapat diperbarui tanpa mengubah struktur utama halaman.
+Website ini adalah static portfolio yang aktif dikembangkan. Perubahan konten, aset visual, audio, dan write-up dapat dilakukan tanpa pipeline build khusus.
 
 ## Lisensi
 
-Belum ada lisensi open-source yang ditentukan untuk repository ini. Hubungi pemilik repository sebelum menggunakan ulang aset, tulisan, atau materi di dalamnya.
+Repository ini belum memiliki lisensi open-source. Hubungi pemilik repository sebelum menggunakan ulang kode, tulisan, audio, gambar, atau aset lainnya.
