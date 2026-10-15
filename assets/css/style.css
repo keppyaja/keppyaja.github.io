@@ -1036,6 +1036,8 @@ footer::before { content: ''; display: block; height: 5px; margin: -38px 0 38px;
 .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 1200; max-width: calc(100% - 32px); width: max-content; background: var(--surface); color: var(--light-color); border: 1px solid var(--border); border-left: 4px solid var(--accent-color); padding: 12px 20px; font-size: .9rem; opacity: 0; transition: opacity .2s; pointer-events: none; }
 .toast.show { opacity: 1; }
 .toast-error { border-left-color: var(--danger); }
+.easter-egg-notice { position: fixed; left: 50%; bottom: 24px; z-index: 1200; max-width: calc(100% - 32px); padding: 14px 20px; transform: translate(-50%, 16px); background: var(--surface); border: 1px solid var(--accent-color); box-shadow: 0 0 24px rgba(225, 251, 0, .18); color: var(--accent-color); font-family: var(--mono); font-size: .9rem; opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; }
+.easter-egg-notice.is-visible { opacity: 1; transform: translate(-50%, 0); }
 @media (max-width: 1000px) {
     .container { width: calc(100% - 48px); }
     .logo span { display: none; }

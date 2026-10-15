@@ -11,6 +11,7 @@
     let pausedByVisibility = false;
     let navigating = false;
     let shouldResumeAudio = false;
+    let easterEggInitialized = false;
 
     if (!audio) {
         audio = document.createElement('audio');
@@ -145,6 +146,50 @@
         updateToggle(!audio.paused);
     }
 
+    function initEasterEgg() {
+        if (easterEggInitialized) return;
+        easterEggInitialized = true;
+
+        const trigger = 'skipped';
+        const message = 'skipped{Y3_Shun99u4n9_C4nt1k_b9t}';
+        let typed = '';
+        let hideTimer;
+
+        function showEasterEgg() {
+            let notice = document.getElementById('easter-egg-notice');
+            if (!notice) {
+                notice = document.createElement('div');
+                notice.id = 'easter-egg-notice';
+                notice.className = 'easter-egg-notice';
+                notice.setAttribute('role', 'status');
+                notice.setAttribute('aria-live', 'polite');
+                document.body.append(notice);
+            }
+
+            notice.textContent = message;
+            notice.classList.add('is-visible');
+            window.clearTimeout(hideTimer);
+            hideTimer = window.setTimeout(() => {
+                notice.classList.remove('is-visible');
+            }, 5000);
+        }
+
+        document.addEventListener('keydown', event => {
+            const target = event.target;
+            if (target instanceof HTMLElement &&
+                (target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName))) {
+                return;
+            }
+            if (event.key.length !== 1) return;
+
+            typed = `${typed}${event.key.toLowerCase()}`.slice(-trigger.length);
+            if (typed === trigger) {
+                typed = '';
+                showEasterEgg();
+            }
+        });
+    }
+
     function syncEntrySession() {
         const entryScreen = document.getElementById('entry-screen');
 
@@ -263,6 +308,7 @@
         }
     });
 
+    initEasterEgg();
     ensureAudioToggle();
     syncEntrySession();
     if (shouldResumeAudio) {
