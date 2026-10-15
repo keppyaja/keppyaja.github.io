@@ -221,7 +221,7 @@
             document.body.className = nextDocument.body.className;
             document.title = nextDocument.title;
             syncEntrySession();
-            if (pushState) window.history.pushState({}, '', url);
+            if (pushState) window.history.pushState({}, '', response.url || url);
             await loadPageScripts(nextDocument);
             ensureAudioToggle();
             startAudio();
