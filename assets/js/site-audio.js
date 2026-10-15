@@ -1,7 +1,10 @@
 (() => {
     'use strict';
 
-    const AUDIO_PATH = new URL('../audio/theme.mp3', document.currentScript?.src || window.location.href).href;
+    // Determine the absolute URL of the audio file relative to the site-audio.js script
+    const scriptTag = document.currentScript || document.querySelector('script[src*="site-audio.js"]');
+    const SCRIPT_URL = scriptTag?.src || window.location.href;
+    const AUDIO_PATH = new URL('../audio/theme.mp3', SCRIPT_URL).href;
     const AUDIO_STATE_KEY = 'portfolio-audio-state';
     let audio = document.getElementById('site-audio');
     let mutedByUser = false;
@@ -16,13 +19,16 @@
         audio.loop = true;
         audio.preload = 'auto';
         document.body.append(audio);
+    } else if (audio.src !== AUDIO_PATH) {
+        audio.src = AUDIO_PATH;
     }
 
-    function saveAudioState() {
+    function saveAudioState(forcePlayingState) {
         try {
+            const isPlaying = forcePlayingState !== undefined ? forcePlayingState : !audio.paused;
             sessionStorage.setItem(AUDIO_STATE_KEY, JSON.stringify({
                 currentTime: audio.currentTime,
-                wasPlaying: !audio.paused,
+                wasPlaying: isPlaying,
                 mutedByUser
             }));
         } catch (error) {
@@ -35,20 +41,23 @@
             const savedState = JSON.parse(sessionStorage.getItem(AUDIO_STATE_KEY) || 'null');
             if (!savedState) return;
             shouldResumeAudio = savedState.wasPlaying === true;
-            if (Number.isFinite(savedState.currentTime) && savedState.currentTime > 0) {
-                audio.currentTime = savedState.currentTime;
-            }
             mutedByUser = savedState.mutedByUser === true;
+            if (Number.isFinite(savedState.currentTime) && savedState.currentTime > 0) {
+                if (audio.readyState >= 1) {
+                    audio.currentTime = savedState.currentTime;
+                } else {
+                    audio.addEventListener('loadedmetadata', () => {
+                        audio.currentTime = savedState.currentTime;
+                    }, { once: true });
+                }
+            }
         } catch (error) {
             console.warn('Audio playback state could not be restored.', error);
         }
     }
 
     restoreAudioState();
-    audio.addEventListener('loadedmetadata', () => {
-        restoreAudioState();
-        if (shouldResumeAudio) startAudio();
-    }, { once: true });
+
     function updateToggle(isPlaying) {
         const toggle = document.getElementById('audio-toggle');
         if (!toggle) return;
@@ -64,14 +73,46 @@
     function startAudio() {
         if (mutedByUser || document.hidden) return;
         audio.muted = false;
-        audio.play().then(() => updateToggle(true)).catch(() => updateToggle(false));
+        audio.play().then(() => {
+            updateToggle(true);
+            saveAudioState(true);
+        }).catch((err) => {
+            updateToggle(false);
+            // Browser autoplay restrictions: resume on first user interaction
+            const resumeOnInteraction = () => {
+                if (mutedByUser || !shouldResumeAudio) return;
+                audio.play().then(() => {
+                    updateToggle(true);
+                    saveAudioState(true);
+                }).catch(() => {});
+            };
+            window.addEventListener('click', resumeOnInteraction, { once: true });
+            window.addEventListener('keydown', resumeOnInteraction, { once: true });
+            window.addEventListener('touchstart', resumeOnInteraction, { once: true });
+        });
     }
 
-    audio.addEventListener('timeupdate', saveAudioState);
-    audio.addEventListener('pause', saveAudioState);
-    audio.addEventListener('play', saveAudioState);
-    window.addEventListener('pagehide', saveAudioState);
-    window.addEventListener('beforeunload', saveAudioState);
+    audio.addEventListener('timeupdate', () => {
+        if (!audio.paused) {
+            saveAudioState(true);
+        }
+    });
+    audio.addEventListener('play', () => {
+        saveAudioState(true);
+    });
+    audio.addEventListener('pause', () => {
+        // Only mark wasPlaying as false if user deliberately paused it (via mutedByUser)
+        // and not because of page unloads or internal navigation
+        if (mutedByUser) {
+            saveAudioState(false);
+        }
+    });
+    window.addEventListener('pagehide', () => {
+        saveAudioState(!audio.paused);
+    });
+    window.addEventListener('beforeunload', () => {
+        saveAudioState(!audio.paused);
+    });
 
     function bindAudioToggle() {
         const toggle = document.getElementById('audio-toggle');
@@ -106,13 +147,24 @@
 
     function syncEntrySession() {
         const entryScreen = document.getElementById('entry-screen');
-        if (!entryScreen) return;
 
         let hasVisited = false;
         try {
             hasVisited = sessionStorage.getItem('skipped-portfolio-entry-seen') === 'true';
         } catch (error) {
             console.warn('Entry session state is unavailable during navigation.', error);
+        }
+
+        // Visiting a page without the entry screen means the visitor has
+        // already entered the portfolio. Preserve that state for SPA returns
+        // to the home page.
+        if (!entryScreen) {
+            try {
+                sessionStorage.setItem('skipped-portfolio-entry-seen', 'true');
+            } catch (error) {
+                console.warn('Entry session state could not be saved during navigation.', error);
+            }
+            return;
         }
 
         if (hasVisited) {
@@ -152,6 +204,14 @@
             if (!response.ok) throw new Error(`Navigation failed with status ${response.status}`);
             const html = await response.text();
             const nextDocument = new DOMParser().parseFromString(html, 'text/html');
+            if (nextDocument.getElementById('entry-screen') &&
+                !document.getElementById('entry-screen')) {
+                try {
+                    sessionStorage.setItem('skipped-portfolio-entry-seen', 'true');
+                } catch (error) {
+                    console.warn('Entry session state could not be saved before navigation.', error);
+                }
+            }
             const persistentAudio = audio;
             const nextBodyChildren = [...nextDocument.body.children]
                 .filter(element => element.tagName !== 'AUDIO' && element.tagName !== 'SCRIPT');
@@ -182,7 +242,10 @@
         const link = event.target.closest('a[href]');
         if (!link || event.defaultPrevented || link.target === '_blank' || link.hasAttribute('download')) return;
         const url = new URL(link.href, window.location.href);
-        if (url.origin !== window.location.origin || url.hash) return;
+        // Only intercept internal links with the same origin or file path
+        const isSameOrigin = (url.origin === window.location.origin && url.origin !== 'null') ||
+                             (window.location.protocol === 'file:' && url.protocol === 'file:');
+        if (!isSameOrigin || url.hash) return;
         event.preventDefault();
         navigate(url.href);
     });
@@ -202,5 +265,16 @@
 
     ensureAudioToggle();
     syncEntrySession();
-    if (!shouldResumeAudio) startAudio();
+    if (shouldResumeAudio) {
+        startAudio();
+    }
+
+    // Handle Back-Forward Cache (bfcache) when user hits back button in browser
+    window.addEventListener('pageshow', (event) => {
+        restoreAudioState();
+        ensureAudioToggle();
+        if (shouldResumeAudio && audio.paused) {
+            startAudio();
+        }
+    });
 })();
