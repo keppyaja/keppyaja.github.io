@@ -907,12 +907,6 @@ body > header::after {
     transition: border-color .15s, background .15s;
 }
 .portfolio-item:hover { border-left-color: var(--accent-color); background: var(--surface-2); }
-.portfolio-item:nth-child(1) { grid-column: 1; grid-row: 1; }
-.portfolio-item:nth-child(2) { grid-column: 1; grid-row: 2; }
-.portfolio-item:nth-child(3) { grid-column: 1; grid-row: 3; }
-.portfolio-item:nth-child(4) { grid-column: 2; grid-row: 1; }
-.portfolio-item:nth-child(5) { grid-column: 2; grid-row: 2; }
-.portfolio-item:nth-child(6) { grid-column: 2; grid-row: 3; }
 .portfolio-content::before { content: 'MISSION / ' counter(project, decimal-leading-zero); display: block; font-family: var(--mono); font-size: .66rem; letter-spacing: .08em; color: var(--accent-color); margin-bottom: 16px; }
 .portfolio-content h3 { font-size: 1.75rem; line-height: 1.1; margin-bottom: 16px; }
 .portfolio-content p { font-size: .95rem; }
