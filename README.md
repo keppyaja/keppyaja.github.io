@@ -1,8 +1,6 @@
 # Skipped | Cybersecurity Portfolio
 
-Portofolio pribadi **Tsaqif Fawwaz (Skipped)**, seorang cybersecurity enthusiast, CTF player, dan programmer. Situs ini menggabungkan profil, kompetensi teknis, proyek, aktivitas CTF, dan arsip write-up dalam antarmuka bertema cyberpunk yang terinspirasi secara nonresmi oleh **Zenless Zone Zero** dan Ye Shunguang.
-
-> Situs ini adalah situs penggemar tidak resmi. Zenless Zone Zero dan Ye Shunguang adalah milik HoYoverse. Situs tidak berafiliasi dengan HoYoverse dan tidak menggunakan artwork resmi.
+Portofolio pribadi **Tsaqif Fawwaz (Skipped)**, seorang cybersecurity enthusiast, CTF player, dan programmer.
 
 ## Isi Situs
 
