@@ -6,12 +6,41 @@
     const SCRIPT_URL = scriptTag?.src || window.location.href;
     const AUDIO_PATH = new URL('../audio/theme.mp3', SCRIPT_URL).href;
     const AUDIO_STATE_KEY = 'portfolio-audio-state';
+    const GSAP_CDN = 'https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js';
+    const GSAP_SCROLL_TRIGGER_CDN = 'https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js';
+    const GSAP_SCROLL_TO_CDN = 'https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollToPlugin.min.js';
     let audio = document.getElementById('site-audio');
     let mutedByUser = false;
     let pausedByVisibility = false;
     let navigating = false;
     let shouldResumeAudio = false;
     let easterEggInitialized = false;
+
+    function loadScript(src) {
+        return new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = src;
+            script.onload = resolve;
+            script.onerror = () => reject(new Error(`Unable to load ${src}`));
+            document.head.append(script);
+        });
+    }
+
+    async function loadGsapAnimations() {
+        try {
+            if (!window.gsap) await loadScript(GSAP_CDN);
+            // Plugins are optional: the animation script checks for each before using it.
+            if (!window.ScrollTrigger) await loadScript(GSAP_SCROLL_TRIGGER_CDN).catch(console.warn);
+            if (!window.ScrollToPlugin) await loadScript(GSAP_SCROLL_TO_CDN).catch(console.warn);
+            const animationSource = new URL('gsap-animations.js?v=3', SCRIPT_URL).href;
+            if (!document.querySelector(`script[src="${animationSource}"]`)) {
+                await loadScript(animationSource);
+            }
+            window.initGsapAnimations?.();
+        } catch (error) {
+            console.warn('GSAP animations could not be loaded.', error);
+        }
+    }
 
     if (!audio) {
         audio = document.createElement('audio');
@@ -167,10 +196,16 @@
             }
 
             notice.textContent = message;
-            notice.classList.add('is-visible');
             window.clearTimeout(hideTimer);
+            if (window.animateNotice) {
+                window.animateNotice(notice, { hold: 5, offset: 16 });
+                return;
+            }
+            // GSAP has not loaded (offline or blocked CDN): show the notice without animation.
+            notice.style.opacity = '1';
+            notice.style.transform = 'translate(-50%, 0)';
             hideTimer = window.setTimeout(() => {
-                notice.classList.remove('is-visible');
+                notice.style.opacity = '0';
             }, 5000);
         }
 
@@ -269,6 +304,7 @@
             if (pushState) window.history.pushState({}, '', response.url || url);
             await loadPageScripts(nextDocument);
             ensureAudioToggle();
+            window.initGsapAnimations?.();
             startAudio();
             window.scrollTo({ top: 0, behavior: 'auto' });
         } catch (error) {
@@ -311,6 +347,7 @@
     initEasterEgg();
     ensureAudioToggle();
     syncEntrySession();
+    loadGsapAnimations();
     if (shouldResumeAudio) {
         startAudio();
     }

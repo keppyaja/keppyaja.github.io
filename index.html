@@ -29,7 +29,7 @@
         crossorigin="anonymous"
         defer></script>
 
-    <link rel="stylesheet" href="assets/css/style.css?v=13">
+    <link rel="stylesheet" href="assets/css/style.css?v=17">
     <script>
         window.portfolioEntrySession = {
             key: 'skipped-portfolio-entry-seen',
@@ -69,7 +69,7 @@
             document.documentElement.classList.add('entry-session-visited');
         }
     </script>
-    <script src="assets/js/site-audio.js" defer></script>
+    <script src="assets/js/site-audio.js?v=3" defer></script>
 </head>
 <body class="entry-locked">
     <a class="skip-link" href="#main-content">Lewati navigasi</a>
@@ -263,36 +263,40 @@ q = N // p</code></pre>
     <section id="skills" class="skills">
         <div class="container">
             <div class="section-heading"><p class="eyebrow">02 / Fokus & perangkat</p><h2>Loadout.</h2><p>Bidang yang saya pelajari dan alat yang saya bawa.</p></div>
-            <div class="skills-container">
-                <div class="skill-item">
-                    <div class="skill-icon"><i class="fas fa-key"></i></div>
-                    <h3>Kriptografi & Analisis</h3>
-                    <p>RSA, AES, Lattice Reduction, Hidden Number Problem (HNP)</p>
-                </div>
-                <div class="skill-item">
-                    <div class="skill-icon"><i class="fas fa-microscope"></i></div>
-                    <h3>Reverse Engineering</h3>
-                    <p>Ghidra, JADX, Analisis Binary, Dekompilasi</p>
-                </div>
-                <div class="skill-item">
-                    <div class="skill-icon"><i class="fas fa-code"></i></div>
-                    <h3>Programming</h3>
-                    <p>Python (pwntools), C++/C (Algoritma/CP), PHP</p>
-                </div>
-                <div class="skill-item">
-                    <div class="skill-icon"><i class="fab fa-linux"></i></div>
-                    <h3>Sistem & Lingkungan</h3>
-                    <p>Kali Linux, WSL, Bash Scripting</p>
-                </div>
-                <div class="skill-item">
-                    <div class="skill-icon"><i class="fas fa-database"></i></div>
-                    <h3>Database Design</h3>
-                    <p>PostgreSQL, MySQL, SQL CRUD</p>
-                </div>
-                <div class="skill-item">
-                    <div class="skill-icon"><i class="fas fa-flag"></i></div>
-                    <h3>CTF & Keamanan</h3>
-                    <p>Cryptography, Web Exploitation, Binary Exploitation, Reverse Engineering</p>
+            <div class="skills-marquee" tabindex="0" role="region" aria-label="Loadout: fokus dan perangkat. Gulir ke samping untuk membaca bagian tertentu.">
+                <div class="skills-track">
+                    <div class="skills-container">
+                        <div class="skill-item">
+                            <div class="skill-icon"><i class="fas fa-key"></i></div>
+                            <h3>Kriptografi & Analisis</h3>
+                            <p>RSA, AES, Lattice Reduction, Hidden Number Problem (HNP)</p>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-icon"><i class="fas fa-microscope"></i></div>
+                            <h3>Reverse Engineering</h3>
+                            <p>Ghidra, JADX, Analisis Binary, Dekompilasi</p>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-icon"><i class="fas fa-code"></i></div>
+                            <h3>Programming</h3>
+                            <p>Python (pwntools), C++/C (Algoritma/CP), PHP</p>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-icon"><i class="fab fa-linux"></i></div>
+                            <h3>Sistem & Lingkungan</h3>
+                            <p>Kali Linux, WSL, Bash Scripting</p>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-icon"><i class="fas fa-database"></i></div>
+                            <h3>Database Design</h3>
+                            <p>PostgreSQL, MySQL, SQL CRUD</p>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-icon"><i class="fas fa-flag"></i></div>
+                            <h3>CTF & Keamanan</h3>
+                            <p>Cryptography, Web Exploitation, Binary Exploitation, Reverse Engineering</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -504,6 +508,7 @@ q = N // p</code></pre>
         function enterPortfolio() {
             if (!entryScreen || entryScreen.classList.contains('is-leaving')) return;
             window.portfolioEntrySession?.markVisited();
+            if (window.playEntryExitAnimation?.(entryScreen)) return;
             entryScreen.classList.add('is-leaving');
             document.body.classList.remove('entry-locked');
             window.setTimeout(() => {
@@ -542,11 +547,12 @@ q = N // p</code></pre>
             toast.textContent = message;
             document.body.appendChild(toast);
 
-            requestAnimationFrame(() => toast.classList.add('show'));
-            setTimeout(() => {
-                toast.classList.remove('show');
-                setTimeout(() => toast.remove(), 300);
-            }, 3500);
+            if (window.animateNotice) {
+                window.animateNotice(toast, { hold: 3.5, onHidden: () => toast.remove() });
+            } else {
+                toast.style.opacity = '1';
+                setTimeout(() => toast.remove(), 3800);
+            }
         }
         document.body.classList.add('navigation-ready');
         const menuToggle = document.querySelector('.menu-toggle');
@@ -554,6 +560,7 @@ q = N // p</code></pre>
 
         menuToggle.addEventListener('click', function () {
             const isOpen = navLinks.classList.toggle('active');
+            if (isOpen) window.animateNavMenu?.(navLinks);
             this.setAttribute('aria-expanded', isOpen);
             this.querySelector('i').classList.toggle('fa-bars');
             this.querySelector('i').classList.toggle('fa-times');
@@ -569,12 +576,16 @@ q = N // p</code></pre>
                     if (target) {
                         const headerOffset = document.querySelector('body > header')?.offsetHeight || 0;
                         const targetTop = target.getBoundingClientRect().top + window.scrollY - headerOffset;
-                        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-                        window.scrollTo({
-                            top: Math.max(0, targetTop),
-                            behavior: prefersReducedMotion ? 'auto' : 'smooth'
-                        });
+                        if (window.gsapScrollTo) {
+                            window.gsapScrollTo(targetTop);
+                        } else {
+                            const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                            window.scrollTo({
+                                top: Math.max(0, targetTop),
+                                behavior: prefersReducedMotion ? 'auto' : 'smooth'
+                            });
+                        }
                         window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}`);
                     }
                 }
@@ -608,118 +619,7 @@ q = N // p</code></pre>
         window.addEventListener('scroll', handleScrollEffects, { passive: true });
         handleScrollEffects();
 
-        const parallaxItems = document.querySelectorAll('[data-parallax]');
-        const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        let parallaxTicking = false;
-
-        function updateParallax() {
-            if (reducedMotion) return;
-            const scene = document.querySelector('.parallax-scene');
-            if (!scene) return;
-
-            const scrolled = window.scrollY;
-
-            parallaxItems.forEach(item => {
-                const speed = Number(item.dataset.parallax) || 0;
-                const shift = scrolled * speed;
-                item.style.transform = `translateY(${shift}px)`;
-            });
-
-            parallaxTicking = false;
-        }
-
-        function requestParallaxUpdate() {
-            if (!parallaxTicking) {
-                window.requestAnimationFrame(updateParallax);
-                parallaxTicking = true;
-            }
-        }
-
-        window.addEventListener('scroll', requestParallaxUpdate, { passive: true });
-        window.addEventListener('resize', requestParallaxUpdate);
-        requestParallaxUpdate();
-
-        const heroTiltRoot = document.getElementById('hero-tilt-root');
-        const heroSection  = document.querySelector('.hero.parallax-scene');
-        let tiltTicking    = false;
-        const TILT_MAX     = 6;
-
-        function applyTilt(e) {
-            if (!heroTiltRoot || !heroSection || reducedMotion) return;
-            const rect = heroSection.getBoundingClientRect();
-            if (rect.bottom < 0 || rect.top > window.innerHeight) return;
-
-            const cx = rect.left + rect.width  / 2;
-            const cy = rect.top  + rect.height / 2;
-            const dx = (e.clientX - cx) / (rect.width  / 2);
-            const dy = (e.clientY - cy) / (rect.height / 2);
-
-            const rotateY =  dx * TILT_MAX;
-            const rotateX = -dy * TILT_MAX * 0.6;
-
-            heroTiltRoot.style.transform = `perspective(1200px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-            tiltTicking = false;
-        }
-
-        function requestTiltUpdate(e) {
-            if (!tiltTicking) {
-                const ev = e;
-                window.requestAnimationFrame(() => applyTilt(ev));
-                tiltTicking = true;
-            }
-        }
-
-        function resetTilt() {
-            if (!heroTiltRoot || reducedMotion) return;
-            heroTiltRoot.style.transition = 'transform .6s cubic-bezier(.2,.8,.2,1)';
-            heroTiltRoot.style.transform  = 'perspective(1200px) rotateX(0deg) rotateY(0deg)';
-            setTimeout(() => { if (heroTiltRoot) heroTiltRoot.style.transition = ''; }, 620);
-        }
-
-        if (heroSection) {
-            heroSection.addEventListener('mousemove', requestTiltUpdate, { passive: true });
-            heroSection.addEventListener('mouseleave', resetTilt);
-        }
-
-        const entryCard = document.querySelector('.entry-screen-content');
-        let entryTiltTicking = false;
-
-        function applyEntryTilt(e) {
-            if (!entryCard || !entryScreen || reducedMotion) return;
-            const rect = entryScreen.getBoundingClientRect();
-            const dx = (e.clientX - (rect.left + rect.width / 2)) / (rect.width / 2);
-            const dy = (e.clientY - (rect.top + rect.height / 2)) / (rect.height / 2);
-            const rotateY = dx * 4;
-            const rotateX = -dy * 3;
-
-            entryCard.style.transform = `perspective(1200px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-            entryTiltTicking = false;
-        }
-
-        function requestEntryTiltUpdate(e) {
-            if (!entryTiltTicking) {
-                const ev = e;
-                window.requestAnimationFrame(() => applyEntryTilt(ev));
-                entryTiltTicking = true;
-            }
-        }
-
-        function resetEntryTilt() {
-            if (!entryCard || reducedMotion) return;
-            entryCard.style.transition = 'transform .6s cubic-bezier(.2,.8,.2,1)';
-            entryCard.style.transform = 'perspective(1200px) rotateX(0deg) rotateY(0deg)';
-            setTimeout(() => { if (entryCard) entryCard.style.transition = ''; }, 620);
-        }
-
-        if (entryScreen) {
-            entryScreen.addEventListener('mousemove', requestEntryTiltUpdate, { passive: true });
-            entryScreen.addEventListener('mouseleave', resetEntryTilt);
-        }
-        if (entryCard) {
-            entryCard.addEventListener('pointermove', requestEntryTiltUpdate, { passive: true });
-            entryCard.addEventListener('pointerleave', resetEntryTilt);
-        }
-
+        window.initGsapAnimations?.();
 
         document.getElementById('contactForm').addEventListener('submit', function(e) {
             e.preventDefault();
@@ -733,6 +633,12 @@ q = N // p</code></pre>
 
             btn.innerHTML = 'Mengirim pesan… <i class="fas fa-spinner fa-spin"></i>';
             btn.disabled = true;
+            const spinner = window.animateSpinner?.(btn.querySelector('.fa-spin'));
+            const restoreButton = () => {
+                spinner?.kill();
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            };
 
             fetch("https://formsubmit.co/ajax/sukepaja18@gmail.com", {
                 method: "POST",
@@ -751,13 +657,11 @@ q = N // p</code></pre>
             .then(data => {
                 showToast('Pesan terkirim. Terima kasih sudah menghubungi saya.');
                 this.reset();
-                btn.innerHTML = originalText;
-                btn.disabled = false;
+                restoreButton();
             })
             .catch(error => {
                 showToast('Pesan belum terkirim. Silakan coba lagi atau hubungi melalui email.', true);
-                btn.innerHTML = originalText;
-                btn.disabled = false;
+                restoreButton();
             });
         });
         async function fetchCodeforces() {
@@ -791,6 +695,7 @@ q = N // p</code></pre>
         function openModal(triggerEl) {
             lastFocusedElement = triggerEl || document.activeElement;
             modal.style.display = "block";
+            window.animateProjectModal?.(modal);
             span.focus();
         }
 

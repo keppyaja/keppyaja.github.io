@@ -88,6 +88,7 @@
     pagination.append(previous, pageLabel, next);
 
     let page = 1;
+    let animateRows = false;
     const render = () => {
         const terms = normalize(query.value).split(/\s+/).filter(Boolean);
         const matches = entries.filter(entry =>
@@ -110,6 +111,8 @@
             });
             group.element.hidden = group.categories.every(category => category.hidden);
         });
+        if (animateRows) window.animateArchiveRows?.(Array.from(visible, entry => entry.row));
+        window.refreshGsapScroll?.();
         previous.disabled = page === 1 || showAllCompetitionNotes;
         next.disabled = page >= pages || showAllCompetitionNotes;
         pagination.hidden = showAllCompetitionNotes;
@@ -133,7 +136,17 @@
         categorySelect.value = '';
         resetPage();
         if (group) {
-            window.requestAnimationFrame(() => group.element.scrollIntoView({ block: 'start' }));
+            window.requestAnimationFrame(() => {
+                if (!window.gsapScrollTo) {
+                    group.element.scrollIntoView({ block: 'start' });
+                    return;
+                }
+                // scrollIntoView() honours both of these, so the GSAP scroll does too.
+                const scrollPadding = parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0;
+                const scrollMargin = parseFloat(getComputedStyle(group.element).scrollMarginTop) || 0;
+                const top = group.element.getBoundingClientRect().top + window.scrollY - scrollPadding - scrollMargin;
+                window.gsapScrollTo(top);
+            });
         }
     };
 
@@ -166,4 +179,5 @@
     results.dataset.initialized = 'true';
     const initialCompetition = new URLSearchParams(window.location.search).get('competition');
     applyCompetition(initialCompetition || '');
+    animateRows = true;
 })();
