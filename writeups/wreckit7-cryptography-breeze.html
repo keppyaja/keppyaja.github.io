@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Breeze | Write-up | Skipped</title>
+    <meta name="description" content="Write-up Breeze (Cryptography) dari Wreck-IT 7.0 Quals oleh tim GWS Mas Daman.">
+    <meta name="theme-color" content="#0a0a0a">
+    <link rel="icon" type="image/svg+xml" href="../assets/images/favicon.svg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;1,700;1,800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/style.css?v=17">
+    <script src="../assets/js/site-audio.js?v=3" defer></script>
+</head>
+<body class="writeup-page-body">
+    <header>
+        <div class="container">
+            <nav class="navbar" aria-label="Navigasi utama">
+                <a href="../index.html" class="logo">Skipped<span>/ notes</span></a>
+                <ul class="nav-links">
+                    <li><a href="../#home">Intro</a></li>
+                    <li><a href="../#about">Tentang</a></li>
+                    <li><a href="../#skills">Fokus</a></li>
+                    <li><a href="../#portfolio">Proyek</a></li>
+                    <li><a href="index.html" class="active" aria-current="page">Write-ups</a></li>
+                    <li><a href="../#contact">Kontak</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="writeup-page">
+        <div class="container">
+            <nav class="writeup-breadcrumb" aria-label="Breadcrumb">
+                <a href="../index.html">Home</a>
+                <span>/</span>
+                <a href="index.html">Write-ups</a>
+                <span>/</span>
+                <a href="index.html#wreckit7">Wreck-IT 7.0</a>
+                <span>/</span>
+                <span class="current">Breeze</span>
+            </nav>
+
+            <div class="writeup-page-header">
+                <span class="tag writeup-cat-tag"><i class="fas fa-key"></i> Cryptography</span>
+                <h1>Breeze</h1>
+                <p class="writeup-page-sub">Wreck-IT 7.0 Quals</p>
+            </div>
+
+            <article id="markdown-content" class="writeup-page-body-content">
+<h1>Write-Up: Breeze</h1>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Challenge</strong></td>
+<td>Breeze</td>
+</tr>
+<tr>
+<td><strong>Kategori</strong></td>
+<td>Cryptography</td>
+</tr>
+<tr>
+<td><strong>Event</strong></td>
+<td>Wreck-IT 7.0 (Quals)</td>
+</tr>
+<tr>
+<td><strong>Tim</strong></td>
+<td>GWS Mas Daman</td>
+</tr>
+<tr>
+<td><strong>Anggota</strong></td>
+<td>Skipped, Daman, Irul</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Deskripsi Challenge</h2>
+<blockquote>
+<p>angin sepoi-sepoi</p>
+</blockquote>
+<hr />
+<h2>Identifikasi Kerentanan</h2>
+<p>Diberikan dua file, yaitu <code>chall.py</code> dan <code>out.txt</code>.</p>
+<p>Pada Python, <em>randomizer</em> bawaan memakai algoritma MT19937 yang memiliki <em>internal state</em> sebanyak 624 integer 32-bit. Di baris 45, <code>P0</code> menyimpan angka acak dengan memanggil <code>A()</code> selama 624 kali berturut-turut. <code>P0</code> inilah yang nantinya dicetak pada <code>out.txt</code> sebagai <code>o</code>. Dari hasil tersebut kita bisa melakukan <em>reverse engineering</em> untuk setiap nilai.</p>
+<p>Selanjutnya, fungsi pengacakan menghasilkan angka acak dengan mengurangi <code>x</code> dengan <code>last</code>, lalu menggabungkannya dengan <code>prev</code>. Meskipun pengacakan dilakukan berkali-kali, algoritma ini tetap linear sehingga <em>state</em>-nya bisa dibongkar untuk menebak angka selanjutnya.</p>
+<p>Celah lain ada pada bit <code>x</code> di posisi paling belakang setelah dilakukan <code>y &lt;&lt; 1</code>. Karena <code>y</code> pasti genap, angka ganjil-genap pada hasil akhir <code>sc</code> dapat diketahui dari nilai <code>x</code>.</p>
+<hr />
+<h2>Reasoning</h2>
+<p>Pendekatan yang digunakan relevan karena setiap algoritma yang dipecahkan akan berguna untuk pemecahan algoritma berikutnya, sehingga proses dekripsi bisa lebih efisien.</p>
+<hr />
+<h2>Langkah-langkah</h2>
+<p>Untuk mempermudah kloning MT19937, saya menggunakan library <code>randcrack</code>.</p>
+<ol>
+<li>Kloning <em>state</em> MT19937 dari 624 nilai <code>o</code> menggunakan <code>RandCrack</code>.</li>
+<li>Simulasikan ulang pembangkitan parameter challenge memakai fungsi <code>B</code>, <code>C</code>, dan <code>D</code> untuk mendapatkan nilai-nilai yang diperlukan.</li>
+<li>Lakukan <em>discrete logarithm</em> menggunakan <code>sympy</code> untuk memulihkan nilai high dan low.</li>
+<li>Bruteforce <code>ml</code> berukuran 16-bit bawah memakai 16 indeks awal <code>sc</code>.</li>
+<li>Bruteforce <code>mr</code> berukuran 16-bit atas menggunakan <code>ml</code> yang sudah ditemukan dan sisa data <code>sc</code>.</li>
+<li>Dekripsi AES dengan kandidat key yang dihasilkan.</li>
+</ol>
+<hr />
+<h2>Solver</h2>
+<pre><code class="language-python">import random, math
+from randcrack import RandCrack
+from sympy.ntheory import discrete_log
+from hashlib import sha256
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import unpad
+from collections import Counter
+
+
+data = {}
+exec(open("out.txt").read(), {}, data)
+o, p, g, le, sc, ct = data['o'], data['n'], data['r'], data['le'], data['sc'], bytes.fromhex(data['ct'])
+
+
+cracker = RandCrack()
+for x in o:
+    cracker.submit(x)
+
+
+A = lambda: cracker.predict_getrandbits(32)
+
+
+def B(n):
+    x = 0
+    while n:
+        k = min(n, A().bit_length() or 1)
+        if k &gt; 32:
+            k = 32
+        x, n = (x &lt;&lt; k) | (A() &gt;&gt; (32 - k)), n - k
+    return x
+
+
+def C(n):
+    k = n.bit_length()
+    while 1:
+        x = B(k)
+        if x &lt; n:
+            return x
+
+
+def D(v):
+    v = list(v)
+    for i in range(len(v) - 1, 0, -1):
+        j = C(i + 1)
+        v[i], v[j] = v[j], v[i]
+    return v
+
+
+U = lambda: ((A() &lt;&lt; 32) ^ A())
+
+
+w0 = next(w for _ in iter(int, 1) if 48 &lt;= (w := A().bit_length() + A().bit_length()) &lt;= 80)
+m0, z0 = 1 &lt;&lt; w0, (1 &lt;&lt; w0) - 1
+X = lambda t: ((U() ^ (t * 0x9e3779b97f4a7c15)) &amp; z0)
+
+
+def G(t, o=0, u=1):
+    x = X(t)
+    y = (U() ^ ((x &lt;&lt; 9) &amp; z0) ^ (x &gt;&gt; 13) ^ (t &lt;&lt; 17)) &amp; z0
+    p_val, q_val = 2 + (x &amp; 31), 4 + ((y &gt;&gt; 7) &amp; 31)
+    v = [(p_val + i + ((x &gt;&gt; (i &amp; 31)) &amp; 1) + ((y &gt;&gt; ((i + 5) &amp; 31)) &amp; 1)) * u for i in range(q_val)]
+    if o:
+        v = [(r &lt;&lt; 1) | 1 for r in v]
+    return D(v)
+
+
+H = lambda t, o=0, u=1: (v := G(t, o, u))[C(len(v))]
+
+a0, a1 = H(A()), H(A())
+while not 20 &lt;= a0 + a1 &lt;= 38:
+    a0, a1 = H(A()), H(A())
+a2, a3, a4 = a0 + a1, H(A()) + H(A()), H(A(), 1)
+
+while 1:
+    a5 = B(a3) | 1
+    if a5 &gt; 3 and pow(a5, a4, m0) not in (1, z0):
+        break
+
+a7 = next(a for _ in iter(int, 1) if 104 &lt;= (a := H(A(), 0, 4)) &lt;= 184)
+a8, a9 = H(A()), H(A())
+aa = [1 + C(H(A())) for _ in range(a7)]
+ab, ac, ad, ae = C(4), C(4), C(4), C(3)
+af, ag, ah, ai, aj, ak, al = B(a2), B(a2) | 1, B(a2), C(a2), C(a2), B(a2), B(a2)
+am = next(a for _ in iter(int, 1) if 30 &lt;= (a := H(A())) &lt;= 40)
+an, ao = p.bit_length(), C(p.bit_length())
+ap, aq, ar = B(an), B(an) | 1, B(an)
+H(A())
+
+
+L_rot = lambda x, s, w: x if s == 0 else ((x &lt;&lt; s) | (x &gt;&gt; (w - s))) &amp; ((1 &lt;&lt; w) - 1)
+O_rot = lambda x, s, w: x if s == 0 else ((x &gt;&gt; s) | (x &lt;&lt; (w - s))) &amp; ((1 &lt;&lt; w) - 1)
+
+
+def invert_cut(val, idx):
+    y = O_rot(val, ao, an)
+    if ad &amp; 2:
+        y ^= al
+    if ad &amp; 1:
+        y ^= ak
+    if ac &amp; 2:
+        y = L_rot(y, aj, an)
+    if ac &amp; 1:
+        y ^= (ag * idx + ah) &amp; ((1 &lt;&lt; an) - 1)
+    if ab &amp; 2:
+        y = O_rot(y, ai, an)
+    if ab &amp; 1:
+        y ^= af
+    return y
+
+
+total_calls = a8 + a9 + 2
+k_indices = []
+for j in aa:
+    k_indices.append(total_calls + j)
+    total_calls += j
+
+A_base_am = pow(a5, a4, m0) % (1 &lt;&lt; am)
+A_inv_am = pow(A_base_am, -1, 1 &lt;&lt; am)
+
+H_cands = []
+for idx, val in enumerate(le):
+    Y = invert_cut(val, idx)
+    if Y &lt; p:
+        try:
+            E_k = discrete_log(p, Y, g)
+            H_cands.append((E_k * pow(A_inv_am, k_indices[idx], 1 &lt;&lt; am)) % (1 &lt;&lt; am))
+        except ValueError:
+            pass
+
+most_common_H = Counter(H_cands).most_common(1)[0][0]
+
+lo0 = (most_common_H * pow(A_base_am, a8 + 1, 1 &lt;&lt; am)) % (1 &lt;&lt; am)
+lo1 = (most_common_H * pow(A_base_am, a8 + a9 + 2, 1 &lt;&lt; am)) % (1 &lt;&lt; am)
+
+
+HW = lambda x: bin(x).count('1')
+ml = next(ml_cand for ml_cand in range(65536) if all(sc[i] - (HW((ml_cand * (i + 1) + lo0 + (lo1 &lt;&lt; (i &amp; 7))) &amp; 0xffff) &lt;&lt; 1) - ((ml_cand &gt;&gt; i) &amp; 1) in (0, 1, 2) for i in range(16)))
+
+y_vals = [HW((ml * (i + 1) + lo0 + (lo1 &lt;&lt; (i &amp; 7))) &amp; 0xffff) for i in range(32)]
+valid_mr = [mr_cand for mr_cand in range(65536) if all(sc[i] - (y_vals[i] &lt;&lt; 1) - ((mr_cand &gt;&gt; (i - 16)) &amp; 1) in (0, 1, 2) for i in range(16, 32))]
+
+
+a_bytes = (lo0 ^ ml).to_bytes(8, "big")
+for mr in valid_mr:
+    for rand_byte in range(11):
+        key = sha256(a_bytes + (lo1 ^ mr).to_bytes(8, "big") + bytes([rand_byte])).digest()[:16]
+        try:
+            flag = unpad(AES.new(key, AES.MODE_ECB).decrypt(ct), 16)
+            if all(32 &lt;= c &lt; 127 for c in flag):
+                print(flag.decode('utf-8'))
+                exit()
+        except:
+            pass
+</code></pre>
+<hr />
+<h2>Flag</h2>
+<p>Nilai flag tidak tercatat pada dokumen asli, jadi bagian ini dibiarkan kosong.</p>
+            </article>
+
+            <div class="writeup-page-footer">
+                <a href="index.html" class="btn"><i class="fas fa-arrow-left"></i> Kembali ke Catatan CTF</a>
+                <a href="source/Wreck-IT7/Quals/Wreck-IT-7.0_QUAL_GWS-Mas-Daman.pdf" class="btn" target="_blank" rel="noopener noreferrer"><i class="fas fa-file-pdf"></i> Dokumen Asli (PDF)</a>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="copyright">
+                <p>&copy; 2026 Skipped. Catatan belajar, ditulis sambil mencoba.</p>
+                <p class="fan-note">Situs penggemar. Zenless Zone Zero dan Ye Shunguang adalah milik HoYoverse; situs ini tidak berafiliasi dan tidak memakai artwork resminya.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

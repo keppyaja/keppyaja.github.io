@@ -9,7 +9,7 @@ Portofolio pribadi **Tsaqif Fawwaz (Skipped)**, seorang cybersecurity enthusiast
 - **Fokus dan keahlian**: kriptografi, binary exploitation, web exploitation, reverse engineering, Linux, database, dan CTF.
 - **Project showcase**: WebMusyKom, local AI chatbot, Perpusri, dan proyek algoritma.
 - **Statistik Codeforces** yang diambil dari Codeforces API.
-- **Arsip write-up CTF** dari ARACTF7 dan CyLab/picoCTF.
+- **Arsip write-up CTF** dari ARACTF7, Wreck-IT 7.0, dan CyLab/picoCTF.
 - **Form kontak** yang mengirimkan pesan melalui FormSubmit.
 
 ## Fitur Interaksi
@@ -104,12 +104,13 @@ Header keamanan seperti Content Security Policy (CSP), HSTS, dan `frame-ancestor
 Arsip saat ini berisi write-up dari kategori:
 
 - Cryptography
+- Web Exploitation
 - Binary Exploitation
 - Reverse Engineering
 - Forensics
 - Miscellaneous
 
-Sumber Markdown berada di [writeups/source](writeups/source). Halaman yang sudah dirender dapat dibuka melalui [writeups/index.html](writeups/index.html).
+Sumber Markdown dan dokumen asli berada di [writeups/source](writeups/source). Halaman yang sudah dirender dapat dibuka melalui [writeups/index.html](writeups/index.html).
 
 ## Status Proyek
 

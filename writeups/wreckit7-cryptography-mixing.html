@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mixing | Write-up | Skipped</title>
+    <meta name="description" content="Write-up Mixing (Cryptography) dari Wreck-IT 7.0 Quals oleh tim GWS Mas Daman.">
+    <meta name="theme-color" content="#0a0a0a">
+    <link rel="icon" type="image/svg+xml" href="../assets/images/favicon.svg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;1,700;1,800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/style.css?v=17">
+    <script src="../assets/js/site-audio.js?v=3" defer></script>
+</head>
+<body class="writeup-page-body">
+    <header>
+        <div class="container">
+            <nav class="navbar" aria-label="Navigasi utama">
+                <a href="../index.html" class="logo">Skipped<span>/ notes</span></a>
+                <ul class="nav-links">
+                    <li><a href="../#home">Intro</a></li>
+                    <li><a href="../#about">Tentang</a></li>
+                    <li><a href="../#skills">Fokus</a></li>
+                    <li><a href="../#portfolio">Proyek</a></li>
+                    <li><a href="index.html" class="active" aria-current="page">Write-ups</a></li>
+                    <li><a href="../#contact">Kontak</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="writeup-page">
+        <div class="container">
+            <nav class="writeup-breadcrumb" aria-label="Breadcrumb">
+                <a href="../index.html">Home</a>
+                <span>/</span>
+                <a href="index.html">Write-ups</a>
+                <span>/</span>
+                <a href="index.html#wreckit7">Wreck-IT 7.0</a>
+                <span>/</span>
+                <span class="current">Mixing</span>
+            </nav>
+
+            <div class="writeup-page-header">
+                <span class="tag writeup-cat-tag"><i class="fas fa-key"></i> Cryptography</span>
+                <h1>Mixing</h1>
+                <p class="writeup-page-sub">Wreck-IT 7.0 Quals</p>
+            </div>
+
+            <article id="markdown-content" class="writeup-page-body-content">
+<h1>Write-Up: Mixing</h1>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Challenge</strong></td>
+<td>Mixing</td>
+</tr>
+<tr>
+<td><strong>Kategori</strong></td>
+<td>Cryptography</td>
+</tr>
+<tr>
+<td><strong>Event</strong></td>
+<td>Wreck-IT 7.0 (Quals)</td>
+</tr>
+<tr>
+<td><strong>Tim</strong></td>
+<td>GWS Mas Daman</td>
+</tr>
+<tr>
+<td><strong>Anggota</strong></td>
+<td>Skipped, Daman, Irul</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>Deskripsi Challenge</h2>
+<blockquote>
+<p>ICE MIXED PAKDE NYOS THIS MIXED FRUIT AND SYRUP IS NOT MEASURED, THE PORTION IS VERY BIG</p>
+</blockquote>
+<hr />
+<h2>Analisis</h2>
+<p>Script challenge membangun kurva elips <code>y^2 = x^3 + A*x + B mod P</code>. Flag diletakkan pada koordinat <code>y1</code> dari titik <code>(x1, y1)</code> di kurva, lalu koordinat tersebut di-<em>double</em> sebanyak 5 kali. Output yang diberikan hanyalah enam nilai <code>x</code>.</p>
+<pre><code class="language-python">#!/usr/bin/env python3
+from secrets import flag
+import os
+from Crypto.Util.number import getPrime
+
+
+P = getPrime(512)
+while P % 4 != 3:
+    P = getPrime(512)
+
+
+A = int.from_bytes(os.urandom(64), 'big') % P
+Y1 = int.from_bytes(flag.ljust(64, b'\x00'), 'big')
+X1 = int.from_bytes(os.urandom(64), 'big') % P
+B = (Y1**2 - X1**3 - A*X1) % P
+X = [X1]
+for _ in range(5):
+    curr_X = X[-1]
+    num = (curr_X**2 - A)**2 - 8*B*curr_X
+    den = 4*(curr_X**3 + A*curr_X + B)
+    next_X = (num * pow(den, -1, P)) % P
+    X.append(next_X)
+
+
+with open("out.txt", "w") as f:
+    f.write("data = " + repr(X))
+</code></pre>
+<p>Nilai <code>P</code> dan <code>A</code> dibangkitkan secara acak, sedangkan <code>B</code> dihitung dari <code>Y1</code>, <code>X1</code>, dan <code>A</code>. Karena <code>Y1</code> berisi flag, kita perlu memulihkan <code>P</code>, <code>A</code>, dan <code>B</code> hanya dari deretan nilai <code>x</code>.</p>
+<hr />
+<h2>Solve</h2>
+<p>Rumus <em>doubling</em> di atas bersifat publik. Setiap pasangan <code>(x1, x2)</code> yang berurutan memberikan satu persamaan yang melibatkan <code>A</code>, <code>B</code>, dan <code>P</code>:</p>
+<pre><code>x2 * 4*(x1^3 + A*x1 + B) = (x1^2 - A)^2 - 8*B*x1 (mod P)
+</code></pre>
+<p>Kalau dipindah ke satu ruas dan didefinisikan:</p>
+<pre><code>c1 = 4*x1*x2 + 2*x1^2
+c2 = 4*x2 + 8*x1
+c3 = 4*x2*x1^3 - x1^4
+</code></pre>
+<p>Maka setiap pasangan <code>(x1, x2)</code> yang berurutan memberikan:</p>
+<pre><code>Eq_i: A^2 - c1_i*A - c2_i*B - c3_i = 0 (mod P)
+</code></pre>
+<p>Koefisien <code>A^2</code> sama untuk semua pasangan, jadi bisa diabaikan dengan mengurangkan dua persamaan:</p>
+<pre><code>D_i = Eq_i - Eq_{i+1}: d1_i*A + d2_i*B + d3_i = 0 (mod P)
+</code></pre>
+<p>Dari sini kita memperoleh empat persamaan linear murni dalam <code>A</code> dan <code>B</code>. Untuk mencari <code>P</code>, kita bisa memakai GCD determinan. Ambil tiga persamaan untuk membentuk matriks 3&times;3:</p>
+<pre><code>| d1_a d2_a d3_a |
+| d1_b d2_b d3_b |
+| d1_c d2_c d3_c |
+</code></pre>
+<p>Karena ketiganya memiliki solusi yang sama <code>(A, B, 1)</code> modulo <code>P</code>, determinan matriks tersebut harus habis dibagi <code>P</code>. Hasilnya adalah prima 512-bit yang tepat.</p>
+<p>Setelah <code>P</code> diketahui, kita tinggal mencari <code>A</code> dan <code>B</code>. Untuk mendapatkan flag:</p>
+<pre><code>val = X1^3 + A*X1 + B (mod P)
+</code></pre>
+<p>Karena <code>P % 4 == 3</code>, akar kuadratnya dapat dihitung dengan:</p>
+<pre><code>y = val^((P+1)//4) (mod P)
+</code></pre>
+<hr />
+<h2>Solver</h2>
+<pre><code class="language-python">from sympy import Matrix, isprime
+from itertools import combinations
+import math
+
+
+data = [
+    1310728018303650763936027566726118990540730463418184722626247766533259897833339472201369793020753036897354956372655805443666265539520643579468280542790912,
+    1948567695288789033882726566040664624967196105123510164670807174337853448573304124592834588010330665765241266759938926247542041919802062304813097620037961,
+    3770888144390194259291756870781587478561974187172600114039080697232166318179389261967556513452232735112227886010717711511566088733244254977109884050750521,
+    6685219650661520592837452091527901959121163338051479114854456479415168009003692128002422024872994156351020672099581144020816412383886103779026501845968524,
+    3445973769773227766423737354206143846342976057594988433631816479986063937687945211927469517217182447001986012000990667311685794996130773953481639400178746,
+    341460821872650281559806202378121714041594962254191119981490154027800966470418186955386638018116210324473072042502834593429857879741880406950528171126212
+]
+x = data
+n = len(x)
+
+
+def c123(i, mod=None):
+    """Koefisien c1, c2, c3 untuk persamaan Eq_i: A^2 - c1*A - c2*B - c3 = 0"""
+    x1, x2 = x[i], x[i + 1]
+    c1 = 4 * x1 * x2 + 2 * x1 ** 2
+    c2 = 4 * x2 + 8 * x1
+    c3 = 4 * x2 * x1 ** 3 - x1 ** 4
+    if mod:
+        return c1 % mod, c2 % mod, c3 % mod
+    return c1, c2, c3
+
+
+def build_D():
+    """Bangun daftar persamaan linear D_i: d1*A + d2*B + d3 = 0 (mod P)
+    dari selisih Eq_i - Eq_{i+1} (menghilangkan A^2)."""
+    C = [c123(i) for i in range(n - 1)]
+    D = []
+    for i in range(len(C) - 1):
+        c1a, c2a, c3a = C[i]
+        c1b, c2b, c3b = C[i + 1]
+        d1 = -(c1a - c1b)
+        d2 = -(c2a - c2b)
+        d3 = -(c3a - c3b)
+        D.append((d1, d2, d3))
+    return D
+
+
+def recover_P(D):
+    """Cari P via GCD determinan 3x3 dari kombinasi baris D, lalu buang
+    faktor kecil supaya tersisa 512-bit prime P % 4 == 3."""
+    dets = []
+    for combo in combinations(range(len(D)), 3):
+        rows = [D[i] for i in combo]
+        det = Matrix(rows).det()
+        dets.append(int(det))
+    g = 0
+    for d in dets:
+        g = math.gcd(g, d)
+    n_ = abs(g)
+    small = 1
+    for p in range(2, 200_000):
+        while n_ % p == 0:
+            n_ //= p
+            small *= p
+    assert isprime(n_), "Gagal mendapatkan P prima, cek data/metode"
+    assert n_.bit_length() >= 500, "P terlalu kecil, mungkin salah kombinasi"
+    return n_
+
+
+def recover_AB(D, P):
+    """Selesaikan sistem linear A, B mod P memakai 2 persamaan pertama,
+    lalu verifikasi dengan sisa persamaan."""
+    D = [(d1 % P, d2 % P, d3 % P) for d1, d2, d3 in D]
+    (d1_1, d2_1, d3_1), (d1_2, d2_2, d3_2) = D[0], D[1]
+    det = (d1_1 * d2_2 - d1_2 * d2_1) % P
+    detA = ((-d3_1) * d2_2 - (-d3_2) * d2_1) % P
+    detB = (d1_1 * (-d3_2) - d1_2 * (-d3_1)) % P
+    inv_det = pow(det, -1, P)
+    A = (detA * inv_det) % P
+    B = (detB * inv_det) % P
+    for d1, d2, d3 in D:
+        assert (d1 * A + d2 * B + d3) % P == 0
+    c1, c2, c3 = c123(0, mod=P)
+    assert (A * A - c1 * A - c2 * B - c3) % P == 0, "Verifikasi A,B gagal"
+    return A, B
+
+
+def recover_flag(P, A, B):
+    assert P % 4 == 3
+    x1 = x[0]
+    val = (x1 ** 3 + A * x1 + B) % P
+    y = pow(val, (P + 1) // 4, P)
+    for cand in (y, P - y):
+        b = cand.to_bytes(64, 'big').rstrip(b'\x00')
+        try:
+            s = b.decode()
+            if s.isprintable():
+                return s
+        except UnicodeDecodeError:
+            continue
+    return None
+
+
+def main():
+    D = build_D()
+    P = recover_P(D)
+    print(f"[+] P ditemukan ({P.bit_length()} bit, P%4={P % 4}):")
+    print(f"      {P}")
+    A, B = recover_AB(D, P)
+    print(f"[+] A = {A}")
+    print(f"[+] B = {B}")
+    flag = recover_flag(P, A, B)
+    print(f"[+] FLAG: {flag}")
+
+
+if __name__ == "__main__":
+    main()
+</code></pre>
+<hr />
+<h2>Flag</h2>
+<p><code>WRECKIT70{5urf_w4v3_4nd_curv3}</code></p>
+            </article>
+
+            <div class="writeup-page-footer">
+                <a href="index.html" class="btn"><i class="fas fa-arrow-left"></i> Kembali ke Catatan CTF</a>
+                <a href="source/Wreck-IT7/Quals/Wreck-IT-7.0_QUAL_GWS-Mas-Daman.pdf" class="btn" target="_blank" rel="noopener noreferrer"><i class="fas fa-file-pdf"></i> Dokumen Asli (PDF)</a>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="copyright">
+                <p>&copy; 2026 Skipped. Catatan belajar, ditulis sambil mencoba.</p>
+                <p class="fan-note">Situs penggemar. Zenless Zone Zero dan Ye Shunguang adalah milik HoYoverse; situs ini tidak berafiliasi dan tidak memakai artwork resminya.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
