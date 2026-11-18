@@ -6,6 +6,7 @@
     const SCRIPT_URL = scriptTag?.src || window.location.href;
     const AUDIO_PATH = new URL('../audio/theme.mp3', SCRIPT_URL).href;
     const AUDIO_STATE_KEY = 'portfolio-audio-state';
+    const AUDIO_VOLUME_KEY = 'portfolio-audio-volume';
     const GSAP_CDN = 'https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js';
     const GSAP_SCROLL_TRIGGER_CDN = 'https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js';
     const GSAP_SCROLL_TO_CDN = 'https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollToPlugin.min.js';
@@ -19,7 +20,14 @@
     let musicPromptShown = false;
     let shouldResumeAudio = false;
     let easterEggInitialized = false;
+    let savedVolume = 50;
 
+    try {
+        const storedVolume = Number.parseInt(sessionStorage.getItem(AUDIO_VOLUME_KEY) || '50', 10);
+        if (Number.isFinite(storedVolume)) savedVolume = Math.min(100, Math.max(0, storedVolume));
+    } catch (error) {
+        console.warn('Audio volume state is unavailable.', error);
+    }
     function normalizeIndexUrl() {
         if (!/\/index\.html$/.test(window.location.pathname)) return;
         const cleanPath = window.location.pathname.slice(0, -'index.html'.length) || '/';
@@ -68,6 +76,7 @@
     } else if (audio.src !== AUDIO_PATH) {
         audio.src = AUDIO_PATH;
     }
+    audio.volume = savedVolume / 100;
 
     function saveAudioState(forcePlayingState) {
         try {
@@ -244,7 +253,48 @@
             toggle.innerHTML = '<i class="fas fa-volume-mute" aria-hidden="true"></i><span>Musik</span>';
             navbar.append(toggle);
         }
+        if (toggle && !toggle.parentElement?.classList.contains('audio-control')) {
+            const control = document.createElement('div');
+            control.className = 'audio-control';
+            toggle.insertAdjacentElement('afterend', control);
+            control.append(toggle);
+
+            const panel = document.createElement('div');
+            panel.className = 'audio-volume-panel';
+            panel.innerHTML = `
+                <label for="audio-volume">Volume <output id="audio-volume-output" for="audio-volume">${savedVolume}%</output></label>
+                <input id="audio-volume" type="range" min="0" max="100" step="1" value="${savedVolume}" aria-label="Volume musik">
+            `;
+            control.append(panel);
+        }
+
         bindAudioToggle();
+        const control = toggle?.closest('.audio-control');
+        const volume = control?.querySelector('#audio-volume');
+        const volumeOutput = control?.querySelector('#audio-volume-output');
+        if (volume && volume.dataset.volumeBound !== 'true') {
+            volume.dataset.volumeBound = 'true';
+            const updateVolume = value => {
+                const volumePercent = Math.min(100, Math.max(0, Number(value)));
+                audio.volume = volumePercent / 100;
+                volume.value = String(volumePercent);
+                volume.style.setProperty('--volume-fill', `${volumePercent}%`);
+                volume.setAttribute('aria-valuetext', `${volumePercent} persen`);
+                if (volumeOutput) volumeOutput.value = `${volumePercent}%`;
+                try {
+                    sessionStorage.setItem(AUDIO_VOLUME_KEY, String(volumePercent));
+                } catch (error) {
+                    console.warn('Audio volume state could not be saved.', error);
+                }
+            };
+            volume.addEventListener('input', () => updateVolume(volume.value));
+            updateVolume(volume.value);
+            control.addEventListener('keydown', event => {
+                if (event.key === 'Escape') control.classList.add('volume-panel-dismissed');
+            });
+            control.addEventListener('pointerenter', () => control.classList.remove('volume-panel-dismissed'));
+            control.addEventListener('focusin', () => control.classList.remove('volume-panel-dismissed'));
+        }
         updateToggle(!audio.paused);
     }
 

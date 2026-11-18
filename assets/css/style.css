@@ -349,6 +349,99 @@ body > header::after {
 .audio-toggle i { width: 12px; font-size: .72rem; text-align: center; }
 /* Hover, pressed and active states of .audio-toggle are animated by GSAP. */
 .audio-toggle:focus-visible { outline: 2px solid var(--accent-color); outline-offset: 3px; }
+.audio-control {
+    position: relative;
+    display: inline-flex;
+    margin-left: auto;
+    align-self: center;
+}
+.audio-volume-panel {
+    position: absolute;
+    z-index: 100;
+    top: calc(100% + 10px);
+    right: 0;
+    width: 190px;
+    padding: 12px 14px 14px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    box-shadow: 0 14px 32px rgba(0, 0, 0, .45);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-4px);
+    transition: opacity .15s ease, transform .15s ease, visibility 0s linear .15s;
+}
+.audio-control:hover .audio-volume-panel,
+.audio-control:focus-within .audio-volume-panel,
+.audio-control.audio-panel-open .audio-volume-panel {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    transition-delay: 0s;
+}
+.audio-control.volume-panel-dismissed .audio-volume-panel {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-4px);
+}
+.audio-volume-panel label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    color: var(--light-color);
+    font-family: var(--mono);
+    font-size: .68rem;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+.audio-volume-panel output {
+    color: var(--accent-color);
+}
+.audio-volume-panel input[type="range"] {
+    --slider-track-size: 4px;
+    --slider-thumb-size: 14px;
+    width: 100%;
+    height: 14px;
+    margin: 0;
+    appearance: none;
+    background: transparent;
+    cursor: pointer;
+}
+.audio-volume-panel input[type="range"]::-webkit-slider-runnable-track {
+    height: var(--slider-track-size);
+    border-radius: 999px;
+    background: linear-gradient(to right, var(--accent-color) 0 var(--volume-fill, 50%), var(--border) var(--volume-fill, 50%) 100%);
+}
+.audio-volume-panel input[type="range"]::-webkit-slider-thumb {
+    width: var(--slider-thumb-size);
+    height: var(--slider-thumb-size);
+    margin-top: calc((var(--slider-track-size) - var(--slider-thumb-size)) / 2);
+    appearance: none;
+    border: 2px solid var(--accent-color);
+    border-radius: 50%;
+    background: var(--surface);
+}
+.audio-volume-panel input[type="range"]::-moz-range-track {
+    height: var(--slider-track-size);
+    border-radius: 999px;
+    background: var(--border);
+}
+.audio-volume-panel input[type="range"]::-moz-range-progress {
+    height: var(--slider-track-size);
+    border-radius: 999px;
+    background: var(--accent-color);
+}
+.audio-volume-panel input[type="range"]::-moz-range-thumb {
+    width: calc(var(--slider-thumb-size) - 4px);
+    height: calc(var(--slider-thumb-size) - 4px);
+    border: 2px solid var(--accent-color);
+    border-radius: 50%;
+    background: var(--surface);
+}
+.audio-volume-panel input[type="range"]:focus-visible {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 5px;
+}
 .menu-toggle { display: none; background: transparent; color: var(--light-color); border: 2px solid var(--border); border-radius: 0; width: 44px; height: 44px; }
 
 .hero {
@@ -907,7 +1000,8 @@ footer::before { content: ''; display: block; height: 5px; margin: -38px 0 38px;
 @media (max-width: 720px) {
     .container { width: calc(100% - 40px); }
     .navbar { min-height: 64px; flex-wrap: wrap; gap: 0; }
-    .audio-toggle { min-width: 86px; margin-left: auto; margin-right: 10px; }
+    .audio-toggle { min-width: 86px; }
+    .audio-control { margin-left: auto; margin-right: 10px; }
     .navigation-ready .menu-toggle { display: block; }
     .nav-links { display: flex; width: 100%; flex-wrap: wrap; gap: 4px 24px; padding: 12px 0 20px; }
     .navigation-ready .nav-links { display: none; }
