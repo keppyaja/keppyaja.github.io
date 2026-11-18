@@ -13,8 +13,17 @@
     let mutedByUser = false;
     let pausedByVisibility = false;
     let navigating = false;
-    let shouldResumeAudio = false;
+    let musicPromptShown = false;
     let easterEggInitialized = false;
+
+    function normalizeIndexUrl() {
+        if (!/\/index\.html$/.test(window.location.pathname)) return;
+        const cleanPath = window.location.pathname.slice(0, -'index.html'.length) || '/';
+        const cleanUrl = `${cleanPath}${window.location.search}${window.location.hash}`;
+        window.history.replaceState(null, '', cleanUrl);
+    }
+
+    normalizeIndexUrl();
 
     function loadScript(src) {
         return new Promise((resolve, reject) => {
@@ -32,13 +41,15 @@
             // Plugins are optional: the animation script checks for each before using it.
             if (!window.ScrollTrigger) await loadScript(GSAP_SCROLL_TRIGGER_CDN).catch(console.warn);
             if (!window.ScrollToPlugin) await loadScript(GSAP_SCROLL_TO_CDN).catch(console.warn);
-            const animationSource = new URL('gsap-animations.js?v=3', SCRIPT_URL).href;
+            const animationSource = new URL('gsap-animations.js?v=5', SCRIPT_URL).href;
             if (!document.querySelector(`script[src="${animationSource}"]`)) {
                 await loadScript(animationSource);
             }
             window.initGsapAnimations?.();
         } catch (error) {
             console.warn('GSAP animations could not be loaded.', error);
+            const enterButton = document.getElementById('enter-site');
+            if (enterButton) enterButton.disabled = false;
         }
     }
 
@@ -70,7 +81,6 @@
         try {
             const savedState = JSON.parse(sessionStorage.getItem(AUDIO_STATE_KEY) || 'null');
             if (!savedState) return;
-            shouldResumeAudio = savedState.wasPlaying === true;
             mutedByUser = savedState.mutedByUser === true;
             if (Number.isFinite(savedState.currentTime) && savedState.currentTime > 0) {
                 if (audio.readyState >= 1) {
@@ -108,18 +118,39 @@
             saveAudioState(true);
         }).catch((err) => {
             updateToggle(false);
-            // Browser autoplay restrictions: resume on first user interaction
-            const resumeOnInteraction = () => {
-                if (mutedByUser || !shouldResumeAudio) return;
-                audio.play().then(() => {
-                    updateToggle(true);
-                    saveAudioState(true);
-                }).catch(() => {});
-            };
-            window.addEventListener('click', resumeOnInteraction, { once: true });
-            window.addEventListener('keydown', resumeOnInteraction, { once: true });
-            window.addEventListener('touchstart', resumeOnInteraction, { once: true });
+            console.warn('Audio playback was blocked by the browser.', err);
         });
+    }
+
+    function askToPlayMusic() {
+        if (musicPromptShown || !audio.paused) return;
+        musicPromptShown = true;
+        const dialog = document.getElementById('music-consent-dialog');
+        const yesButton = document.getElementById('music-consent-yes');
+        const noButton = document.getElementById('music-consent-no');
+        if (!dialog || !yesButton || !noButton) {
+            console.warn('Music consent dialog is unavailable.');
+            return;
+        }
+
+        const closeDialog = wantsMusic => {
+            dialog.hidden = true;
+            document.body.classList.remove('music-dialog-open');
+            if (wantsMusic) {
+                mutedByUser = false;
+                startAudio();
+                return;
+            }
+            mutedByUser = true;
+            saveAudioState(false);
+            updateToggle(false);
+        };
+
+        yesButton.onclick = () => closeDialog(true);
+        noButton.onclick = () => closeDialog(false);
+        dialog.hidden = false;
+        document.body.classList.add('music-dialog-open');
+        yesButton.focus();
     }
 
     audio.addEventListener('timeupdate', () => {
@@ -305,7 +336,6 @@
             await loadPageScripts(nextDocument);
             ensureAudioToggle();
             window.initGsapAnimations?.();
-            startAudio();
             window.scrollTo({ top: 0, behavior: 'auto' });
         } catch (error) {
             console.error('Internal navigation failed.', error);
@@ -317,7 +347,6 @@
 
     document.addEventListener('click', event => {
         if (event.target.closest('#enter-site')) {
-            startAudio();
             return;
         }
         const link = event.target.closest('a[href]');
@@ -338,26 +367,20 @@
             audio.muted = true;
             audio.pause();
             updateToggle(false);
-        } else if (pausedByVisibility && !mutedByUser) {
+        } else {
             pausedByVisibility = false;
-            startAudio();
         }
     });
 
+    document.addEventListener('portfolio-entry-complete', askToPlayMusic, { once: true });
     initEasterEgg();
     ensureAudioToggle();
     syncEntrySession();
     loadGsapAnimations();
-    if (shouldResumeAudio) {
-        startAudio();
-    }
 
     // Handle Back-Forward Cache (bfcache) when user hits back button in browser
     window.addEventListener('pageshow', (event) => {
         restoreAudioState();
         ensureAudioToggle();
-        if (shouldResumeAudio && audio.paused) {
-            startAudio();
-        }
     });
 })();

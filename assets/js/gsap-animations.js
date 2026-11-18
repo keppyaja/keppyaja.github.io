@@ -389,6 +389,7 @@
             entryAmbient = [];
             entryScreen.hidden = true;
             entryScreen.setAttribute('aria-hidden', 'true');
+            document.dispatchEvent(new CustomEvent('portfolio-entry-complete'));
             return true;
         }
 
@@ -400,6 +401,7 @@
                 entryAmbient = [];
                 entryScreen.hidden = true;
                 entryScreen.setAttribute('aria-hidden', 'true');
+                document.dispatchEvent(new CustomEvent('portfolio-entry-complete'));
             }
         })
             .to(entryScreen.querySelector('.entry-screen-content'), {
@@ -418,6 +420,26 @@
             .to(entryScreen, { yPercent: -100, duration: 0.85 }, 0.22);
 
         return true;
+    }
+
+    function animateEntryProgress(entryScreen, gsap) {
+        const progressValue = entryScreen.querySelector('#entry-progress-value');
+        const progressFill = entryScreen.querySelector('#entry-progress-fill');
+        const enterButton = entryScreen.querySelector('#enter-site');
+        const progress = { value: 0 };
+        const updateProgress = () => {
+            const percentage = Math.round(progress.value);
+            if (progressValue) progressValue.textContent = `${percentage}%`;
+            if (progressFill) gsap.set(progressFill, { scaleX: percentage / 100 });
+        };
+        gsap.timeline({
+            onComplete: () => {
+                if (enterButton) enterButton.disabled = false;
+                window.enterPortfolio?.();
+            }
+        })
+            .to(progress, { value: 90, duration: 5, ease: 'power1.inOut', onUpdate: updateProgress })
+            .to(progress, { value: 100, duration: 2.2, ease: 'power2.out', onUpdate: updateProgress });
     }
 
     /* ------------------------------------------------------------------ *
@@ -629,6 +651,10 @@
         const reduceMotion = prefersReducedMotion();
         const controller = new AbortController();
         const { signal } = controller;
+        const entryScreen = document.querySelector('.entry-screen');
+        const entryVisible = Boolean(entryScreen) && !entryScreen.hidden &&
+            !entryScreen.classList.contains('is-leaving') &&
+            !document.documentElement.classList.contains('entry-session-visited');
 
         activeContext = gsap.context(self => {
             // Event handlers run later; routing them through the context keeps their
@@ -637,22 +663,28 @@
             const handler = callback => (...args) => self.run(() => callback(...args));
 
             bindInteractions({ signal, handler, reduceMotion });
-            if (reduceMotion) return () => controller.abort();
-
-            const entryScreen = document.querySelector('.entry-screen');
-            const entryVisible = Boolean(entryScreen) && !entryScreen.hidden &&
-                !entryScreen.classList.contains('is-leaving') &&
-                !document.documentElement.classList.contains('entry-session-visited');
+            if (reduceMotion) {
+                const progressValue = document.querySelector('#entry-progress-value');
+                const progressFill = document.querySelector('#entry-progress-fill');
+                if (progressValue) progressValue.textContent = '100%';
+                if (progressFill) gsap.set(progressFill, { scaleX: 1 });
+                const enterButton = entryScreen?.querySelector('#enter-site');
+                if (enterButton) enterButton.disabled = false;
+                if (entryVisible) window.enterPortfolio?.();
+                return () => controller.abort();
+            }
 
             bindTilt({ gsap, signal, handler });
             const stopMarquee = startSkillsMarquee({ gsap, signal });
 
             if (entryVisible) {
                 startEntryAmbient(gsap, entryScreen);
-                gsap.timeline({
+                const introTimeline = gsap.timeline({
                     defaults: { ease: 'power3.out' },
                     onComplete: handler(() => startOrbitLoops(gsap, entryScreen))
-                })
+                });
+
+                introTimeline
                     .from('.entry-screen-content > *', {
                         y: 28,
                         autoAlpha: 0,
@@ -661,6 +693,8 @@
                     })
                     .from('.entry-silhouette', { x: 90, autoAlpha: 0, duration: 1.1 }, '-=0.8')
                     .from('.entry-screen-orbit', { scale: 0.7, autoAlpha: 0, duration: 1 }, '-=0.9');
+
+                animateEntryProgress(entryScreen, gsap);
             }
 
             gsap.from('.navbar', {

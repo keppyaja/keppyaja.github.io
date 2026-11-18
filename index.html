@@ -29,7 +29,7 @@
         crossorigin="anonymous"
         defer></script>
 
-    <link rel="stylesheet" href="assets/css/style.css?v=17">
+    <link rel="stylesheet" href="assets/css/style.css?v=18">
     <script>
         window.portfolioEntrySession = {
             key: 'skipped-portfolio-entry-seen',
@@ -69,7 +69,7 @@
             document.documentElement.classList.add('entry-session-visited');
         }
     </script>
-    <script src="assets/js/site-audio.js?v=3" defer></script>
+    <script src="assets/js/site-audio.js?v=5" defer></script>
 </head>
 <body class="entry-locked">
     <a class="skip-link" href="#main-content">Lewati navigasi</a>
@@ -90,10 +90,19 @@
             <p class="entry-kicker">Welcome to the edge</p>
             <h1 id="entry-title">Skipped<span>/</span></h1>
             <p class="entry-description">Tentang saya, CTF, project, dan Competitive Programming. </p>
-            <button class="btn btn-accent entry-enter" id="enter-site" type="button">
+            <div class="entry-progress" aria-label="Memuat portfolio">
+                <div class="entry-progress-meta">
+                    <span>Loading showcase</span>
+                    <strong id="entry-progress-value">0%</strong>
+                </div>
+                <div class="entry-progress-track" aria-hidden="true">
+                    <span id="entry-progress-fill"></span>
+                </div>
+            </div>
+            <button class="btn btn-accent entry-enter" id="enter-site" type="button" disabled>
                 Masuk ke portfolio <i class="fas fa-arrow-right" aria-hidden="true"></i>
             </button>
-            <p class="entry-hint">Klik untuk membuka halaman utama</p>
+            <p class="entry-hint">Showcase sedang disiapkan · otomatis masuk</p>
         </div>
         <div class="entry-screen-meta" aria-hidden="true">
             <span>System ready</span>
@@ -101,16 +110,28 @@
         </div>
     </section>
 
+    <div class="music-consent" id="music-consent-dialog" hidden role="dialog" aria-modal="true" aria-labelledby="music-consent-title" aria-describedby="music-consent-description">
+        <div class="music-consent-panel">
+            <p class="eyebrow">Optional soundtrack / 01</p>
+            <h2 id="music-consent-title">Nyalakan musik?</h2>
+            <p id="music-consent-description">Portfolio ini memiliki musik latar. Musik hanya akan diputar jika Anda memilih untuk menyalakannya.</p>
+            <div class="music-consent-actions">
+                <button class="btn btn-accent" id="music-consent-yes" type="button">Nyalakan musik <i class="fas fa-volume-high" aria-hidden="true"></i></button>
+                <button class="btn" id="music-consent-no" type="button">Tidak sekarang</button>
+            </div>
+        </div>
+    </div>
+
     <header>
         <div class="container">
             <nav class="navbar">
-                <a href="index.html" class="logo">Skipped<span>/ security notes</span></a>
+                <a href="./" class="logo">Skipped<span>/ security notes</span></a>
                 <ul class="nav-links" id="navLinks">
                     <li><a href="#home">Intro</a></li>
                     <li><a href="#about">Tentang</a></li>
                     <li><a href="#skills">Fokus</a></li>
                     <li><a href="#portfolio">Proyek</a></li>
-                    <li><a href="writeups/index.html">Write-ups</a></li>
+                    <li><a href="writeups/">Write-ups</a></li>
                     <li><a href="#contact">Kontak</a></li>
                 </ul>
                 <button type="button" class="audio-toggle" id="audio-toggle" aria-label="Nyalakan musik" aria-pressed="false">
@@ -182,7 +203,7 @@
                 <p class="hero-intro">Saya mahasiswa teknik informatika yang belajar keamanan lewat tantangan CTF. Saya juga tertarik pada algoritma dan struktur data.</p>
                 <p class="hero-intro">Hobi bermain game dan membaca buku.</p>
                 <div class="hero-btns">
-                    <a href="writeups/index.html" class="btn btn-accent">Baca catatan CTF <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+                    <a href="writeups/" class="btn btn-accent">Baca catatan CTF <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
                     <a href="#portfolio" class="text-link">Lihat proyek <i class="fas fa-arrow-down" aria-hidden="true"></i></a>
                 </div>
                 <p class="hero-location">PENS · Sidoarjo / Surabaya</p>
@@ -239,6 +260,42 @@ q = N // p</code></pre>
         </div>
     </section>
 
+    <section class="table-of-contents" aria-labelledby="contents-title">
+        <div class="container">
+            <div class="section-heading">
+                <p class="eyebrow">00 / Navigasi arsip</p>
+                <h2 id="contents-title">Table of contents.</h2>
+                <p>Telusuri bagian utama portfolio ini.</p>
+            </div>
+            <nav class="toc-grid" aria-label="Daftar isi portfolio">
+                <a class="toc-item" href="#home">
+                    <span class="toc-number">00</span>
+                    <strong>Intro</strong>
+                    <span class="toc-arrow" aria-hidden="true"><i class="fas fa-arrow-right"></i></span>
+                </a>
+                <a class="toc-item" href="#about">
+                    <span class="toc-number">01</span>
+                    <strong>Tentang saya</strong>
+                    <span class="toc-arrow" aria-hidden="true"><i class="fas fa-arrow-right"></i></span>
+                </a>
+                <a class="toc-item" href="#skills">
+                    <span class="toc-number">02</span>
+                    <strong>Fokus & perangkat</strong>
+                    <span class="toc-arrow" aria-hidden="true"><i class="fas fa-arrow-right"></i></span>
+                </a>
+                <a class="toc-item" href="#portfolio">
+                    <span class="toc-number">03</span>
+                    <strong>Proyek & eksperimen</strong>
+                    <span class="toc-arrow" aria-hidden="true"><i class="fas fa-arrow-right"></i></span>
+                </a>
+                <a class="toc-item" href="#contact">
+                    <span class="toc-number">04</span>
+                    <strong>Kontak</strong>
+                    <span class="toc-arrow" aria-hidden="true"><i class="fas fa-arrow-right"></i></span>
+                </a>
+            </nav>
+        </div>
+    </section>
 
     <section id="about" class="about">
         <div class="container">
@@ -394,7 +451,7 @@ q = N // p</code></pre>
                             <span class="tag">Write-up</span>
                         </div>
                         <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top: 15px;">
-                            <a href="writeups/index.html" class="btn btn-accent" style="padding: 8px 15px; font-size: 1rem;">
+                            <a href="writeups/" class="btn btn-accent" style="padding: 8px 15px; font-size: 1rem;">
                                 Baca semua catatan <i class="fas fa-arrow-right" aria-hidden="true"></i>
                             </a>
                             <a href="https://github.com/keppyaja/Write-Ups" target="_blank" rel="noopener noreferrer" class="btn" style="padding: 8px 15px; font-size: 1rem;">
@@ -532,6 +589,7 @@ q = N // p</code></pre>
             }, 1100);
         }
 
+        window.enterPortfolio = enterPortfolio;
         enterSite?.addEventListener('click', enterPortfolio);
         if (!document.documentElement.classList.contains('entry-session-visited')) {
             enterSite?.focus();
