@@ -425,7 +425,6 @@
     function animateEntryProgress(entryScreen, gsap) {
         const progressValue = entryScreen.querySelector('#entry-progress-value');
         const progressFill = entryScreen.querySelector('#entry-progress-fill');
-        const enterButton = entryScreen.querySelector('#enter-site');
         const progress = { value: 0 };
         const updateProgress = () => {
             const percentage = Math.round(progress.value);
@@ -434,7 +433,6 @@
         };
         gsap.timeline({
             onComplete: () => {
-                if (enterButton) enterButton.disabled = false;
                 window.enterPortfolio?.();
             }
         })
@@ -668,8 +666,6 @@
                 const progressFill = document.querySelector('#entry-progress-fill');
                 if (progressValue) progressValue.textContent = '100%';
                 if (progressFill) gsap.set(progressFill, { scaleX: 1 });
-                const enterButton = entryScreen?.querySelector('#enter-site');
-                if (enterButton) enterButton.disabled = false;
                 if (entryVisible) window.enterPortfolio?.();
                 return () => controller.abort();
             }

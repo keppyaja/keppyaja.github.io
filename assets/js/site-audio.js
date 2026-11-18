@@ -48,8 +48,6 @@
             window.initGsapAnimations?.();
         } catch (error) {
             console.warn('GSAP animations could not be loaded.', error);
-            const enterButton = document.getElementById('enter-site');
-            if (enterButton) enterButton.disabled = false;
         }
     }
 
@@ -346,9 +344,6 @@
     }
 
     document.addEventListener('click', event => {
-        if (event.target.closest('#enter-site')) {
-            return;
-        }
         const link = event.target.closest('a[href]');
         if (!link || event.defaultPrevented || link.target === '_blank' || link.hasAttribute('download')) return;
         const url = new URL(link.href, window.location.href);

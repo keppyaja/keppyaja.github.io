@@ -99,9 +99,6 @@
                     <span id="entry-progress-fill"></span>
                 </div>
             </div>
-            <button class="btn btn-accent entry-enter" id="enter-site" type="button" disabled>
-                Masuk ke portfolio <i class="fas fa-arrow-right" aria-hidden="true"></i>
-            </button>
             <p class="entry-hint">Showcase sedang disiapkan · otomatis masuk</p>
         </div>
         <div class="entry-screen-meta" aria-hidden="true">
@@ -575,8 +572,6 @@ q = N // p</code></pre>
     </div>
     <script>
         const entryScreen = document.getElementById('entry-screen');
-        const enterSite = document.getElementById('enter-site');
-
         function enterPortfolio() {
             if (!entryScreen || entryScreen.classList.contains('is-leaving')) return;
             window.portfolioEntrySession?.markVisited();
@@ -590,10 +585,6 @@ q = N // p</code></pre>
         }
 
         window.enterPortfolio = enterPortfolio;
-        enterSite?.addEventListener('click', enterPortfolio);
-        if (!document.documentElement.classList.contains('entry-session-visited')) {
-            enterSite?.focus();
-        }
 
         const initialSectionId = window.location.hash.slice(1);
         if (initialSectionId) {
