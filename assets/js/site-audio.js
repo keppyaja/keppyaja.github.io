@@ -9,6 +9,9 @@
     const GSAP_CDN = 'https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js';
     const GSAP_SCROLL_TRIGGER_CDN = 'https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js';
     const GSAP_SCROLL_TO_CDN = 'https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollToPlugin.min.js';
+    const GSAP_INTEGRITY = 'sha384-g4NTh/Iv5PPU4xPyhEWqPcwtNXOvdaDI8LLnyYfyNZOjKJeYQyjzQ9X5275eBjpt';
+    const GSAP_SCROLL_TRIGGER_INTEGRITY = 'sha384-Z3REaz79l2IaAZqJsSABtTbhjgOUYyV3p90XNnAPCSHg3EMTz1fouunq9WZRtj3d';
+    const GSAP_SCROLL_TO_INTEGRITY = 'sha384-RVPQwTb0fPz9kI8s5GwAq1Qioto9fnEQt1aKGSQSm8xV6+DIdBSgcCShoHqfKnhv';
     let audio = document.getElementById('site-audio');
     let mutedByUser = false;
     let pausedByVisibility = false;
@@ -26,10 +29,13 @@
 
     normalizeIndexUrl();
 
-    function loadScript(src) {
+    function loadScript(src, integrity) {
         return new Promise((resolve, reject) => {
             const script = document.createElement('script');
             script.src = src;
+            script.crossOrigin = 'anonymous';
+            script.referrerPolicy = 'no-referrer';
+            if (integrity) script.integrity = integrity;
             script.onload = resolve;
             script.onerror = () => reject(new Error(`Unable to load ${src}`));
             document.head.append(script);
@@ -38,10 +44,10 @@
 
     async function loadGsapAnimations() {
         try {
-            if (!window.gsap) await loadScript(GSAP_CDN);
+            if (!window.gsap) await loadScript(GSAP_CDN, GSAP_INTEGRITY);
             // Plugins are optional: the animation script checks for each before using it.
-            if (!window.ScrollTrigger) await loadScript(GSAP_SCROLL_TRIGGER_CDN).catch(console.warn);
-            if (!window.ScrollToPlugin) await loadScript(GSAP_SCROLL_TO_CDN).catch(console.warn);
+            if (!window.ScrollTrigger) await loadScript(GSAP_SCROLL_TRIGGER_CDN, GSAP_SCROLL_TRIGGER_INTEGRITY).catch(console.warn);
+            if (!window.ScrollToPlugin) await loadScript(GSAP_SCROLL_TO_CDN, GSAP_SCROLL_TO_INTEGRITY).catch(console.warn);
             const animationSource = new URL('gsap-animations.js?v=7', SCRIPT_URL).href;
             if (!document.querySelector(`script[src="${animationSource}"]`)) {
                 await loadScript(animationSource);
