@@ -13,7 +13,7 @@
     <meta name="twitter:card" content="summary">
     <link rel="icon" type="image/svg+xml" href="assets/images/favicon.svg">
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha384-iw3OoTErCYJJB9mCa8LNS2hbsQ7M3C0EpIsO/H5+EGAkPGc6rk+V8i04oW/K5xq0" crossorigin="anonymous" referrerpolicy="no-referrer">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,11 +22,13 @@
         src="https://cdn.jsdelivr.net/npm/marked@15.0.12/marked.min.js"
         integrity="sha384-948ahk4ZmxYVYOc+rxN1H2gM1EJ2Duhp7uHtZ4WSLkV4Vtx5MUqnV+l7u9B+jFv+"
         crossorigin="anonymous"
+        referrerpolicy="no-referrer"
         defer></script>
     <script
         src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"
         integrity="sha384-JEyTNhjM6R1ElGoJns4U2Ln4ofPcqzSsynQkmEc/KGy6336qAZl70tDLufbkla+3"
         crossorigin="anonymous"
+        referrerpolicy="no-referrer"
         defer></script>
 
     <link rel="stylesheet" href="assets/css/style.css?v=18">
@@ -143,7 +145,7 @@
     </header>
 
     <main id="main-content">
-    <section id="home" class="hero parallax-scene">
+    <section id="home" class="hero parallax-scene" tabindex="-1">
 
 
         <div class="hero-bg-layer" data-parallax="0.06" aria-hidden="true"></div>
@@ -294,7 +296,7 @@ q = N // p</code></pre>
         </div>
     </section>
 
-    <section id="about" class="about">
+    <section id="about" class="about" tabindex="-1">
         <div class="container">
             <div class="section-heading"><p class="eyebrow">01 / Tentang</p><h2>Di balik alias Skipped.</h2></div>
             <div class="about-content">
@@ -314,7 +316,7 @@ q = N // p</code></pre>
         </div>
     </section>
 
-    <section id="skills" class="skills">
+    <section id="skills" class="skills" tabindex="-1">
         <div class="container">
             <div class="section-heading"><p class="eyebrow">02 / Fokus & perangkat</p><h2>Loadout.</h2><p>Bidang yang saya pelajari dan tools yang saya gunakan.</p></div>
             <div class="skills-marquee" tabindex="0" role="region" aria-label="Loadout: fokus dan perangkat. Gulir ke samping untuk membaca bagian tertentu.">
@@ -356,7 +358,7 @@ q = N // p</code></pre>
         </div>
     </section>
 
-    <section id="portfolio" class="portfolio">
+    <section id="portfolio" class="portfolio" tabindex="-1">
         <div class="container">
             <div class="section-heading"><p class="eyebrow">03 / Proyek & eksperimen</p><h2>Riwayat misi.</h2><p>Beberapa proyek pengembangan dan eksplorasi keamanan saya.</p></div>
             <div class="portfolio-grid">
@@ -487,7 +489,7 @@ q = N // p</code></pre>
         </div>
     </section>
 
-    <section id="contact" class="contact">
+    <section id="contact" class="contact" tabindex="-1">
         <div class="container">
             <div class="section-heading"><p class="eyebrow">04 / Kontak</p><h2>Ada yang ingin didiskusikan?</h2><p>Soal CTF, proyek, atau sekadar bertukar catatan.</p></div>
             <div class="contact-container">
@@ -665,23 +667,35 @@ q = N // p</code></pre>
 
         const sections = document.querySelectorAll('section[id]');
         const navAnchors = document.querySelectorAll('.nav-links a[href^="#"]');
-
-        function handleScrollEffects() {
-
-            let currentSection = '';
-            sections.forEach(section => {
-                if (window.scrollY >= section.offsetTop - 120) {
-                    currentSection = section.id;
+        const syncCurrentNavigation = currentSection => {
+            navAnchors.forEach(link => {
+                const isCurrent = link.getAttribute('href') === `#${currentSection}`;
+                link.classList.toggle('active', isCurrent);
+                if (isCurrent) {
+                    link.setAttribute('aria-current', 'page');
+                } else {
+                    link.removeAttribute('aria-current');
                 }
             });
+        };
 
-            navAnchors.forEach(link => {
-                link.classList.toggle('active', link.getAttribute('href') === `#${currentSection}`);
-            });
+        if (CSS.supports('scroll-target-group: auto')) {
+            const syncNativeCurrentNavigation = () => {
+                const currentLink = document.querySelector('.nav-links a:target-current');
+                const initialSection = window.location.hash.slice(1) || sections[0]?.id || '';
+                syncCurrentNavigation(currentLink?.hash.slice(1) || initialSection);
+            };
+            syncNativeCurrentNavigation();
+            document.addEventListener('scrollend', syncNativeCurrentNavigation);
+            window.addEventListener('hashchange', syncNativeCurrentNavigation);
+        } else {
+            const observer = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) syncCurrentNavigation(entry.target.id);
+                });
+            }, { rootMargin: '-50% 0px -50% 0px', threshold: 0 });
+            sections.forEach(section => observer.observe(section));
         }
-
-        window.addEventListener('scroll', handleScrollEffects, { passive: true });
-        handleScrollEffects();
 
         window.initGsapAnimations?.();
 
@@ -774,6 +788,10 @@ q = N // p</code></pre>
                 return;
             }
             const rawHtml = marked.parse(markdownText);
+            if ('setHTML' in Element.prototype) {
+                mdContent.setHTML(rawHtml);
+                return;
+            }
             mdContent.innerHTML = DOMPurify.sanitize(rawHtml);
         }
 

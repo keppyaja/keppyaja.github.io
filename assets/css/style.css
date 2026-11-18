@@ -334,7 +334,7 @@ body > header::after {
 }
 .logo::before { content: ''; width: 10px; height: 22px; background: var(--accent-color); transform: skewX(-18deg); }
 .logo span { font-family: var(--mono); font-size: .48rem; font-style: normal; font-weight: 400; letter-spacing: 0; text-transform: none; color: var(--gray-color); }
-.nav-links { display: flex; align-items: center; gap: 26px; list-style: none; }
+.nav-links { display: flex; align-items: center; gap: 26px; list-style: none; scroll-target-group: auto; }
 .nav-links a { display: block; padding: 8px 0; font-family: var(--display); font-size: 1.05rem; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: var(--gray-color); }
 .nav-links a:hover, .nav-links a.active, .nav-links a[aria-current] { color: var(--accent-color); }
 .nav-links a.active, .nav-links a[aria-current] { text-decoration: underline; text-decoration-thickness: 3px; text-underline-offset: 7px; }
