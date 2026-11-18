@@ -28,7 +28,8 @@ Portofolio pribadi **Tsaqif Fawwaz (Skipped)**, seorang cybersecurity enthusiast
   - loop playback,
   - tombol mute/unmute di navbar,
   - persetujuan pengguna sebelum musik diputar,
-  - pause saat tab tidak aktif tanpa autoplay ulang,
+  - pause saat tab tidak aktif dan dilanjutkan saat tab aktif kembali,
+  - dilanjutkan saat kembali melalui navigasi internal atau Back/Forward Cache,
   - penyimpanan posisi dan status playback selama sesi.
 
 ## Teknologi
