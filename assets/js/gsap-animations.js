@@ -688,7 +688,19 @@
                         stagger: 0.08
                     })
                     .from('.entry-silhouette', { x: 90, autoAlpha: 0, duration: 1.1 }, '-=0.8')
-                    .from('.entry-screen-orbit', { scale: 0.7, autoAlpha: 0, duration: 1 }, '-=0.9');
+                    .from('.entry-screen-orbit', { scale: 0.7, autoAlpha: 0, duration: 1 }, '-=0.9')
+                    .from('.entry-screen h1', {
+                        clipPath: 'inset(0 100% 0 0)',
+                        letterSpacing: '.12em',
+                        duration: 0.85,
+                        ease: 'power3.out'
+                    }, '-=0.75')
+                    .from('.entry-progress-track span', {
+                        scaleX: 0,
+                        transformOrigin: 'left center',
+                        duration: 0.65,
+                        ease: 'power2.out'
+                    }, '-=0.55');
 
                 animateEntryProgress(entryScreen, gsap);
             }
@@ -767,6 +779,39 @@
                         scrollTrigger: {
                             trigger: element,
                             start: 'top 92%',
+                            once: true
+                        }
+                    });
+                });
+
+                gsap.utils.toArray('.toc-item').forEach((item, index) => {
+                    gsap.from(item, {
+                        y: 24,
+                        x: index % 2 ? 12 : -12,
+                        rotateX: 8,
+                        autoAlpha: 0,
+                        duration: 0.55,
+                        delay: index * 0.07,
+                        ease: 'power2.out',
+                        scrollTrigger: {
+                            trigger: item,
+                            start: 'top 92%',
+                            once: true
+                        }
+                    });
+                });
+
+                gsap.utils.toArray('.skill-item').forEach((item, index) => {
+                    gsap.from(item, {
+                        y: 20,
+                        scale: 0.96,
+                        autoAlpha: 0,
+                        duration: 0.48,
+                        delay: (index % 6) * 0.04,
+                        ease: 'power2.out',
+                        scrollTrigger: {
+                            trigger: item,
+                            start: 'top 94%',
                             once: true
                         }
                     });
@@ -853,6 +898,69 @@
             clearProps: 'transform,opacity,visibility',
             overwrite: true
         });
+    };
+
+    window.animateMusicConsent = (dialog, isClosing, onComplete) => {
+        if (!window.gsap || !dialog) {
+            onComplete?.();
+            return;
+        }
+        const { gsap } = window;
+        const panel = dialog.querySelector('.music-consent-panel');
+        if (!panel) {
+            onComplete?.();
+            return;
+        }
+
+        if (prefersReducedMotion()) {
+            if (isClosing) onComplete?.();
+            else gsap.set(dialog, { clearProps: 'all' });
+            return;
+        }
+
+        if (isClosing) {
+            gsap.timeline({
+                onComplete
+            })
+                .to(panel, {
+                    y: 18,
+                    scale: 0.96,
+                    autoAlpha: 0,
+                    duration: 0.28,
+                    ease: 'power2.in',
+                    overwrite: true
+                })
+                .to(dialog, {
+                    autoAlpha: 0,
+                    duration: 0.22,
+                    ease: 'power1.out'
+                }, '-=0.08');
+            return;
+        }
+
+        gsap.timeline()
+            .set(dialog, { autoAlpha: 0 })
+            .set(panel, { y: 28, scale: 0.94, rotateX: 5, autoAlpha: 0 })
+            .to(dialog, {
+                autoAlpha: 1,
+                duration: 0.25,
+                ease: 'power1.out'
+            })
+            .to(panel, {
+                y: 0,
+                scale: 1,
+                rotateX: 0,
+                autoAlpha: 1,
+                duration: 0.5,
+                ease: 'back.out(1.5)'
+            }, '-=0.12')
+            .from(panel.querySelectorAll('.eyebrow, h2, p, .music-consent-actions > *'), {
+                y: 12,
+                autoAlpha: 0,
+                duration: 0.38,
+                stagger: 0.06,
+                ease: 'power2.out'
+            }, '-=0.32');
     };
 
     window.animateSpinner = icon => {

@@ -41,7 +41,7 @@
             // Plugins are optional: the animation script checks for each before using it.
             if (!window.ScrollTrigger) await loadScript(GSAP_SCROLL_TRIGGER_CDN).catch(console.warn);
             if (!window.ScrollToPlugin) await loadScript(GSAP_SCROLL_TO_CDN).catch(console.warn);
-            const animationSource = new URL('gsap-animations.js?v=5', SCRIPT_URL).href;
+            const animationSource = new URL('gsap-animations.js?v=6', SCRIPT_URL).href;
             if (!document.querySelector(`script[src="${animationSource}"]`)) {
                 await loadScript(animationSource);
             }
@@ -131,24 +131,46 @@
             return;
         }
 
+        let closing = false;
         const closeDialog = wantsMusic => {
-            dialog.hidden = true;
-            document.body.classList.remove('music-dialog-open');
+            if (closing) return;
+            closing = true;
+            const finish = () => {
+                dialog.hidden = true;
+                document.body.classList.remove('music-dialog-open');
+                document.removeEventListener('keydown', onDialogKeydown);
+                yesButton.onclick = null;
+                noButton.onclick = null;
+            };
+
             if (wantsMusic) {
                 mutedByUser = false;
                 startAudio();
-                return;
+            } else {
+                mutedByUser = true;
+                saveAudioState(false);
+                updateToggle(false);
             }
-            mutedByUser = true;
-            saveAudioState(false);
-            updateToggle(false);
+
+            if (window.animateMusicConsent) {
+                window.animateMusicConsent(dialog, true, finish);
+            } else {
+                finish();
+            }
+        };
+        const onDialogKeydown = event => {
+            if (event.key === 'Escape') closeDialog(false);
         };
 
         yesButton.onclick = () => closeDialog(true);
         noButton.onclick = () => closeDialog(false);
+        document.addEventListener('keydown', onDialogKeydown);
         dialog.hidden = false;
         document.body.classList.add('music-dialog-open');
-        yesButton.focus();
+        if (window.animateMusicConsent) {
+            window.animateMusicConsent(dialog, false);
+        }
+        window.requestAnimationFrame(() => yesButton.focus());
     }
 
     audio.addEventListener('timeupdate', () => {
