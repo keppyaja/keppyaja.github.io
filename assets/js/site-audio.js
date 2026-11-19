@@ -298,6 +298,59 @@
         updateToggle(!audio.paused);
     }
 
+    function setupMobileNavigation() {
+        const navbar = document.querySelector('.navbar');
+        const navLinks = navbar?.querySelector('.nav-links');
+        if (!navbar || !navLinks) return;
+
+        document.body.classList.add('navigation-ready');
+        let menuToggle = navbar.querySelector('.menu-toggle');
+        if (!menuToggle) {
+            menuToggle = document.createElement('button');
+            menuToggle.type = 'button';
+            menuToggle.className = 'menu-toggle';
+            menuToggle.setAttribute('aria-label', 'Buka navigasi');
+            menuToggle.setAttribute('aria-expanded', 'false');
+            menuToggle.setAttribute('aria-controls', navLinks.id || 'primary-navigation');
+            menuToggle.innerHTML = '<i class="fas fa-bars" aria-hidden="true"></i>';
+            if (!navLinks.id) navLinks.id = 'primary-navigation';
+            navbar.append(menuToggle);
+        }
+
+        if (menuToggle.dataset.mobileNavBound === 'true') return;
+        menuToggle.dataset.mobileNavBound = 'true';
+
+        const closeMenu = () => {
+            navLinks.classList.remove('active');
+            menuToggle.setAttribute('aria-expanded', 'false');
+            const icon = menuToggle.querySelector('i');
+            icon?.classList.remove('fa-times');
+            icon?.classList.add('fa-bars');
+        };
+
+        menuToggle.addEventListener('click', () => {
+            const isOpen = navLinks.classList.toggle('active');
+            menuToggle.setAttribute('aria-expanded', String(isOpen));
+            menuToggle.setAttribute('aria-label', isOpen ? 'Tutup navigasi' : 'Buka navigasi');
+            const icon = menuToggle.querySelector('i');
+            icon?.classList.toggle('fa-bars', !isOpen);
+            icon?.classList.toggle('fa-times', isOpen);
+            if (isOpen) window.animateNavMenu?.(navLinks);
+        });
+
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', closeMenu);
+        });
+
+        menuToggle.addEventListener('keydown', event => {
+            if (event.key === 'Escape') closeMenu();
+        });
+
+        window.matchMedia('(min-width: 721px)').addEventListener('change', event => {
+            if (event.matches) closeMenu();
+        });
+    }
+
     function initEasterEgg() {
         if (easterEggInitialized) return;
         easterEggInitialized = true;
@@ -427,6 +480,7 @@
             if (pushState) window.history.pushState({}, '', response.url || url);
             await loadPageScripts(nextDocument);
             ensureAudioToggle();
+            setupMobileNavigation();
             window.initGsapAnimations?.();
             if (shouldResumeAudio && audio.paused) {
                 startAudio();
@@ -469,6 +523,7 @@
     document.addEventListener('portfolio-entry-complete', askToPlayMusic, { once: true });
     initEasterEgg();
     ensureAudioToggle();
+    setupMobileNavigation();
     syncEntrySession();
     loadGsapAnimations();
 

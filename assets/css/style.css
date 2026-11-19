@@ -1015,9 +1015,6 @@ footer::before { content: ''; display: block; height: 5px; margin: -38px 0 38px;
     .nav-links { display: flex; width: 100%; flex-wrap: wrap; gap: 4px 24px; padding: 12px 0 20px; }
     .navigation-ready .nav-links { display: none; }
     .navigation-ready .nav-links.active { display: flex; }
-    .writeup-page-body .nav-links { display: flex; width: auto; padding: 10px 0; gap: 16px; }
-    .writeup-page-body .navbar { gap: 8px 20px; padding-block: 10px; }
-    .writeup-page-body .nav-links a { font-size: .95rem; }
     section { padding-block: 54px; }
     section + section > .container { padding-top: 36px; }
 
@@ -1073,7 +1070,6 @@ footer::before { content: ''; display: block; height: 5px; margin: -38px 0 38px;
     .archive-pagination button { font-size: .9rem; padding: 7px 10px; }
     .archive-page-number { font-size: .75rem; text-align: center; }
     .writeup-comp-count { margin-left: 10px; }
-    .writeup-page-body .nav-links { width: 100%; }
     .toc-grid { grid-template-columns: 1fr; }
 }
 @media (prefers-reduced-motion: reduce) {

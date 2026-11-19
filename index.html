@@ -31,7 +31,7 @@
         referrerpolicy="no-referrer"
         defer></script>
 
-    <link rel="stylesheet" href="assets/css/style.css?v=20">
+    <link rel="stylesheet" href="assets/css/style.css?v=21">
     <script>
         window.portfolioEntrySession = {
             key: 'skipped-portfolio-entry-seen',
@@ -71,7 +71,7 @@
             document.documentElement.classList.add('entry-session-visited');
         }
     </script>
-    <script src="assets/js/site-audio.js?v=7" defer></script>
+    <script src="assets/js/site-audio.js?v=8" defer></script>
 </head>
 <body class="entry-locked">
     <a class="skip-link" href="#main-content">Lewati navigasi</a>
@@ -623,6 +623,7 @@ q = N // p</code></pre>
         document.body.classList.add('navigation-ready');
         const menuToggle = document.querySelector('.menu-toggle');
         const navLinks = document.querySelector('.nav-links');
+        menuToggle.dataset.mobileNavBound = 'true';
 
         menuToggle.addEventListener('click', function () {
             const isOpen = navLinks.classList.toggle('active');
