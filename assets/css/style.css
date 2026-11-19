@@ -355,6 +355,31 @@ body > header::after {
 .audio-toggle i { width: 12px; font-size: .72rem; text-align: center; }
 /* Hover, pressed and active states of .audio-toggle are animated by GSAP. */
 .audio-toggle:focus-visible { outline: 2px solid var(--accent-color); outline-offset: 3px; }
+.motion-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-width: 92px;
+    min-height: 34px;
+    padding: 6px 10px;
+    margin-left: 8px;
+    background: transparent;
+    color: var(--gray-color);
+    border: 1px solid var(--border);
+    border-radius: 0;
+    font-family: var(--mono);
+    font-size: .64rem;
+    font-weight: 500;
+    letter-spacing: .06em;
+    line-height: 1;
+    text-transform: uppercase;
+}
+.motion-toggle i { width: 12px; font-size: .72rem; text-align: center; color: var(--accent-color); }
+.motion-toggle[aria-pressed="true"] { color: var(--light-color); border-color: var(--accent-color); }
+.motion-toggle:focus-visible { outline: 2px solid var(--accent-color); outline-offset: 3px; }
+.motion-dialog-open { overflow: hidden; }
+.motion-consent { z-index: 3300; }
 .audio-control {
     position: relative;
     display: inline-flex;
@@ -1045,6 +1070,7 @@ footer::before { content: ''; display: block; height: 5px; margin: -38px 0 38px;
     .container { width: calc(100% - 40px); }
     .navbar { min-height: 64px; flex-wrap: wrap; gap: 0; }
     .audio-toggle { min-width: 86px; }
+    .motion-toggle { min-width: 86px; margin-left: 6px; }
     .audio-control { margin-left: auto; margin-right: 10px; }
     .navigation-ready .menu-toggle { display: block; }
     .nav-links { display: flex; width: 100%; flex-wrap: wrap; gap: 4px 24px; padding: 12px 0 20px; }
@@ -1109,4 +1135,13 @@ footer::before { content: ''; display: block; height: 5px; margin: -38px 0 38px;
 }
 @media (prefers-reduced-motion: reduce) {
     .entry-screen.is-leaving { visibility: hidden; transform: translateY(-100%); }
+}
+
+body.reduce-motion .entry-particles,
+body.reduce-motion .entry-screen-orbit,
+body.reduce-motion .entry-silhouette {
+    animation: none;
+}
+body.reduce-motion * {
+    scroll-behavior: auto;
 }

@@ -2,7 +2,21 @@
     'use strict';
 
     const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)';
-    const prefersReducedMotion = () => window.matchMedia(REDUCED_MOTION_QUERY).matches;
+    const REDUCED_MOTION_STORAGE_KEY = 'skipped-reduce-motion';
+    const readReducedMotionOverride = () => {
+        try {
+            return localStorage.getItem(REDUCED_MOTION_STORAGE_KEY);
+        } catch (error) {
+            console.warn('Motion preference state is unavailable.', error);
+            return null;
+        }
+    };
+    const prefersReducedMotion = () => {
+        const override = readReducedMotionOverride();
+        if (override === 'reduce') return true;
+        if (override === 'full') return false;
+        return window.matchMedia(REDUCED_MOTION_QUERY).matches;
+    };
 
     let activeContext = null;
     let activeMedia = null;
@@ -529,6 +543,106 @@
      * Loadout marquee: endless loop that can still be scrolled by hand
      * ------------------------------------------------------------------ */
 
+    function setupMotionPreference({ signal }) {
+        const navbar = document.querySelector('.navbar');
+        if (!navbar) return;
+
+        let toggle = document.getElementById('motion-toggle');
+        if (!toggle) {
+            toggle = document.createElement('button');
+            toggle.type = 'button';
+            toggle.className = 'motion-toggle';
+            toggle.id = 'motion-toggle';
+            navbar.append(toggle);
+        }
+
+        let dialog = document.getElementById('motion-consent-dialog');
+        if (!dialog) {
+            dialog = document.createElement('div');
+            dialog.id = 'motion-consent-dialog';
+            dialog.className = 'music-consent motion-consent';
+            dialog.hidden = true;
+            dialog.setAttribute('role', 'dialog');
+            dialog.setAttribute('aria-modal', 'true');
+            dialog.setAttribute('aria-labelledby', 'motion-consent-title');
+            dialog.setAttribute('aria-describedby', 'motion-consent-description');
+            dialog.innerHTML = `
+                <div class="music-consent-panel">
+                    <p class="eyebrow">Motion preference / 02</p>
+                    <h2 id="motion-consent-title">Kurangi gerak animasi?</h2>
+                    <p id="motion-consent-description">Matikan animasi dekoratif dan loop otomatis untuk tampilan yang lebih tenang.</p>
+                    <div class="music-consent-actions">
+                        <button class="btn btn-accent" id="motion-consent-yes" type="button">Kurangi gerak <i class="fas fa-person" aria-hidden="true"></i></button>
+                        <button class="btn" id="motion-consent-no" type="button">Pertahankan gerak</button>
+                    </div>
+                </div>`;
+            document.body.append(dialog);
+        }
+
+        const syncToggle = () => {
+            const reduced = prefersReducedMotion();
+            document.body.classList.toggle('reduce-motion', reduced);
+            toggle.setAttribute('aria-pressed', String(reduced));
+            toggle.setAttribute('aria-label', reduced ? 'Aktifkan gerak penuh' : 'Kurangi gerak animasi');
+            toggle.innerHTML = reduced
+                ? '<i class="fas fa-person" aria-hidden="true"></i><span>Reduksi</span>'
+                : '<i class="fas fa-person-running" aria-hidden="true"></i><span>Gerak</span>';
+        };
+
+        const savePreference = value => {
+            try {
+                localStorage.setItem(REDUCED_MOTION_STORAGE_KEY, value);
+            } catch (error) {
+                console.warn('Motion preference could not be saved.', error);
+            }
+            syncToggle();
+            initAnimations();
+        };
+
+        const yesButton = dialog.querySelector('#motion-consent-yes');
+        const noButton = dialog.querySelector('#motion-consent-no');
+
+        const closeDialog = () => {
+            dialog.hidden = true;
+            document.body.classList.remove('motion-dialog-open');
+            document.removeEventListener('keydown', onDialogKeydown);
+        };
+        const onDialogKeydown = event => {
+            if (event.key === 'Escape') closeDialog();
+        };
+
+        const openDialog = () => {
+            dialog.hidden = false;
+            document.body.classList.add('motion-dialog-open');
+            document.addEventListener('keydown', onDialogKeydown);
+            window.requestAnimationFrame(() => yesButton?.focus());
+        };
+
+        toggle.addEventListener('click', openDialog, { signal });
+        yesButton.onclick = () => {
+            closeDialog();
+            savePreference('reduce');
+        };
+        noButton.onclick = () => {
+            closeDialog();
+            savePreference('full');
+        };
+
+        const motionQuery = window.matchMedia(REDUCED_MOTION_QUERY);
+        const onSystemMotionChange = () => {
+            if (!readReducedMotionOverride()) {
+                syncToggle();
+                initAnimations();
+            }
+        };
+        motionQuery.addEventListener('change', onSystemMotionChange);
+        signal.addEventListener('abort', () => {
+            motionQuery.removeEventListener('change', onSystemMotionChange);
+        }, { once: true });
+
+        syncToggle();
+    }
+
     function startSkillsMarquee({ gsap, signal }) {
         const marquee = document.querySelector('.skills-marquee');
         const shell = marquee?.closest('.skills-marquee-shell');
@@ -722,6 +836,8 @@
         const reduceMotion = prefersReducedMotion();
         const controller = new AbortController();
         const { signal } = controller;
+        setupMotionPreference({ signal });
+        let stopMarquee = () => {};
         const entryScreen = document.querySelector('.entry-screen');
         const entryVisible = Boolean(entryScreen) && !entryScreen.hidden &&
             !entryScreen.classList.contains('is-leaving') &&
@@ -744,7 +860,7 @@
             }
 
             bindTilt({ gsap, signal, handler });
-            const stopMarquee = startSkillsMarquee({ gsap, signal });
+            stopMarquee = startSkillsMarquee({ gsap, signal });
 
             if (entryVisible) {
                 startEntryAmbient(gsap, entryScreen);
