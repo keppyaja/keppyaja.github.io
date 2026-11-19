@@ -10,6 +10,7 @@ Portofolio pribadi **Tsaqif Fawwaz (Skipped)**, seorang cybersecurity enthusiast
 - **Project showcase**: WebMusyKom, local AI chatbot, Perpusri, dan proyek algoritma.
 - **Table of contents** interaktif untuk berpindah ke setiap section utama portfolio.
 - **Statistik Codeforces** yang diambil dari Codeforces API.
+- **Preferensi gerak**: kontrol manual untuk mengurangi atau mengaktifkan animasi, dengan fallback mengikuti pengaturan sistem.
 - **Arsip write-up CTF** dari ARACTF7, Wreck-IT 7.0, dan CyLab/picoCTF.
 - **Form kontak** yang mengirimkan pesan melalui FormSubmit.
 
@@ -23,7 +24,11 @@ Portofolio pribadi **Tsaqif Fawwaz (Skipped)**, seorang cybersecurity enthusiast
 - Navigasi internal tanpa reload melalui [assets/js/site-audio.js](assets/js/site-audio.js), termasuk preservasi audio saat berpindah halaman.
 - Pencarian, filter kompetisi/kategori, dan pagination pada [writeups/](writeups/).
 - Modal studi kasus proyek dengan rendering Markdown yang disanitasi.
-- Parallax, pointer tilt, scroll reveal, hover state, marquee loadout, dan dukungan `prefers-reduced-motion` menggunakan GSAP.
+- Parallax, pointer tilt, scroll reveal, hover state, dan marquee loadout menggunakan GSAP.
+- Marquee loadout berjalan terus-menerus, mendukung drag dan scroll manual, serta memiliki tombol pause/play.
+- Bar bergaris kuning-hitam di header dan footer bergerak secara horizontal dan berhenti otomatis saat reduce motion aktif.
+- Dialog preferensi gerak dapat mengaktifkan mode reduksi atau mengembalikan animasi penuh.
+- Preferensi gerak disimpan dengan `localStorage`; saat belum dipilih, situs mengikuti `prefers-reduced-motion` dari perangkat.
 - Audio lokal `assets/audio/theme.mp3` dengan:
   - loop playback,
   - tombol mute/unmute di navbar,
@@ -36,7 +41,7 @@ Portofolio pribadi **Tsaqif Fawwaz (Skipped)**, seorang cybersecurity enthusiast
 
 - HTML5
 - CSS3 dengan custom properties, responsive media queries, dan animasi CSS
-- Vanilla JavaScript dengan History API, Fetch API, Page Visibility API, Web Audio/HTMLMedia API, dan `sessionStorage`
+- Vanilla JavaScript dengan History API, Fetch API, Page Visibility API, Web Audio/HTMLMedia API, `sessionStorage`, dan `localStorage`
 - GSAP `3.12.5`, termasuk ScrollTrigger dan ScrollToPlugin yang dimuat dari CDN
 - Font Awesome 6.4.0
 - Google Fonts: Barlow Condensed, IBM Plex Sans, dan IBM Plex Mono
@@ -59,7 +64,7 @@ Portofolio pribadi **Tsaqif Fawwaz (Skipped)**, seorang cybersecurity enthusiast
 │   │   ├── profile.webp
 │   │   └── ye-candidate-*.webp
 │   └── js/
-│       ├── gsap-animations.js  # Entry, scroll, hover, tilt, dan marquee animation
+│       ├── gsap-animations.js  # Entry, scroll, hover, tilt, marquee, dan preferensi gerak
 │       ├── site-audio.js       # Audio global dan navigasi internal
 │       └── writeups.js          # Search, filter, dan pagination write-up
 └── writeups/
@@ -94,6 +99,7 @@ Server HTTP lokal disarankan daripada membuka file secara langsung melalui `file
 - Markdown dibersihkan dengan DOMPurify sebelum dimasukkan ke DOM.
 - Tautan eksternal yang dibuka pada tab baru menggunakan `rel="noopener noreferrer"`.
 - Audio di-host secara lokal dan tidak menggunakan embed pihak ketiga. Audio tidak autoplay dan memerlukan persetujuan melalui modal custom.
+- Preferensi reduce motion disimpan hanya di browser pengguna melalui `localStorage` dan dapat diubah kapan saja melalui tombol Gerak/Reduksi di navbar.
 - Statistik Codeforces diambil dari endpoint publik yang sudah ditentukan.
 - Form kontak meneruskan nama, email, dan pesan ke FormSubmit melalui HTTPS.
 - URL `index.html` dinormalisasi ke URL direktori menggunakan History API; konfigurasi hosting tetap perlu mendukung fallback `index.html` untuk URL direktori.
