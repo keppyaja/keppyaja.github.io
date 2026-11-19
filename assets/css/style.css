@@ -872,6 +872,7 @@ body > header::after {
 .portfolio-content::before { content: 'MISSION / ' counter(project, decimal-leading-zero); display: block; font-family: var(--mono); font-size: .66rem; letter-spacing: .08em; color: var(--accent-color); margin-bottom: 16px; }
 .portfolio-content h3 { font-size: 1.75rem; line-height: 1.1; margin-bottom: 16px; }
 .portfolio-content p { font-size: .95rem; }
+.portfolio-description-mobile { display: none; }
 .portfolio-content .portfolio-role { font-family: var(--mono); font-size: .7rem; color: var(--physical); }
 .portfolio-role i { display: none; }
 .portfolio-tags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 20px; }
@@ -1001,6 +1002,8 @@ footer::before { content: ''; display: block; height: 5px; margin: -38px 0 38px;
     .hero-char-wrap { width: 100%; }
     .about-content, .contact-container { gap: 50px; }
     .portfolio-grid { gap: 20px; }
+    .portfolio-description-desktop { display: none; }
+    .portfolio-description-mobile { display: inline; }
     .toc-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 @media (max-width: 720px) {
