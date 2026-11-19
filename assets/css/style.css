@@ -331,7 +331,21 @@ body.music-dialog-open { overflow: hidden; }
 body > header { position: sticky; top: 0; z-index: 1000; background: var(--primary-color); }
 body > header::after {
     content: ''; display: block; height: 5px;
-    background: repeating-linear-gradient(-45deg, var(--accent-color) 0 9px, #0a0a0a 9px 18px);
+    background: repeating-linear-gradient(-45deg, var(--accent-color) 0 9px, #0a0a0a 9px 18px) 0 0 / 36px 5px;
+    will-change: background-position;
+}
+@keyframes stripe-roll {
+    to { background-position: 36px 0; }
+}
+@media (prefers-reduced-motion: no-preference) {
+    body > header::after,
+    footer::before {
+        animation: stripe-roll 1.2s linear infinite;
+    }
+}
+body.reduce-motion > header::after,
+body.reduce-motion footer::before {
+    animation: none;
 }
 .navbar { display: flex; align-items: center; justify-content: space-between; gap: 24px; min-height: 72px; }
 .logo {
@@ -953,7 +967,14 @@ body > header::after {
 textarea.form-control { min-height: 150px; resize: vertical; }
 .form-note { font-size: .75rem; }
 footer { border-top: 1px solid var(--border); padding: 38px 0 24px; }
-footer::before { content: ''; display: block; height: 5px; margin: -38px 0 38px; background: repeating-linear-gradient(-45deg, var(--accent-color) 0 9px, #0a0a0a 9px 18px); }
+footer::before {
+    content: '';
+    display: block;
+    height: 5px;
+    margin: -38px 0 38px;
+    background: repeating-linear-gradient(-45deg, var(--accent-color) 0 9px, #0a0a0a 9px 18px) 0 0 / 36px 5px;
+    will-change: background-position;
+}
 .footer-content { display: flex; justify-content: space-between; gap: 32px; margin-bottom: 36px; }
 .footer-about h3 { font-size: 1.5rem; margin-bottom: 10px; }
 .footer-about p { font-size: .85rem; }
