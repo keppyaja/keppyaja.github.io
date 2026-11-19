@@ -284,6 +284,71 @@
      * Pointer tilt (hero + entry card)
      * ------------------------------------------------------------------ */
 
+    function bindFollowingCursor({ gsap, signal }) {
+        if (!window.matchMedia('(pointer: fine)').matches) return;
+
+        let cursor = document.querySelector('.following-cursor');
+        if (!cursor) {
+            cursor = document.createElement('div');
+            cursor.className = 'following-cursor';
+            cursor.setAttribute('aria-hidden', 'true');
+            cursor.innerHTML = '<span class="following-cursor-dot"></span><span class="following-cursor-ring"></span>';
+            document.body.append(cursor);
+        }
+
+        const dot = cursor.querySelector('.following-cursor-dot');
+        const ring = cursor.querySelector('.following-cursor-ring');
+        if (!dot || !ring) return;
+
+        let visible = false;
+        const setDotX = gsap.quickSetter(dot, 'x', 'px');
+        const setDotY = gsap.quickSetter(dot, 'y', 'px');
+
+        gsap.set(cursor, { opacity: 0 });
+        document.body.classList.add('cursor-ready');
+
+        const move = event => {
+            if (event.pointerType && event.pointerType !== 'mouse') return;
+            if (!visible) {
+                visible = true;
+                gsap.to(cursor, { opacity: 1, duration: 0.12, overwrite: true });
+            }
+
+            setDotX(event.clientX - 3);
+            setDotY(event.clientY - 3);
+            gsap.to(ring, {
+                x: event.clientX - 18,
+                y: event.clientY - 18,
+                duration: 0.28,
+                ease: 'power3.out',
+                overwrite: 'auto'
+            });
+
+            const interactive = event.target.closest?.('a, button, input, textarea, select, [role="button"], [tabindex]:not([tabindex="-1"])');
+            cursor.classList.toggle('is-interactive', Boolean(interactive));
+        };
+
+        const hide = () => {
+            visible = false;
+            gsap.to(cursor, { opacity: 0, duration: 0.12, overwrite: true });
+        };
+
+        window.addEventListener('pointermove', move, { signal, passive: true });
+        window.addEventListener('pointerleave', hide, { signal });
+        document.documentElement.addEventListener('mouseleave', hide, { signal });
+        window.addEventListener('pointerdown', event => {
+            if (event.pointerType === 'mouse') cursor.classList.add('is-pressed');
+        }, { signal, passive: true });
+        window.addEventListener('pointerup', () => cursor.classList.remove('is-pressed'), { signal, passive: true });
+
+        signal.addEventListener('abort', () => {
+            gsap.killTweensOf(cursor);
+            gsap.killTweensOf(ring);
+            cursor.remove();
+            document.body.classList.remove('cursor-ready');
+        }, { once: true });
+    }
+
     function bindTilt({ gsap, signal, handler }) {
         const pointerOffset = (event, rect) => ({
             dx: (event.clientX - (rect.left + rect.width / 2)) / (rect.width / 2),
@@ -860,6 +925,7 @@
             }
 
             bindTilt({ gsap, signal, handler });
+            bindFollowingCursor({ gsap, signal });
             stopMarquee = startSkillsMarquee({ gsap, signal });
 
             if (entryVisible) {
