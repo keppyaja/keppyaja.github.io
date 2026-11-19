@@ -8,6 +8,7 @@
     let activeMedia = null;
     let entryAmbient = [];
     let refreshFrame = 0;
+    let glitchTimers = new Set();
 
     function registerPlugins() {
         const plugins = [window.ScrollTrigger, window.ScrollToPlugin].filter(Boolean);
@@ -41,6 +42,42 @@
     const ALL_SIDES = ['Top', 'Right', 'Bottom', 'Left'];
     const borders = (color, sides = ALL_SIDES) =>
         Object.fromEntries(sides.map(side => [`border${side}Color`, color]));
+
+    function scrambleText(element, duration = 720) {
+        if (!element || prefersReducedMotion()) return;
+
+        const original = element.textContent;
+        if (!original.trim()) return;
+        element.dataset.glitchOriginal = original;
+
+        const randomCharacters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#$%&*?/<>[]{}';
+        const start = performance.now();
+        let frame = 0;
+        element.classList.add('text-glitch-active');
+
+        const update = now => {
+            glitchTimers.delete(frame);
+            const progress = Math.min((now - start) / duration, 1);
+            const resolved = Math.floor(progress * original.length);
+
+            element.textContent = Array.from(original).map((character, index) => {
+                if (character === ' ' || /[.,/#!$%^&*;:{}=\-_`~().]/.test(character)) return character;
+                if (index < resolved) return character;
+                return randomCharacters[Math.floor(Math.random() * randomCharacters.length)];
+            }).join('');
+
+            if (progress < 1) {
+                frame = window.requestAnimationFrame(update);
+                glitchTimers.add(frame);
+            } else {
+                element.textContent = original;
+                element.classList.remove('text-glitch-active');
+            }
+        };
+
+        frame = window.requestAnimationFrame(update);
+        glitchTimers.add(frame);
+    }
 
     /**
      * Binds rest / hover / press states of an element to GSAP tweens.
@@ -769,6 +806,17 @@
                     });
                 });
 
+                gsap.utils.toArray('section:not(.hero) .section-heading h2').forEach((heading, index) => {
+                    window.ScrollTrigger.create({
+                        trigger: heading,
+                        start: 'top 88%',
+                        once: true,
+                        onEnter: () => {
+                            gsap.delayedCall(index * 0.04, () => scrambleText(heading));
+                        }
+                    });
+                });
+
                 gsap.utils.toArray('.portfolio-item, .contact-item, .writeup-category').forEach(element => {
                     gsap.from(element, {
                         y: 22,
@@ -838,6 +886,14 @@
             return () => {
                 controller.abort();
                 stopMarquee();
+                glitchTimers.forEach(frame => window.cancelAnimationFrame(frame));
+                glitchTimers.clear();
+                document.querySelectorAll('.text-glitch-active').forEach(element => {
+                    if (element.dataset.glitchOriginal) {
+                        element.textContent = element.dataset.glitchOriginal;
+                    }
+                    element.classList.remove('text-glitch-active');
+                });
             };
         });
 

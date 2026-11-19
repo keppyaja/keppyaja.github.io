@@ -306,6 +306,12 @@ body.music-dialog-open { overflow: hidden; }
 .section-heading { margin-bottom: 44px; max-width: 700px; }
 .section-heading h2 { margin-bottom: 16px; }
 .section-heading > p:last-child:not(.eyebrow) { margin: 0; }
+.text-glitch-active {
+    text-shadow:
+        2px 0 0 rgba(56, 189, 248, .72),
+        -2px 0 0 rgba(245, 158, 11, .72);
+    transform: translateZ(0);
+}
 .btn {
     display: inline-flex; align-items: center; justify-content: center; gap: 16px;
     border: 2px solid var(--secondary-color); border-radius: 0; padding: 10px 22px;

@@ -56,7 +56,7 @@
             // Plugins are optional: the animation script checks for each before using it.
             if (!window.ScrollTrigger) await loadScript(GSAP_SCROLL_TRIGGER_CDN, GSAP_SCROLL_TRIGGER_INTEGRITY).catch(console.warn);
             if (!window.ScrollToPlugin) await loadScript(GSAP_SCROLL_TO_CDN, GSAP_SCROLL_TO_INTEGRITY).catch(console.warn);
-            const animationSource = new URL('gsap-animations.js?v=7', SCRIPT_URL).href;
+            const animationSource = new URL('gsap-animations.js?v=8', SCRIPT_URL).href;
             if (!document.querySelector(`script[src="${animationSource}"]`)) {
                 await loadScript(animationSource);
             }
