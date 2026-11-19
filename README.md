@@ -26,7 +26,6 @@ Portofolio pribadi **Tsaqif Fawwaz (Skipped)**, seorang cybersecurity enthusiast
 - Modal studi kasus proyek dengan rendering Markdown yang disanitasi.
 - Parallax, pointer tilt, scroll reveal, hover state, dan marquee loadout menggunakan GSAP.
 - Marquee loadout berjalan terus-menerus, mendukung drag dan scroll manual, serta memiliki tombol pause/play.
-- Following cursor berupa titik dan ring melambat mengikuti pointer pada perangkat dengan pointer presisi, dengan efek lebih besar pada elemen interaktif.
 - Bar bergaris kuning-hitam di header dan footer bergerak secara horizontal dan berhenti otomatis saat reduce motion aktif.
 - Dialog preferensi gerak dapat mengaktifkan mode reduksi atau mengembalikan animasi penuh.
 - Preferensi gerak disimpan dengan `localStorage`; saat belum dipilih, situs mengikuti `prefers-reduced-motion` dari perangkat.

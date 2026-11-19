@@ -394,44 +394,6 @@ body.reduce-motion footer::before {
 .motion-toggle:focus-visible { outline: 2px solid var(--accent-color); outline-offset: 3px; }
 .motion-dialog-open { overflow: hidden; }
 .motion-consent { z-index: 3300; }
-.following-cursor {
-    position: fixed;
-    inset: 0 0 auto auto;
-    z-index: 3500;
-    width: 0;
-    height: 0;
-    pointer-events: none;
-    opacity: 0;
-}
-.following-cursor-dot,
-.following-cursor-ring {
-    position: fixed;
-    top: 0;
-    left: 0;
-    display: block;
-    border-radius: 50%;
-    pointer-events: none;
-}
-.following-cursor-dot {
-    width: 6px;
-    height: 6px;
-    background: var(--accent-color);
-    box-shadow: 0 0 10px rgba(245, 158, 11, .55);
-}
-.following-cursor-ring {
-    width: 36px;
-    height: 36px;
-    border: 1px solid rgba(245, 158, 11, .72);
-    transition: width 180ms ease, height 180ms ease, border-color 180ms ease, scale 180ms ease;
-}
-.following-cursor.is-interactive .following-cursor-ring {
-    border-width: 2px;
-    border-color: var(--accent-color);
-    scale: 1.35;
-}
-.following-cursor.is-pressed .following-cursor-ring {
-    scale: .72;
-}
 .audio-control {
     position: relative;
     display: inline-flex;
@@ -1194,7 +1156,6 @@ footer::before {
 }
 @media (prefers-reduced-motion: reduce) {
     .entry-screen.is-leaving { visibility: hidden; transform: translateY(-100%); }
-    .following-cursor { display: none; }
 }
 
 body.reduce-motion .entry-particles,
