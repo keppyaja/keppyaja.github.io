@@ -531,6 +531,8 @@
 
     function startSkillsMarquee({ gsap, signal }) {
         const marquee = document.querySelector('.skills-marquee');
+        const shell = marquee?.closest('.skills-marquee-shell');
+        const toggle = shell?.querySelector('.skills-marquee-toggle');
         const track = marquee?.querySelector('.skills-track');
         const source = track?.querySelector('.skills-container:not([data-marquee-clone])');
         if (!marquee || !source) return () => {};
@@ -550,6 +552,7 @@
         source.before(clones[0]);
         source.after(clones[1]);
         marquee.classList.add('is-looping');
+        shell?.classList.add('is-looping');
 
         let loopWidth = 0;
         let windowStart = 0; // position is kept in [windowStart, windowStart + loopWidth)
@@ -560,6 +563,17 @@
         let inView = true;
         let resumeCall = null;
         let drag = null;
+        let running = !prefersReducedMotion();
+
+        const syncToggle = () => {
+            if (!toggle) return;
+            const icon = toggle.querySelector('i');
+            const label = toggle.querySelector('span');
+            toggle.setAttribute('aria-label', running ? 'Jeda animasi gerak loadout' : 'Putar animasi gerak loadout');
+            if (icon) icon.className = running ? 'fas fa-pause' : 'fas fa-play';
+            if (label) label.textContent = running ? 'Jeda' : 'Putar';
+        };
+        syncToggle();
 
         // The copies look identical every `loopWidth` px, so any position can be shifted by a
         // whole loop. The window is the original set, with a copy on each side to scroll into.
@@ -584,7 +598,7 @@
         // Pointer hover never pauses the loop. It only yields while the user is actively
         // dragging/scrolling, or while keyboard focus is on the region (so it can be read).
         const paused = () =>
-            Boolean(drag) || interacting || !inView || document.hidden || marquee.matches(':focus-visible');
+            !running || Boolean(drag) || interacting || !inView || document.hidden || marquee.matches(':focus-visible');
 
         const touch = () => {
             interacting = true;
@@ -608,6 +622,27 @@
 
         const on = (target, type, callback, options = {}) =>
             target.addEventListener(type, callback, { signal, ...options });
+
+        on(toggle, 'click', () => {
+            running = !running;
+            if (!running) {
+                resumeCall?.kill();
+                interacting = false;
+            }
+            syncToggle();
+        });
+
+        const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+        const syncMotionPreference = event => {
+            if (event.matches) {
+                running = false;
+                syncToggle();
+            }
+        };
+        motionQuery.addEventListener('change', syncMotionPreference);
+        signal.addEventListener('abort', () => {
+            motionQuery.removeEventListener('change', syncMotionPreference);
+        }, { once: true });
 
         on(marquee, 'scroll', () => {
             // Our own writes read back exactly as stored; any other value came from the user.
@@ -660,6 +695,7 @@
             viewObserver.disconnect();
             clones.forEach(copy => copy.remove());
             marquee.classList.remove('is-looping', 'is-dragging');
+            shell?.classList.remove('is-looping');
             marquee.scrollLeft = 0;
         };
     }
